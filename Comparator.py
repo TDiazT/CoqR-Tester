@@ -42,25 +42,32 @@ def clean_coq_output(coq_output):
 
     splitlines_ = [line.split() for line in lines]
     splitlines_[0].remove('>')
-    if splitlines_[0][0] == "Success.":
-        return splitlines_[1:]
-    elif splitlines_[0][0] == "Error:":
-        if splitlines_[0][2:] == ['Object', 'not', 'found.']:
-            return "NOT_FOUND"
-        return ""
+
+    return splitlines_
+
 
 def clean_r_output(r_output):
-    splitlines_ = [row.split() for row in r_output.splitlines()]
-    if splitlines_[0][0] == "[1]":
-        return splitlines_
-    elif splitlines_[0][0] == "Error:":
-        if splitlines_[0][1] == 'object':
-            return "NOT_FOUND"
-        return ""
+    return [row.split() for row in r_output.splitlines()]
+
 
 
 def compare_outputs(clean_coq_out, clean_r_out):
-    return "OK" if clean_coq_out == clean_r_out else "Nop"
+    coq_res = ""
+    r_res = ""
+
+    if clean_coq_out[0][0] == "Success.":
+        coq_res = clean_coq_out[1:]
+    elif clean_coq_out[0][0] == "Error:":
+        if clean_coq_out[0][2:] == ['Object', 'not', 'found.']:
+            coq_res = "NOT_FOUND"
+
+    if clean_r_out[0][0] == "[1]":
+        r_res = clean_r_out
+    elif clean_r_out[0][0] == "Error:":
+        if clean_r_out[0][1] == 'object':
+            r_res =  "NOT_FOUND"
+
+    return "OK" if coq_res == r_res else "Nop"
 
 
 def compare_outputs_for(expression):
