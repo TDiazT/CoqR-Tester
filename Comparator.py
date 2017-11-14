@@ -1,22 +1,8 @@
 import subprocess
 from subprocess import PIPE, STDOUT, Popen
-import glob
 
 path_to_proveR = "/Users/Tomas/Documents/Memoria/Coq-R/proveR/low/runR.native"
 rscript = "rscript"
-
-
-def run_script():
-    return subprocess.run(["rscript", filename], universal_newlines=True, stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT).stdout
-
-
-def clean_output(raw_output):
-    return [row.split() for row in raw_output.splitlines()]
-
-
-def run_coq_script():
-    pass
 
 
 def run_coq_script_for(expression):
@@ -82,10 +68,3 @@ def compare_outputs_for(expression):
     clean_r_out = clean_r_output(r_output)
 
     return compare_outputs(clean_coq_out, clean_r_out)
-
-
-for filename in glob.iglob('RTests/**/*.R', recursive=True):
-    coq_output = run_coq_script()
-    output = run_script()
-    cleaned_output = clean_output(output)
-    print(cleaned_output)
