@@ -61,7 +61,11 @@ def compare_outputs(clean_coq_out, clean_r_out):
             coq_res = "NOT_FOUND"
     elif clean_coq_out[0][0:2] == ["Not", "implemented:"]:
         return "NOT_IMPLEMENTED"
-    if clean_r_out[0][0] == "[1]":
+
+    if not clean_r_out:
+        if not coq_res == "NOT_FOUND":
+            return "OK"
+    elif clean_r_out[0][0] == "[1]":
         r_res = clean_r_out
     elif clean_r_out[0][0] == "Error:":
         if clean_r_out[0][1] == 'object':
