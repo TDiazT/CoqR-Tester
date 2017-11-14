@@ -5,6 +5,7 @@ import glob
 path_to_proveR = "/Users/Tomas/Documents/Memoria/Coq-R/proveR/low/runR.native"
 rscript = "rscript"
 
+
 def run_script():
     return subprocess.run(["rscript", filename], universal_newlines=True, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT).stdout
@@ -32,19 +33,30 @@ def run_r_scipt_for(expression):
 
 def clean_coq_output(coq_output):
     lines = coq_output.splitlines()
-    # # to remove 'Initialising...'
-    # lines.pop(0)
-    # # to remove 'Success.'
-    # lines.pop(0)
-    # # removes last '>'
-    # lines.pop()
+    # to remove 'Initialising...'
+    lines.pop(0)
+    # to remove 'Success.'
+    lines.pop(0)
+    # removes last '>'
+    lines.pop()
 
     splitlines_ = [line.split() for line in lines]
-    return splitlines_[3]
-
+    splitlines_[0].remove('>')
+    if splitlines_[0][0] == "Success.":
+        return splitlines_[1:]
+    elif splitlines_[0][0] == "Error:":
+        if splitlines_[0][2:] == ['Object', 'not', 'found.']:
+            return "NOT_FOUND"
+        return ""
 
 def clean_r_output(r_output):
-    return [row.split() for row in r_output.splitlines()][0]
+    splitlines_ = [row.split() for row in r_output.splitlines()]
+    if splitlines_[0][0] == "[1]":
+        return splitlines_
+    elif splitlines_[0][0] == "Error:":
+        if splitlines_[0][1] == 'object':
+            return "NOT_FOUND"
+        return ""
 
 
 def compare_outputs(clean_coq_out, clean_r_out):
@@ -58,8 +70,6 @@ def compare_outputs_for(expression):
     clean_coq_out = clean_coq_output(coq_output)
     clean_r_out = clean_r_output(r_output)
 
-    print(clean_coq_out)
-    print(clean_r_out)
     return compare_outputs(clean_coq_out, clean_r_out)
 
 
