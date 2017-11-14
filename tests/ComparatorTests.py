@@ -10,3 +10,7 @@ class ComparatorTest(unittest.TestCase):
     def test_object_not_found_error(self):
         result = compare_outputs_for("e")
         self.assertEqual(result, "OK")
+
+    def test_not_implemented(self):
+        result = compare_outputs_for("1:10")
+        self.assertEqual(result, "NOT_IMPLEMENTED")
