@@ -36,26 +36,36 @@ def clean_r_output(r_output):
     return [row.split() for row in r_output.splitlines()]
 
 
-def compare_outputs(clean_coq_out, clean_r_out):
-    coq_res = ""
-    r_res = ""
+def resolve_coq_case(output):
+    if output[0][0] == "Success.":
+        return output[1:]
+    elif output[0][0] == "Error:":
+        if output[0][2:] == ['Object', 'not', 'found.']:
+            return "NOT_FOUND"
+    elif output[0][0:2] == ["Not", "implemented:"]:
+        return "NOT_IMPLEMENTED"
+    else:
+        return ""
 
-    if clean_coq_out[0][0] == "Success.":
-        coq_res = clean_coq_out[1:]
-    elif clean_coq_out[0][0] == "Error:":
-        if clean_coq_out[0][2:] == ['Object', 'not', 'found.']:
-            coq_res = "NOT_FOUND"
-    elif clean_coq_out[0][0:2] == ["Not", "implemented:"]:
+
+def resolve_r_case(coq_res, r_out):
+    if not r_out:
+        if not coq_res == "NOT_FOUND":
+            return coq_res
+    elif r_out[0][0] == "[1]":
+        return r_out
+    elif r_out[0][0] == "Error:":
+        if r_out[0][1] == 'object':
+            return "NOT_FOUND"
+
+
+def compare_outputs(clean_coq_out, clean_r_out):
+    coq_res = resolve_coq_case(clean_coq_out)
+
+    if coq_res == "NOT_IMPLEMENTED":
         return "NOT_IMPLEMENTED"
 
-    if not clean_r_out:
-        if not coq_res == "NOT_FOUND":
-            return "OK"
-    elif clean_r_out[0][0] == "[1]":
-        r_res = clean_r_out
-    elif clean_r_out[0][0] == "Error:":
-        if clean_r_out[0][1] == 'object':
-            r_res = "NOT_FOUND"
+    r_res = resolve_r_case(coq_res, clean_r_out)
 
     return "OK" if coq_res == r_res else "Nop"
 
