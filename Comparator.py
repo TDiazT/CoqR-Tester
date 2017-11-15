@@ -16,7 +16,7 @@ def run_coq_script_for(expression):
     return p2.communicate()[0]
 
 
-def run_r_scipt_for(expression):
+def run_r_script_for(expression):
     return subprocess.run([rscript, "-e", expression], universal_newlines=True, stdout=PIPE,
                           stderr=STDOUT).stdout
 
@@ -76,7 +76,7 @@ def compare_outputs(clean_coq_out, clean_r_out):
 
 def compare_outputs_for(expression):
     coq_output = run_coq_script_for(expression)
-    r_output = run_r_scipt_for(expression)
+    r_output = run_r_script_for(expression)
 
     clean_coq_out = clean_coq_output(coq_output)
     clean_r_out = clean_r_output(r_output)
