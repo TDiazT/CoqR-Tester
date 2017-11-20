@@ -1,13 +1,27 @@
 import subprocess
 from subprocess import PIPE, STDOUT, Popen
+import re
 
-CASE_NOT_IMPLEMENTED = "NOT_IMPLEMENTED"
+ERROR = "Error:"
 
-CASE_NOT_FOUND = "NOT_FOUND"
+NOT = "Not"
+
+IMPOSSIBLE = "Impossible"
+
+SEQ_TOKEN = "SPECIAL_SUPER_TOKEN"
+
+CASE_NOT_IMPLEMENTED = "CASE_NOT_IMPLEMENTED"
+
+CASE_ERROR = "CASE_ERROR"
+
+CASE_IMPOSSIBLE = "CASE_IMPOSSIBLE"
+
+CASE_ASSIGNMENT = "CASE_ASSIGNMENT"
 
 path_to_proveR = "/Users/Tomas/Documents/Memoria/Coq-R/proveR/low/runR.native"
 rscript = "rscript"
 
+vec_res_regex = re.compile('\[\d+\]')
 
 def run_coq_script_for(expression):
     p1 = Popen(["echo", expression], stdout=PIPE)
@@ -41,37 +55,86 @@ def clean_r_output(r_output):
 
 
 def resolve_coq_case(output):
-    if output[0][0] == "Success.":
-        return output[1:]
-    elif output[0][0] == "Error:":
-        if output[0][2:] == ['Object', 'not', 'found.']:
-            return CASE_NOT_FOUND
-    elif output[0][0:2] == ["Not", "implemented:"]:
-        return CASE_NOT_IMPLEMENTED
-    else:
-        return ""
+    result = []
+
+    for line in output:
+        for word in line:
+            if word == ERROR:
+                result.append(CASE_ERROR)
+                break
+            elif word == NOT:
+                result.append(CASE_NOT_IMPLEMENTED)
+                break
+            elif word == IMPOSSIBLE:
+                result.append(CASE_IMPOSSIBLE)
+                break
+            elif vec_res_regex.match(word) is not None:
+                if vec_res_regex.match(word).group() == '[1]':
+                    result.append(line)
+                else:
+                    result[-1].append(line)
+                break
+            else:
+                break
+
+    return result
 
 
-def resolve_r_case(coq_res, r_out):
-    if not r_out:
-        if not coq_res == CASE_NOT_FOUND:
-            return coq_res
-    elif r_out[0][0] == "[1]":
-        return r_out
-    elif r_out[0][0] == "Error:":
-        if r_out[0][1] == 'object':
-            return CASE_NOT_FOUND
+def resolve_r_case(output):
+    result = []
+    flag = False
+
+    if not output:
+        result.append(CASE_ASSIGNMENT)
+        return result
+
+    for line in output:
+        for word in line:
+            if word == ERROR:
+                result.append(CASE_ERROR)
+                flag = False
+                break
+            elif vec_res_regex.match(word) is not None:
+                if vec_res_regex.match(word).group() == '[1]':
+                    result.append(line)
+                else:
+                    result[-1].append(line)
+                flag = False
+                break
+            elif word == SEQ_TOKEN:
+                if not flag:
+                    flag = True
+                else:
+                    result.append(CASE_ASSIGNMENT)
+                break
+            else:
+                break
+
+    return result
 
 
 def compare_outputs(clean_coq_out, clean_r_out):
-    coq_res = resolve_coq_case(clean_coq_out)
+    coq_outputs = resolve_coq_case(clean_coq_out)
+    r_outputs = resolve_r_case(clean_r_out)
 
-    if coq_res == CASE_NOT_IMPLEMENTED:
-        return CASE_NOT_IMPLEMENTED
+    results = []
+    for coq, r in zip(coq_outputs, r_outputs):
+        if coq == CASE_NOT_IMPLEMENTED:
+            results.append(CASE_NOT_IMPLEMENTED)
+        elif coq == CASE_IMPOSSIBLE:
+            results.append(CASE_IMPOSSIBLE)
+        elif coq == CASE_ERROR:
+            if r == CASE_ERROR:
+                results.append("OK")
+            else:
+                results.append(CASE_ERROR)
+        else:
+            if r == CASE_ASSIGNMENT:
+                results.append("OK")
+            else:
+                results.append("OK") if coq == r else results.append("Not equal")
 
-    r_res = resolve_r_case(coq_res, clean_r_out)
-
-    return "OK" if coq_res == r_res else "Nop"
+    return results
 
 
 def compare_outputs_for(expression):
