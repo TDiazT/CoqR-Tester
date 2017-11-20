@@ -1,5 +1,5 @@
 import unittest
-from Comparator import compare_outputs_for, CASE_NOT_IMPLEMENTED
+from Comparator import compare_outputs_for, CASE_NOT_IMPLEMENTED, SEQ_TOKEN
 
 
 class ComparatorTest(unittest.TestCase):
@@ -17,4 +17,8 @@ class ComparatorTest(unittest.TestCase):
 
     def test_no_output(self):
         result = compare_outputs_for("a <- 1")
+        self.assertEqual(result, ["OK"])
+
+    def test_double_assignment(self):
+        result = compare_outputs_for("a <- 1; '%s' ; b <- 3" % SEQ_TOKEN)
         self.assertEqual(result, ["OK"])

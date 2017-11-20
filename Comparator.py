@@ -23,6 +23,7 @@ rscript = "rscript"
 
 vec_res_regex = re.compile('\[\d+\]')
 
+
 def run_coq_script_for(expression):
     p1 = Popen(["echo", expression], stdout=PIPE)
     p2 = Popen(path_to_proveR, stdin=p1.stdout, stdout=PIPE, stderr=STDOUT, universal_newlines=True)
@@ -70,10 +71,15 @@ def resolve_coq_case(output):
                 break
             elif vec_res_regex.match(word) is not None:
                 if vec_res_regex.match(word).group() == '[1]':
-                    result.append(line)
+                    if line[1] == '"%s"' % SEQ_TOKEN:
+                        break
+                    else:
+                        result.append(line)
                 else:
                     result[-1].append(line)
                 break
+            elif word == '>':
+                continue
             else:
                 break
 
@@ -96,10 +102,17 @@ def resolve_r_case(output):
                 break
             elif vec_res_regex.match(word) is not None:
                 if vec_res_regex.match(word).group() == '[1]':
-                    result.append(line)
+                    if line[1] == '"%s"' % SEQ_TOKEN:
+                        if not flag:
+                            flag = True
+                        else:
+                            result.append(CASE_ASSIGNMENT)
+                    else:
+                        result.append(line)
+                        flag = False
                 else:
                     result[-1].append(line)
-                flag = False
+                    flag = False
                 break
             elif word == SEQ_TOKEN:
                 if not flag:
