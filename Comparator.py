@@ -18,7 +18,8 @@ CASE_IMPOSSIBLE = "CASE_IMPOSSIBLE"
 
 CASE_ASSIGNMENT = "CASE_ASSIGNMENT"
 
-path_to_proveR = "/Users/Tomas/Documents/Memoria/Coq-R/proveR/low/runR.native"
+# path_to_proveR = "/Users/Tomas/Documents/Memoria/Coq-R/proveR/low/runR.native"
+path_to_proveR = ["make", "run", "-C", "/Users/Tomas/Documents/Memoria/Coq-R/proveR/"]
 rscript = "rscript"
 
 vec_res_regex = re.compile('\[\d+\]')
@@ -38,15 +39,8 @@ def run_r_script_for(expression):
 
 def clean_coq_output(coq_output):
     lines = coq_output.splitlines()
-    # to remove 'Initialising...'
-    lines.pop(0)
-    # to remove 'Success.'
-    lines.pop(0)
-    # removes last '>'
-    lines.pop()
 
     splitlines_ = [line.split() for line in lines]
-    splitlines_[0].remove('>')
 
     return splitlines_
 
