@@ -10,6 +10,8 @@ IMPOSSIBLE = "Impossible"
 
 SEQ_TOKEN = "SPECIAL_SUPER_TOKEN"
 
+NULL = "NULL"
+
 CASE_NOT_IMPLEMENTED = "CASE_NOT_IMPLEMENTED"
 
 CASE_ERROR = "CASE_ERROR"
@@ -72,6 +74,9 @@ def resolve_coq_case(output):
                 else:
                     result[-1].append(line)
                 break
+            elif word == '(%s)' % NULL:
+                result.append(NULL)
+                break
             elif word == '>':
                 continue
             else:
@@ -107,6 +112,9 @@ def resolve_r_case(output):
                 else:
                     result[-1].append(line)
                     flag = False
+                break
+            elif word == NULL:
+                result.append(NULL)
                 break
             elif word == SEQ_TOKEN:
                 if not flag:

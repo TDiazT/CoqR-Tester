@@ -7,6 +7,26 @@ class ComparatorTest(unittest.TestCase):
         result = compare_outputs_for("2")
         self.assertEqual(result, ["OK"])
 
+    def test_output_from_TRUE(self):
+        result = compare_outputs_for("TRUE")
+        self.assertEqual(result, ["OK"])
+
+    def test_output_from_FALSE(self):
+        result = compare_outputs_for("FALSE")
+        self.assertEqual(result, ["OK"])
+
+    def test_output_from_NA(self):
+        result = compare_outputs_for("NA")
+        self.assertEqual(result, ["OK"])
+
+    def test_output_from_NaN(self):
+        result = compare_outputs_for("NaN")
+        self.assertEqual(result, ["OK"])
+
+    def test_output_from_NULL(self):
+        result = compare_outputs_for("NULL")
+        self.assertEqual(result, ["OK"])
+
     def test_object_not_found_error(self):
         result = compare_outputs_for("e")
         self.assertEqual(result, ["OK"])
