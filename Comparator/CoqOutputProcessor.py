@@ -45,7 +45,7 @@ class CoqOutputProcessor:
                         else:
                             result.append(line)
                     else:
-                        result[-1].append(line)
+                        result[-1].extend(line)
                     break
                 elif word == '(%s)' % NULL:
                     result.append(NULL)

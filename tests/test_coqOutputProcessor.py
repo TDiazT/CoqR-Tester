@@ -39,3 +39,7 @@ class TestCoqOutputProcessor(TestCase):
         result = self.processor.process(
             "> Error: [findFun3] Could not find function “e”.\nAn error lead to an undefined result.\n")
         self.assertEqual(result, [CASE_ERROR])
+
+    def test_vector_output(self):
+        result = self.processor.process("[1] 1 2 3\n[4] 5 6 7\n")
+        self.assertEqual(result, [['[1]', '1', '2', '3', '[4]', '5', '6', '7']])
