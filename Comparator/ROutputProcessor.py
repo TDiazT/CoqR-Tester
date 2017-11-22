@@ -27,7 +27,7 @@ class ROutputProcessor:
     def process(self, output):
         result = []
         splitlines = [row.split() for row in output.splitlines()]
-        if not output:
+        if not splitlines:
             result.append(CASE_ASSIGNMENT)
             return result
 
