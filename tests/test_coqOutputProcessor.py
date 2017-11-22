@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from Comparator.CoqOutputProcessor import CoqOutputProcessor, CASE_ERROR, NULL
+from Comparator.CoqOutputProcessor import CoqOutputProcessor
+from Comparator.Constants import NULL, CASE_ERROR
 
 
 class TestCoqOutputProcessor(TestCase):
