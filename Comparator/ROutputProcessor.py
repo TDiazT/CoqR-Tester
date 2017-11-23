@@ -21,7 +21,7 @@ class ROutputProcessor:
                     result.append(CASE_ERROR)
                     self.flag = False
                     break
-                elif self.vec_res_regex.match(word) is not None:
+                elif self.vec_res_regex.match(word):
                     if self.vec_res_regex.match(word).group() == '[1]':
                         if line[1] == '"%s"' % SEQ_TOKEN:
                             result.append(SEQ_TOKEN)
