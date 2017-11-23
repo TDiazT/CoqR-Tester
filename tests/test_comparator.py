@@ -20,7 +20,15 @@ class TestComparator(TestCase):
     def test_simple_token(self):
         self.assertEqual(self.comparator.compare_multiple([SEQ_TOKEN], [SEQ_TOKEN]), [])
 
-    def test_assignment_with_tokens(self):
+    def test_simple_assignment_with_tokens(self):
         coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN]
         r = [SEQ_TOKEN, SEQ_TOKEN]
         self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL])
+
+    def test_multiple_assignments_with_tokens(self):
+        coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN, SEQ_TOKEN, ['[1]', '2'], SEQ_TOKEN, ['[1]', '3'], SEQ_TOKEN]
+        r = [SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN]
+        self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL, SUCCESSFUL, SUCCESSFUL])
+
+    def test_mismatching_size_outputs(self):
+        self.fail()
