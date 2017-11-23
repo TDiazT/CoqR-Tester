@@ -24,25 +24,14 @@ class ROutputProcessor:
                 elif self.vec_res_regex.match(word) is not None:
                     if self.vec_res_regex.match(word).group() == '[1]':
                         if line[1] == '"%s"' % SEQ_TOKEN:
-                            if not self.flag:
-                                self.flag = True
-                            else:
-                                result.append(CASE_INVISIBLE)
+                            result.append(SEQ_TOKEN)
                         else:
                             result.append(line)
-                            self.flag = False
                     else:
                         result[-1].extend(line)
-                        self.flag = False
                     break
                 elif word == NULL:
                     result.append(NULL)
-                    break
-                elif word == SEQ_TOKEN:
-                    if not self.flag:
-                        self.flag = True
-                    else:
-                        result.append(CASE_INVISIBLE)
                     break
                 else:
                     break
