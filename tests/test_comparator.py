@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from Comparator.Comparator import Comparator
-from Comparator.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_ASSIGNMENT
+from Comparator.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE
 
 
 class TestComparator(TestCase):
@@ -10,7 +10,7 @@ class TestComparator(TestCase):
 
     def test_case_not_implemented(self):
         self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_ERROR]), [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_ASSIGNMENT]),
+        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_INVISIBLE]),
                          [CASE_NOT_IMPLEMENTED])
         self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [['[1]', "TRUE"]]),
                          [CASE_NOT_IMPLEMENTED])

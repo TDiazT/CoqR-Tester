@@ -1,4 +1,4 @@
-from Comparator.Constants import CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_IMPOSSIBLE, SUCCESSFUL, CASE_ASSIGNMENT, \
+from Comparator.Constants import CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_IMPOSSIBLE, SUCCESSFUL, CASE_INVISIBLE, \
     NOT_EQUAL
 
 
@@ -20,7 +20,7 @@ class Comparator:
             else:
                 return CASE_ERROR
         else:
-            if outputs[1] == CASE_ASSIGNMENT:
+            if outputs[1] == CASE_INVISIBLE:
                 return SUCCESSFUL
             else:
                 return SUCCESSFUL if outputs[0] == outputs[1] else NOT_EQUAL

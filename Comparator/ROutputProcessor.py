@@ -1,6 +1,6 @@
 import re
 
-from Comparator.Constants import CASE_ASSIGNMENT, CASE_ERROR, SEQ_TOKEN, NULL
+from Comparator.Constants import CASE_INVISIBLE, CASE_ERROR, SEQ_TOKEN, NULL
 
 
 class ROutputProcessor:
@@ -12,7 +12,7 @@ class ROutputProcessor:
         result = []
         splitlines = [row.split() for row in output.splitlines()]
         if not splitlines:
-            result.append(CASE_ASSIGNMENT)
+            result.append(CASE_INVISIBLE)
             return result
 
         for line in splitlines:
@@ -27,7 +27,7 @@ class ROutputProcessor:
                             if not self.flag:
                                 self.flag = True
                             else:
-                                result.append(CASE_ASSIGNMENT)
+                                result.append(CASE_INVISIBLE)
                         else:
                             result.append(line)
                             self.flag = False
@@ -42,7 +42,7 @@ class ROutputProcessor:
                     if not self.flag:
                         self.flag = True
                     else:
-                        result.append(CASE_ASSIGNMENT)
+                        result.append(CASE_INVISIBLE)
                     break
                 else:
                     break

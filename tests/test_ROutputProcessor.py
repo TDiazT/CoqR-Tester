@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Comparator.ROutputProcessor import ROutputProcessor, NULL, CASE_ERROR, SEQ_TOKEN, CASE_ASSIGNMENT
+from Comparator.ROutputProcessor import ROutputProcessor, NULL, CASE_ERROR, SEQ_TOKEN, CASE_INVISIBLE
 
 
 class TestROutputProcessor(TestCase):
@@ -46,8 +46,8 @@ class TestROutputProcessor(TestCase):
 
     def test_assignment_with_empty_array(self):
         result = self.processor.process("")
-        self.assertEqual(result, [CASE_ASSIGNMENT])
+        self.assertEqual(result, [CASE_INVISIBLE])
 
     def test_assignment_with_token(self):
         result = self.processor.process("%s\n%s" % (SEQ_TOKEN, SEQ_TOKEN))
-        self.assertEqual(result, [CASE_ASSIGNMENT])
+        self.assertEqual(result, [CASE_INVISIBLE])
