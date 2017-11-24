@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from Comparator.Comparator import Comparator
-from Comparator.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE, SEQ_TOKEN
+from Comparator.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE, SEQ_TOKEN, \
+    CASE_IMPOSSIBLE, NOT_EQUAL
 
 
 class TestComparator(TestCase):
@@ -29,6 +30,12 @@ class TestComparator(TestCase):
         coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN, SEQ_TOKEN, ['[1]', '2'], SEQ_TOKEN, ['[1]', '3'], SEQ_TOKEN]
         r = [SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN]
         self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL, SUCCESSFUL, SUCCESSFUL])
+
+    def test_all_outputs_different(self):
+        coq = [SEQ_TOKEN, ['[1]', '1'], CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_IMPOSSIBLE]
+        r = list(reversed(coq))
+        self.assertEqual(self.comparator.compare_multiple(coq, r),
+                         [NOT_EQUAL, NOT_EQUAL, CASE_NOT_IMPLEMENTED, NOT_EQUAL, CASE_IMPOSSIBLE])
 
     def test_mismatching_size_outputs(self):
         self.fail()
