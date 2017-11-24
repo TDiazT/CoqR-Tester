@@ -49,5 +49,23 @@ class TestROutputProcessor(TestCase):
         self.assertEqual(result, [CASE_INVISIBLE])
 
     def test_assignment_with_token(self):
-        result = self.processor.process("%s\n%s" % (SEQ_TOKEN, SEQ_TOKEN))
-        self.assertEqual(result, [CASE_INVISIBLE])
+        result = self.processor.process("[1] \"%s\"\n[1] \"%s\"" % (SEQ_TOKEN, SEQ_TOKEN))
+        self.assertEqual(result, [SEQ_TOKEN, SEQ_TOKEN])
+
+    def test_single_token(self):
+        result = self.processor.process("[1] \"%s\"" % SEQ_TOKEN)
+        self.assertEqual(result, [SEQ_TOKEN])
+
+    def test_multiple_tokens(self):
+        result = self.processor.process("[1] \"%s\"\n[1] \"%s\"\n[1] \"%s\"" % (SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN))
+        self.assertEqual(result, [SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN])
+
+    def test_multiple_outputs(self):
+        output = "[1] \"%s\"\n%s\n%s\n%s\n[1] \"%s\"\n[1] \"%s\"\n%s" % (SEQ_TOKEN, NULL, "[1] 1 2 3",
+                                                                         "Error: object 'e' not found",
+                                                                         SEQ_TOKEN,
+                                                                         SEQ_TOKEN,
+                                                                         "[1] TRUE")
+        result = self.processor.process(output)
+        self.assertEqual(result,
+                         [SEQ_TOKEN, NULL, ['[1]', '1', '2', '3'], CASE_ERROR, SEQ_TOKEN, SEQ_TOKEN, ['[1]', 'TRUE']])

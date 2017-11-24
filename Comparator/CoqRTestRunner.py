@@ -5,7 +5,8 @@ from Comparator.ROutputProcessor import ROutputProcessor
 from Comparator.RRunner import RRunner
 
 
-class TestRunner:
+class CoqRTestRunner:
+
     def test_expression(self, expression):
         return Comparator().compare_multiple(CoqOutputProcessor().process(CoqRunner().run_expression(expression)),
                                              ROutputProcessor().process(RRunner().run_expression(expression)))

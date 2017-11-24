@@ -26,7 +26,7 @@ class CoqOutputProcessor:
                 elif self.vec_res_regex.match(word) is not None:
                     if self.vec_res_regex.match(word).group() == '[1]':
                         if line[1] == '"%s"' % SEQ_TOKEN:
-                            break
+                            result.append(SEQ_TOKEN)
                         else:
                             result.append(line)
                     else:
