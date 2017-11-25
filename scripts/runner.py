@@ -21,13 +21,12 @@ for i, line in enumerate(a):
         coq_interp = os.environ['COQ_INTERP']
 
         p1 = subprocess.Popen(['echo', line], stdout=subprocess.PIPE)
-        p2 = subprocess.Popen(['make', 'run', '-C', coq_interp], stdin=p1.stdout, stdout=subprocess.PIPE,
+        p2 = subprocess.Popen(['make', 'run', '-s', '-C', coq_interp], stdin=p1.stdout, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT, universal_newlines=True)
         p1.stdout.close()
         out = p2.communicate()[0]
         interp = "Coq"
 
-    out = re.sub(r'\n+', ' ', out)
     result = {
         "output": out,
         "expression": line,
