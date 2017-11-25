@@ -3,6 +3,7 @@ import subprocess
 import re
 import json
 import os
+import time
 
 filename = sys.argv[2]
 
@@ -13,6 +14,7 @@ results = []
 
 for i, line in enumerate(a):
     line = line.strip()
+    exec_time = time.time()
     if sys.argv[1] == 'R':
         out = subprocess.run(['rscript', '-e', line], universal_newlines=True, stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT).stdout
@@ -27,9 +29,12 @@ for i, line in enumerate(a):
         out = p2.communicate()[0]
         interp = "Coq"
 
+    exec_time = time.time() - exec_time
+
     result = {
         "output": out,
         "expression": line,
+        "execution_time": exec_time,
         "line": i + 1,
         "interpreter": interp
     }
