@@ -8,8 +8,10 @@ cases = {
     'SUCCESS': re.compile(r'\[\d+\][ \w]+'),
     'ERROR': re.compile(r'Error:*'),
     'NOT_IMPLEMENTED': re.compile(r'Not implemented:'),
-    'IMPOSSIBLE': re.compile('Impossible'),
-    'NULL': re.compile('\(*NULL\)*')
+    'IMPOSSIBLE': re.compile(r'Impossible'),
+    'NULL': re.compile(r'\(*NULL\)*'),
+    'FUNCTION': re.compile(r'\(closure\)|function \(\w*\)'),
+    'INVISIBLE': re.compile(r'^(?![\s\S])')
 }
 
 with open(input_) as file_:
