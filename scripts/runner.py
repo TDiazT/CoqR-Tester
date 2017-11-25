@@ -8,12 +8,13 @@ import time
 filename = sys.argv[2]
 
 with open(filename) as file_:
-    a = file_.readlines()
+    lines = file_.readlines()
 
 results = []
 
-for i, line in enumerate(a):
-    line = line.strip()
+lines = [line.strip() for line in lines]
+
+for i, line in enumerate(filter(None, lines)):
     exec_time = time.time()
     if sys.argv[1] == 'R':
         out = subprocess.run(['rscript', '-e', line], universal_newlines=True, stdout=subprocess.PIPE,
