@@ -86,3 +86,33 @@ A file with the results in the following format:
   ...
  ]
 ```
+
+
+## Run
+
+This runs all the previous ones sequentially and outputs everything to the
+`out` directory.
+
+```bash
+$ ./run.sh input.R
+# This will generate in ../out, the files:
+# - r.json
+# - coq.json
+# - r-clean.json
+# - coq-clean.json
+# - comparison.json
+```
+
+
+Arguments:
+1. Input file: R file with expressions to be run
+2. R output (optional): Particular name for the R output file
+3. Coq output (optional): Particular name for the Coq output file
+
+Output:
+All files mentioned in previous scripts:
+- r.json
+- coq.json
+- r-clean.json
+- coq-clean.json
+- comparison.json
