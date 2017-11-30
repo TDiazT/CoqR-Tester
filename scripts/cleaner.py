@@ -18,15 +18,17 @@ with open(input_) as file_:
     outputs = json.load(file_)
 
     for output in outputs:
-
+        result = []
         for case in cases:
-            result = cases[case].findall(output['output'])
+            matches = cases[case].findall(output['output'])
 
-            if result:
+            if matches:
                 if case == 'SUCCESS':
-                    output['clean_output'] = result
+                    result.append(matches)
                 else:
-                    output['clean_output'] = case
+                    result.append(case)
+
+        output['clean_output'] = result
 
 with open(sys.argv[2], "w") as file_:
     json.dump(outputs, file_, indent=2)
