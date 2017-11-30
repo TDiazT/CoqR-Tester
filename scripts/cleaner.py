@@ -28,6 +28,9 @@ with open(input_) as file_:
                 else:
                     result.append(case)
 
+        if not result:
+            result.append("UNKNOWN")
+
         output['clean_output'] = result
 
 with open(sys.argv[2], "w") as file_:

@@ -35,6 +35,8 @@ for pair in zip(coq_results, r_results):
     elif coq_output == "FUNCTION":
         if not r_output == "ERROR":
             status = "SUCCESS"
+    elif coq_output == "UNKNOWN" or r_output == "UNKNOWN":
+        status = "UNDECIDED"
     else:
         status = "SUCCESS" if compare(coq_output, r_output) else "FAILED"
 
