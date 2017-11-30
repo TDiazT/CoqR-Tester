@@ -52,7 +52,7 @@ A file with the same results as in the input file but with a new field:
 [
     {
        ...,
-       "clean_output": ""
+       "clean_output": [],
     },
     ...
 ]
@@ -76,10 +76,10 @@ A file with the results in the following format:
 ```javascript
 [
   {
-    "clean_coq_output": ""
+    "clean_coq_output": [],
     "status_code": "",
     "expression": "",
-    "clean_r_output": "",
+    "clean_r_output": [],
     "coq_output": "",
     "r_output": ""
   },
