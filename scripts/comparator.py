@@ -1,6 +1,17 @@
 import sys
 import json
 
+
+def compare(s, t):
+    t = list(t)  # make a mutable copy
+    try:
+        for elem in s:
+            t.remove(elem)
+    except ValueError:
+        return False
+    return not t
+
+
 with open(sys.argv[1]) as file_1:
     with open(sys.argv[2]) as file_2:
         coq_results = json.load(file_1)
@@ -25,7 +36,7 @@ for pair in zip(coq_results, r_results):
         if not r_output == "ERROR":
             status = "SUCCESS"
     else:
-        status = "SUCCESS" if coq_output == r_output else "FAILED"
+        status = "SUCCESS" if compare(coq_output, r_output) else "FAILED"
 
     result = {
         "status_code": status,
@@ -37,7 +48,6 @@ for pair in zip(coq_results, r_results):
     }
 
     results.append(result)
-
 
 with open(sys.argv[3], "w") as file_:
     json.dump(results, file_, indent=2)
