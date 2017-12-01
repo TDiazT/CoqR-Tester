@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
+source settings.sh
+
 echo "R"
 
-python expression-runner.py R "$1"
+$PYTHON expression-runner.py R "$1"
 
 echo "Coq"
 
-COQ_INTERP=/Users/Tomas/Documents/Memoria/Coq-R/proveR/ python expression-runner.py a "$1"
+COQ_INTERP=$COQ_INTERP $PYTHON expression-runner.py a "$1"
