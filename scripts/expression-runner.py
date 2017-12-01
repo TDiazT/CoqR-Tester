@@ -5,7 +5,8 @@ import os
 expression = sys.argv[2]
 
 if sys.argv[1] == 'R':
-    out = subprocess.run(['rscript', '-e', expression], universal_newlines=True, stdout=subprocess.PIPE,
+    r_interp = os.environ['RSCRIPT']
+    out = subprocess.run([r_interp, '-e', expression, '--silent'], universal_newlines=True, stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT).stdout
 else:
     coq_interp = os.environ['COQ_INTERP']

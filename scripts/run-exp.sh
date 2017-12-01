@@ -4,7 +4,7 @@ source settings.sh
 
 echo "R"
 
-$PYTHON expression-runner.py R "$1"
+RSCRIPT=$RSCRIPT $PYTHON expression-runner.py R "$1"
 
 echo "Coq"
 
