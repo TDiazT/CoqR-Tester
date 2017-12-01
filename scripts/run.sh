@@ -35,10 +35,10 @@ then
         fi
 
         echo "Running R interpreter"
-        RSCRIPT=$RSCRIPT python $SCRIPTS/runner.py R $SRC "$OUT/$ROUT"
+        RSCRIPT=$RSCRIPT $PYTHON $SCRIPTS/runner.py R $SRC "$OUT/$ROUT"
 
         echo "Running Coq interpreter"
-        COQ_INTERP=$COQ_INTERP python $SCRIPTS/runner.py asdf $SRC $OUT/$COQOUT
+        COQ_INTERP=$COQ_INTERP $PYTHON $SCRIPTS/runner.py asdf $SRC $OUT/$COQOUT
 
         echo "Cleaning outputs"
         python $SCRIPTS/cleaner.py $OUT/$ROUT $OUT/clean-$ROUT
