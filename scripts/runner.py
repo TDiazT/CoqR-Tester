@@ -16,11 +16,11 @@ lines = [line.strip() for line in lines]
 
 for i, line in enumerate(filter(None, lines)):
     exec_time = time.time()
-    if sys.argv[1] == 'R':
+    if os.environ.get('RSCRIPT'):
         out = subprocess.run(['rscript', '-e', line], universal_newlines=True, stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT).stdout
         interp = 'R'
-    else:
+    elif os.environ.get('COQ_INTERP'):
         coq_interp = os.environ['COQ_INTERP']
 
         p1 = subprocess.Popen(['echo', line], stdout=subprocess.PIPE)

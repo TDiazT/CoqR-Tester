@@ -2,8 +2,10 @@
 
 source settings.sh
 
+
 echo "R"
 
+if [
 RSCRIPT=$RSCRIPT $PYTHON expression-runner.py R "$1"
 
 echo "Coq"
