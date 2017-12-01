@@ -1,5 +1,22 @@
 # Scripts
 
+## Expression runner
+It runs an expression with given interpreter and prints output in console.
+
+```bash
+
+# R
+python expression-runner.py R "expression"
+
+# Coq
+COQ_INTERP=/path/to/proveR/ python expression-runner.py a "expression"
+
+
+```
+
+[See also](#run-exp)
+
+
 ## Runner
 It runs every command in a file, line by line, with the given interpreter and outputs
 a file with a JSON-style result.
@@ -86,6 +103,18 @@ A file with the results in the following format:
   ...
  ]
 ```
+
+
+## Run-exp
+Runs an expression with R and Coq interpreter.
+
+```bash
+$ ./run-exp.sh "exp"
+```
+
+Arguments:
+1. Expression to be run
+
 
 
 ## Run
