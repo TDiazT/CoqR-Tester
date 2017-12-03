@@ -2,5 +2,6 @@
 .idea/
 venv/
 */**/*.pyc
+**/cr_out/
 out
-scripts/settings.sh
+rcoq/settings.sh
