@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Comparator.ROutputProcessor import ROutputProcessor, NULL, CASE_ERROR, SEQ_TOKEN, CASE_INVISIBLE
+from rcoq.processors.ROutputProcessor import ROutputProcessor, NULL, CASE_ERROR, SEQ_TOKEN, CASE_INVISIBLE
 
 
 class TestROutputProcessor(TestCase):

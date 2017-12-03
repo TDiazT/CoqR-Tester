@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from Comparator.CoqOutputProcessor import CoqOutputProcessor
-from Comparator.Constants import NULL, CASE_ERROR, SEQ_TOKEN
+from rcoq.Constants import NULL, CASE_ERROR, SEQ_TOKEN
+from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 
 
 class TestCoqOutputProcessor(TestCase):

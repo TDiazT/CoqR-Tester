@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from Comparator.Comparator import Comparator
-from Comparator.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE, SEQ_TOKEN, \
+from rcoq.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE, SEQ_TOKEN, \
     CASE_IMPOSSIBLE, NOT_EQUAL
+from rcoq.comparators.Comparator import Comparator
 
 
 class TestComparator(TestCase):

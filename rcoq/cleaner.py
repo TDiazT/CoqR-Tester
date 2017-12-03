@@ -1,8 +1,8 @@
+import argparse
 import json
 import sys
-import argparse
 
-from ..Comparator.ROutputProcessor import ROutputProcessor
+from rcoq.processors.ROutputProcessor import ROutputProcessor
 
 input_ = sys.argv[1]
 

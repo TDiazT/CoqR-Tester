@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Comparator.RRunner import RRunner
+from rcoq.runners.RRunner import RRunner
 
 
 class TestRRunner(TestCase):

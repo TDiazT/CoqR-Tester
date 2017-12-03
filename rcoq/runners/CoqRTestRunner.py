@@ -1,8 +1,9 @@
-from Comparator.Comparator import Comparator
-from Comparator.CoqOutputProcessor import CoqOutputProcessor
 from Comparator.CoqRunner import CoqRunner
 from Comparator.ROutputProcessor import ROutputProcessor
-from Comparator.RRunner import RRunner
+
+from rcoq.comparators.Comparator import Comparator
+from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
+from rcoq.runners.RRunner import RRunner
 
 
 class CoqRTestRunner:

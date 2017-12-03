@@ -1,27 +1,29 @@
 import re
 
-from Comparator.Constants import CASE_INVISIBLE, CASE_ERROR, SEQ_TOKEN, NULL, CASE_FUNCTION
+from rcoq.Constants import ERROR, NOT, IMPOSSIBLE, SEQ_TOKEN, NULL, CASE_NOT_IMPLEMENTED, CASE_ERROR, \
+    CASE_IMPOSSIBLE
 
 
-class ROutputProcessor:
+class CoqOutputProcessor:
     vec_res_regex = re.compile('\[\d+\]')
-    error_regex = re.compile('Error:*')
-    flag = False
 
     def process(self, output):
         result = []
-        splitlines = [row.split() for row in output.splitlines()]
-        if not splitlines:
-            result.append(CASE_INVISIBLE)
-            return result
+
+        splitlines = [line.split() for line in output.splitlines()]
 
         for line in splitlines:
             for word in line:
-                if self.error_regex.match(word):
+                if word == ERROR:
                     result.append(CASE_ERROR)
-                    self.flag = False
                     break
-                elif self.vec_res_regex.match(word):
+                elif word == NOT:
+                    result.append(CASE_NOT_IMPLEMENTED)
+                    break
+                elif word == IMPOSSIBLE:
+                    result.append(CASE_IMPOSSIBLE)
+                    break
+                elif self.vec_res_regex.match(word) is not None:
                     if self.vec_res_regex.match(word).group() == '[1]':
                         if line[1] == '"%s"' % SEQ_TOKEN:
                             result.append(SEQ_TOKEN)
@@ -30,12 +32,11 @@ class ROutputProcessor:
                     else:
                         result[-1].extend(line)
                     break
-                elif word == 'function':
-                    result.append(CASE_FUNCTION)
-                    break
-                elif word == NULL:
+                elif word == '(%s)' % NULL:
                     result.append(NULL)
                     break
+                elif word == '>':
+                    continue
                 else:
                     break
 
