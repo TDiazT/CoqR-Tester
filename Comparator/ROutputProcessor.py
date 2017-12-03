@@ -1,6 +1,6 @@
 import re
 
-from Comparator.Constants import CASE_INVISIBLE, CASE_ERROR, SEQ_TOKEN, NULL
+from Comparator.Constants import CASE_INVISIBLE, CASE_ERROR, SEQ_TOKEN, NULL, CASE_FUNCTION
 
 
 class ROutputProcessor:
@@ -29,6 +29,9 @@ class ROutputProcessor:
                             result.append(line)
                     else:
                         result[-1].extend(line)
+                    break
+                elif word == 'function':
+                    result.append(CASE_FUNCTION)
                     break
                 elif word == NULL:
                     result.append(NULL)
