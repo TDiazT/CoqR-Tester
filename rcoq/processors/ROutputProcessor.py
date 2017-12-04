@@ -1,42 +1,28 @@
 import re
 
-from rcoq.Constants import CASE_INVISIBLE, CASE_ERROR, SEQ_TOKEN, NULL, CASE_FUNCTION
+from rcoq.Constants import CASE_INVISIBLE, CASE_ERROR, NULL, CASE_FUNCTION, CASE_UNKNOWN
 
 
 class ROutputProcessor:
-    vec_res_regex = re.compile('\[\d+\]')
-    error_regex = re.compile('Error:*')
-    flag = False
+    vec_res_regex = re.compile(r'\[\d+\] [\w "-]+')
+    error_regex = re.compile(r'Error:*')
+    null_regex = re.compile(r'NULL')
+    function_regex = re.compile(r'function')
 
     def process(self, output):
-        result = []
-        splitlines = [row.split() for row in output.splitlines()]
-        if not splitlines:
-            result.append(CASE_INVISIBLE)
-            return result
 
-        for line in splitlines:
-            for word in line:
-                if self.error_regex.match(word):
-                    result.append(CASE_ERROR)
-                    self.flag = False
-                    break
-                elif self.vec_res_regex.match(word):
-                    if self.vec_res_regex.match(word).group() == '[1]':
-                        if line[1] == '"%s"' % SEQ_TOKEN:
-                            result.append(SEQ_TOKEN)
-                        else:
-                            result.append(line)
-                    else:
-                        result[-1].extend(line)
-                    break
-                elif word == 'function':
-                    result.append(CASE_FUNCTION)
-                    break
-                elif word == NULL:
-                    result.append(NULL)
-                    break
-                else:
-                    break
+        if not output:
+            result = CASE_INVISIBLE
+        elif self.error_regex.match(output):
+            result = CASE_ERROR
+        elif self.vec_res_regex.match(output):
+            matches = self.vec_res_regex.findall(output)
+            result = " ".join(matches)
+        elif self.function_regex.match(output):
+            result = CASE_FUNCTION
+        elif self.null_regex.match(output):
+            result = NULL
+        else:
+            result = CASE_UNKNOWN
 
         return result
