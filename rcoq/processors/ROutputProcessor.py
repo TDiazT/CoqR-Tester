@@ -1,15 +1,15 @@
 import re
 
 from rcoq.Cases import Cases
-from rcoq.Constants import CASE_INVISIBLE, CASE_ERROR, NULL, CASE_FUNCTION, CASE_UNKNOWN, CASE_TYPE
 
 
 class ROutputProcessor:
-    vec_res_regex = re.compile(r'\[\d+\][ \w-]+')
+    vec_res_regex = re.compile(r'\[\d+\][ \w\-\"]+')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'function')
     type_regex = re.compile(r'^(logical|numeric|integer|character).*')
+    col_row_regex = re.compile(r'(\[,\d+\]|\[\d+,\][ \w\-\"]+)')
 
     def process(self, output):
 
@@ -19,6 +19,9 @@ class ROutputProcessor:
             result = Cases.ERROR
         elif re.search(self.vec_res_regex, output):
             matches = self.vec_res_regex.findall(output)
+            result = " ".join(matches)
+        elif re.search(self.col_row_regex, output):
+            matches = self.col_row_regex.findall(output)
             result = " ".join(matches)
         elif re.search(self.type_regex, output):
             result = Cases.TYPE

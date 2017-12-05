@@ -69,11 +69,13 @@ class TestROutputProcessor(TestCase):
         self.assertEqual(result, Cases.UNKNOWN)
         result = self.processor.process("adfasd")
         self.assertEqual(result, Cases.UNKNOWN)
-        result = self.processor.process("[,1]")
-        self.assertEqual(result, Cases.UNKNOWN)
 
     def test_vector_type(self):
         self.assertEqual(self.processor.process("integer(0)"), Cases.TYPE)
         self.assertEqual(self.processor.process("numeric(0)"), Cases.TYPE)
         self.assertEqual(self.processor.process("logical(0)"), Cases.TYPE)
         self.assertEqual(self.processor.process("character(0)"), Cases.TYPE)
+
+    def test_cbind_output(self):
+        result = self.processor.process("     [,1] [,2]\n[1,]    1    2\n[2,]    2    2\n[3,]    3    2\n")
+        self.assertEqual(result, "[,1] [,2] [1,]    1    2 [2,]    2    2 [3,]    3    2")
