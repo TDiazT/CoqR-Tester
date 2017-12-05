@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from rcoq.Constants import CASE_FUNCTION, CASE_UNKNOWN
+from rcoq.Constants import CASE_FUNCTION, CASE_UNKNOWN, CASE_TYPE
 from rcoq.processors.ROutputProcessor import ROutputProcessor, CASE_ERROR, CASE_INVISIBLE
 
 
@@ -71,3 +71,9 @@ class TestROutputProcessor(TestCase):
         self.assertEqual(result, CASE_UNKNOWN)
         result = self.processor.process("[,1]")
         self.assertEqual(result, CASE_UNKNOWN)
+
+    def test_vector_type(self):
+        self.assertEqual(self.processor.process("integer(0)"), CASE_TYPE)
+        self.assertEqual(self.processor.process("numeric(0)"), CASE_TYPE)
+        self.assertEqual(self.processor.process("logical(0)"), CASE_TYPE)
+        self.assertEqual(self.processor.process("character(0)"), CASE_TYPE)
