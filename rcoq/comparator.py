@@ -2,16 +2,19 @@ import sys
 import json
 import argparse
 
+from rcoq.comparators.Comparator import compare
+
 parser = argparse.ArgumentParser(description='Takes two files and compares processed outputs between them')
 
 # #
 parser.add_argument('coq')
 parser.add_argument('r')
+parser.add_argument('output')
 
 options = parser.parse_args()
 
 
-def compare(s, t):
+def compare_lists(s, t):
     t = list(t)  # make a mutable copy
     try:
         for elem in s:
@@ -29,36 +32,27 @@ with open(options.coq) as coq_file:
 results = []
 
 for pair in zip(coq_results, r_results):
-    coq_output = pair[0]['clean_output']
-    r_output = pair[1]['clean_output']
-    status = "UNDEFINED"
-    if coq_output == "NOT_IMPLEMENTED":
-        status = "NOT_IMPLEMENTED"
-    elif coq_output == "IMPOSSIBLE":
-        status = "IMPOSSIBLE"
-    elif coq_output == "ERROR":
-        if r_output == "ERROR":
-            status = "SUCCESS"
-        else:
-            status = "FAILED"
-    elif coq_output == "FUNCTION":
-        if not r_output == "ERROR":
-            status = "SUCCESS"
-    elif coq_output == "UNKNOWN" or r_output == "UNKNOWN":
-        status = "UNDECIDED"
-    else:
-        status = "SUCCESS" if compare(coq_output, r_output) else "FAILED"
+    coq_output = pair[0]['processed_output']
+    r_output = pair[1]['processed_output']
 
-    result = {
-        "status_code": status,
+    i = j = 0
+    result = []
+    while i < len(coq_output) and j < len(r_output):
+        comparison = compare(coq_output[i], r_output[j])
+        result.append(comparison)
+        i += 1
+        j += 1
+
+    report = {
+        "status_code": result,
         "expression": pair[0]['expression'],
         "coq_output": pair[0]['output'],
         "r_output": pair[1]['output'],
-        "clean_coq_output": pair[0]['clean_output'],
-        "clean_r_output": pair[1]['clean_output'],
+        "processed_coq_output": coq_output,
+        "processed_r_output": r_output,
     }
+    results.append(report)
 
-    results.append(result)
 
-with open(sys.argv[3], "w") as file_:
+with open(options.output, "w") as file_:
     json.dump(results, file_, indent=2)
