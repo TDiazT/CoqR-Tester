@@ -9,8 +9,8 @@ parser = argparse.ArgumentParser(description='Processes output and returns a new
 
 # #
 parser.add_argument('interp')
-parser.add_argument('input-file')
-parser.add_argument('output-file')
+parser.add_argument('input')
+parser.add_argument('output')
 
 options = parser.parse_args()
 
@@ -21,8 +21,8 @@ elif options.interp == 'Coq':
 else:
     sys.exit('"%s" is not a valid interpreter (either "R" or "Coq")' % options.interp)
 
-input_ = options['input-file']
-output_ = options['output-file']
+input_ = options.input
+output_ = options.output
 
 with open(input_) as file_:
     outputs = json.load(file_)
