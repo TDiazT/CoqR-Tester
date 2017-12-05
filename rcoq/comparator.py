@@ -1,5 +1,14 @@
 import sys
 import json
+import argparse
+
+parser = argparse.ArgumentParser(description='Takes two files and compares processed outputs between them')
+
+# #
+parser.add_argument('coq')
+parser.add_argument('r')
+
+options = parser.parse_args()
 
 
 def compare(s, t):
@@ -12,10 +21,10 @@ def compare(s, t):
     return not t
 
 
-with open(sys.argv[1]) as file_1:
-    with open(sys.argv[2]) as file_2:
-        coq_results = json.load(file_1)
-        r_results = json.load(file_2)
+with open(options.coq) as coq_file:
+    with open(options.r) as r_file:
+        coq_results = json.load(coq_file)
+        r_results = json.load(r_file)
 
 results = []
 
