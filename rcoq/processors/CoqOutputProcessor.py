@@ -1,7 +1,6 @@
 import re
 
-from rcoq.Constants import ERROR, NOT, IMPOSSIBLE, SEQ_TOKEN, NULL, CASE_NOT_IMPLEMENTED, CASE_ERROR, \
-    CASE_IMPOSSIBLE, CASE_INVISIBLE, CASE_FUNCTION, CASE_UNKNOWN
+from rcoq.Cases import Cases
 
 
 class CoqOutputProcessor:
@@ -14,22 +13,22 @@ class CoqOutputProcessor:
 
     def process(self, output):
         if not output:
-            result = CASE_INVISIBLE
+            result = str(Cases.INVISIBLE)
         elif self.not_implemented.search(output):
-            result = CASE_NOT_IMPLEMENTED
+            result = str(Cases.NOT_IMPLEMENTED)
         elif self.impossible.search(output):
-            result = CASE_IMPOSSIBLE
+            result = str(Cases.IMPOSSIBLE)
         elif self.error_regex.search(output):
-            result = CASE_ERROR
+            result = str(Cases.ERROR)
         elif re.search(self.vec_res_regex, output):
             matches = self.vec_res_regex.findall(output)
             result = " ".join(matches)
         elif self.function_regex.search(output):
-            result = CASE_FUNCTION
+            result = str(Cases.FUNCTION)
         elif self.null_regex.search(output):
-            result = NULL
+            result = str(Cases.NULL)
         else:
-            result = CASE_UNKNOWN
+            result = str(Cases.UNKNOWN)
 
         return result
 

@@ -14,6 +14,9 @@ class Cases(Enum):
     UNSUCCESSFUL = 6, "Unsuccesful"
     FUNCTION = 7, "Function"
     UNKNOWN = 8, "Unknown"
+    NULL = 9, "Null"
+    TYPE = 10, "Type"
+
 
     def __str__(self):
         return self.string

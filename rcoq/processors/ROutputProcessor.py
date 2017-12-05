@@ -1,5 +1,6 @@
 import re
 
+from rcoq.Cases import Cases
 from rcoq.Constants import CASE_INVISIBLE, CASE_ERROR, NULL, CASE_FUNCTION, CASE_UNKNOWN, CASE_TYPE
 
 
@@ -13,19 +14,19 @@ class ROutputProcessor:
     def process(self, output):
 
         if not output:
-            result = CASE_INVISIBLE
+            result = str(Cases.INVISIBLE)
         elif self.error_regex.match(output):
-            result = CASE_ERROR
+            result = str(Cases.ERROR)
         elif re.search(self.vec_res_regex, output):
             matches = self.vec_res_regex.findall(output)
             result = " ".join(matches)
         elif re.search(self.type_regex, output):
-            result = CASE_TYPE
+            result = str(Cases.TYPE)
         elif self.function_regex.match(output):
-            result = CASE_FUNCTION
+            result = str(Cases.FUNCTION)
         elif self.null_regex.match(output):
-            result = NULL
+            result = str(Cases.NULL)
         else:
-            result = CASE_UNKNOWN
+            result = str(Cases.UNKNOWN)
 
         return result

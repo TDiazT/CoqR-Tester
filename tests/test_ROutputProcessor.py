@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from rcoq.Constants import CASE_FUNCTION, CASE_UNKNOWN, CASE_TYPE
-from rcoq.processors.ROutputProcessor import ROutputProcessor, CASE_ERROR, CASE_INVISIBLE
+from rcoq.Cases import Cases
+from rcoq.processors.ROutputProcessor import ROutputProcessor
 
 
 class TestROutputProcessor(TestCase):
@@ -40,17 +40,17 @@ class TestROutputProcessor(TestCase):
 
     def test_process_NULL(self):
         result = self.processor.process("NULL\n")
-        self.assertEqual(result, "NULL")
+        self.assertEqual(result, str(Cases.NULL))
 
     #
     def test_process_error_object(self):
         result = self.processor.process("Error: object 'e' not found")
-        self.assertEqual(result, CASE_ERROR)
+        self.assertEqual(result, str(Cases.ERROR))
 
     def test_process_error_function(self):
         result = self.processor.process(
             "Error in e() : could not find function \"e\"")
-        self.assertEqual(result, CASE_ERROR)
+        self.assertEqual(result, str(Cases.ERROR))
 
     def test_vector_output(self):
         result = self.processor.process("[1] 1 2 3\n[4] 5 6 7\n")
@@ -58,22 +58,22 @@ class TestROutputProcessor(TestCase):
 
     def test_assignment_with_empty_array(self):
         result = self.processor.process("")
-        self.assertEqual(result, CASE_INVISIBLE)
+        self.assertEqual(result, str(Cases.INVISIBLE))
 
     def test_function(self):
         result = self.processor.process("function (x) x")
-        self.assertEqual(result, CASE_FUNCTION)
+        self.assertEqual(result, str(Cases.FUNCTION))
 
     def test_unknown(self):
         result = self.processor.process("anything")
-        self.assertEqual(result, CASE_UNKNOWN)
+        self.assertEqual(result, str(Cases.UNKNOWN))
         result = self.processor.process("adfasd")
-        self.assertEqual(result, CASE_UNKNOWN)
+        self.assertEqual(result, str(Cases.UNKNOWN))
         result = self.processor.process("[,1]")
-        self.assertEqual(result, CASE_UNKNOWN)
+        self.assertEqual(result, str(Cases.UNKNOWN))
 
     def test_vector_type(self):
-        self.assertEqual(self.processor.process("integer(0)"), CASE_TYPE)
-        self.assertEqual(self.processor.process("numeric(0)"), CASE_TYPE)
-        self.assertEqual(self.processor.process("logical(0)"), CASE_TYPE)
-        self.assertEqual(self.processor.process("character(0)"), CASE_TYPE)
+        self.assertEqual(self.processor.process("integer(0)"), str(Cases.TYPE))
+        self.assertEqual(self.processor.process("numeric(0)"), str(Cases.TYPE))
+        self.assertEqual(self.processor.process("logical(0)"), str(Cases.TYPE))
+        self.assertEqual(self.processor.process("character(0)"), str(Cases.TYPE))
