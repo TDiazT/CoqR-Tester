@@ -16,6 +16,7 @@ class Cases(IntEnum):
     UNKNOWN = 8, "Unknown"
     NULL = 9, "Null"
     TYPE = 10, "Type"
+    PRIMITIVE = 11, "Primitive"
 
     def __str__(self):
         return self.string

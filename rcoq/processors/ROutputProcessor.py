@@ -10,6 +10,7 @@ class ROutputProcessor:
     function_regex = re.compile(r'function')
     type_regex = re.compile(r'^(logical|numeric|integer|character).*')
     col_row_regex = re.compile(r'(\[,\d+\]|\[\d+,\][ \w\-\"]+)')
+    primitive_regex = re.compile(r'\.Primitive\(.*\)')
 
     def process(self, output):
 
@@ -29,6 +30,8 @@ class ROutputProcessor:
             result = Cases.FUNCTION
         elif self.null_regex.match(output):
             result = Cases.NULL
+        elif re.search(self.primitive_regex, output):
+            result = Cases.PRIMITIVE
         else:
             result = Cases.UNKNOWN
 

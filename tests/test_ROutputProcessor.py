@@ -79,3 +79,7 @@ class TestROutputProcessor(TestCase):
     def test_cbind_output(self):
         result = self.processor.process("     [,1] [,2]\n[1,]    1    2\n[2,]    2    2\n[3,]    3    2\n")
         self.assertEqual(result, "[,1] [,2] [1,]    1    2 [2,]    2    2 [3,]    3    2")
+
+    def test_primitive(self):
+        result = self.processor.process('.Primitive("return")\n')
+        self.assertEqual(result, Cases.PRIMITIVE)
