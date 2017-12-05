@@ -67,7 +67,7 @@ if __name__ == '__main__':
     if options.g:
         stats = get_general_stats(options.input)
         for k, v in stats.most_common():
-            print("%s : %d" % (k, v))
+            print("%s : %d" % (str(Cases(k)), v))
 
     if options.status:
         reports = __read_file(options.input)
