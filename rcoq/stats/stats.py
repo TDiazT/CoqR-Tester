@@ -38,6 +38,7 @@ def get_expressions(reports, status):
         expressions = token_regex.split(report['expression'])
         for i, code in enumerate(report['status_code']):
             if code == status:
+
                 result = {
                     'expression': expressions[i],
                 }
@@ -47,10 +48,13 @@ def get_expressions(reports, status):
                 else:
                     result['coq'] = report['processed_coq_output'][i]
 
-                if report['processed_r_output'][i] in cases_:
-                    result['r'] = str(Cases(report['processed_r_output'][i]))
+                if report['processed_r_output'][i] == Cases.UNKNOWN:
+                    result['r'] = report['r_output']
                 else:
-                    result['r'] = report['processed_r_output'][i]
+                    if report['processed_r_output'][i] in cases_:
+                        result['r'] = str(Cases(report['processed_r_output'][i]))
+                    else:
+                        result['r'] = report['processed_r_output'][i]
 
                 results.append(result)
 
