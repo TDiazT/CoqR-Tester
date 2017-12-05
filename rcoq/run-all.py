@@ -1,11 +1,13 @@
 import argparse
 import os
+import time
 from rcoq import settings, runner, cleaner, comparator
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
+from rcoq.stats import stats
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
@@ -22,10 +24,14 @@ if __name__ == '__main__':
     rout = os.path.join(directory, options.rout)
     coqout = os.path.join(directory, options.coqout)
 
+    delta = time.time()
     print("Running R interpreter...")
     runner.run(options.rsrc, rout, RInterpreter(settings.RSCRIPT))
+    print("Finished in %f seconds" % (time.time() - delta))
+    delta = time.time()
     print("Running Coq interpreter...")
     runner.run(options.rsrc, coqout, CoqInterpreter(settings.COQ_INTERP))
+    print("Finished in %f seconds" % (time.time() - delta))
 
     processed_r = os.path.join(directory, "processed-" + options.rout)
     processed_coq = os.path.join(directory, "processed-" + options.coqout)
@@ -39,3 +45,9 @@ if __name__ == '__main__':
     comparator.compare_files(processed_coq, processed_r, options.output)
 
     print("Done, you may find the results in %s" % options.output)
+
+    print("")
+    print("---------- GENERAL STATS ----------")
+    stats = stats.get_general_stats(options.output)
+    for k, v in stats.most_common():
+        print("%s : %d" % (k, v))
