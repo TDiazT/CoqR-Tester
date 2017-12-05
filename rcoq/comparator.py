@@ -14,27 +14,17 @@ parser.add_argument('output')
 options = parser.parse_args()
 
 
-def compare_lists(s, t):
-    t = list(t)  # make a mutable copy
-    try:
-        for elem in s:
-            t.remove(elem)
-    except ValueError:
-        return False
-    return not t
+def __read_file(filename):
+    with open(filename) as file_:
+        return json.load(file_)
 
 
-with open(options.coq) as coq_file:
-    with open(options.r) as r_file:
-        coq_results = json.load(coq_file)
-        r_results = json.load(r_file)
+def __write_to_file(filename, comparisons):
+    with open(filename, 'w') as file_:
+        json.dump(comparisons, file_, indent=2)
 
-results = []
 
-for pair in zip(coq_results, r_results):
-    coq_output = pair[0]['processed_output']
-    r_output = pair[1]['processed_output']
-
+def compare_outputs(coq_output, r_output):
     i = j = 0
     result = []
     while i < len(coq_output) and j < len(r_output):
@@ -43,16 +33,33 @@ for pair in zip(coq_results, r_results):
         i += 1
         j += 1
 
-    report = {
-        "status_code": result,
-        "expression": pair[0]['expression'],
-        "coq_output": pair[0]['output'],
-        "r_output": pair[1]['output'],
-        "processed_coq_output": coq_output,
-        "processed_r_output": r_output,
-    }
-    results.append(report)
+    return result
 
 
-with open(options.output, "w") as file_:
-    json.dump(results, file_, indent=2)
+def compare_files(coq, r, output_):
+    coq_reports = __read_file(coq)
+    r_reports = __read_file(r)
+    results = []
+
+    for pair in zip(coq_reports, r_reports):
+        coq_output = pair[0]['processed_output']
+        r_output = pair[1]['processed_output']
+
+        result = compare_outputs(coq_output, r_output)
+        report = {
+            "status_code": result,
+            "expression": pair[0]['expression'],
+            "coq_output": pair[0]['output'],
+            "r_output": pair[1]['output'],
+            "processed_coq_output": coq_output,
+            "processed_r_output": r_output,
+        }
+        results.append(report)
+
+    __write_to_file(output_, results)
+
+
+if __name__ == '__main__':
+    options = parser.parse_args()
+
+    compare_files(options.coq, options.r, options.output)
