@@ -1,6 +1,7 @@
 import argparse
 import json
 import sys
+import re
 
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
@@ -24,12 +25,21 @@ else:
 input_ = options.input
 output_ = options.output
 
+token_regex = re.compile(r'\[\d\]\s"TOKEN"\s')
+
+
 with open(input_) as file_:
-    outputs = json.load(file_)
+    reports = json.load(file_)
 
-    for output in outputs:
-        result = processor.process(output['output'])
-        output['clean_output'] = result
+for report in reports:
+    stripped = token_regex.split(report['output'])
 
-with open(sys.argv[2], 'w') as file_:
-    json.dump(outputs, file_, indent=2)
+    result = []
+
+    for out in stripped:
+        result.append(processor.process(out))
+
+    report['processed_output'] = result
+
+with open(output_, 'w') as file_:
+    json.dump(reports, file_, indent=2)
