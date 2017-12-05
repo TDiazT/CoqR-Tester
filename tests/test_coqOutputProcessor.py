@@ -36,16 +36,16 @@ class TestCoqOutputProcessor(TestCase):
 
     def test_process_NULL(self):
         result = self.processor.process("Success.\nNULL\n")
-        self.assertEqual(result, str(Cases.NULL))
+        self.assertEqual(result, Cases.NULL)
 
     def test_process_error_object(self):
         result = self.processor.process("> Error: [eval] Object not found.\nAn error lead to an undefined result.\n")
-        self.assertEqual(result, str(Cases.ERROR))
+        self.assertEqual(result, Cases.ERROR)
 
     def test_process_error_function(self):
         result = self.processor.process(
             "> Error: [findFun3] Could not find function “e”.\nAn error lead to an undefined result.\n")
-        self.assertEqual(result, str(Cases.ERROR))
+        self.assertEqual(result, Cases.ERROR)
 
     def test_vector_output(self):
         result = self.processor.process("Success.\n[1] 1 2 3\n[4] 5 6 7\n")
@@ -54,16 +54,16 @@ class TestCoqOutputProcessor(TestCase):
 
     def test_assignment_with_empty_array(self):
         result = self.processor.process("")
-        self.assertEqual(result, str(Cases.INVISIBLE))
+        self.assertEqual(result, Cases.INVISIBLE)
 
     def test_function(self):
         result = self.processor.process("Success.\n(closure)\n")
-        self.assertEqual(result, str(Cases.FUNCTION))
+        self.assertEqual(result, Cases.FUNCTION)
 
     def test_unknown(self):
         result = self.processor.process("anything")
-        self.assertEqual(result, str(Cases.UNKNOWN))
+        self.assertEqual(result, Cases.UNKNOWN)
         result = self.processor.process("adfasd")
-        self.assertEqual(result, str(Cases.UNKNOWN))
+        self.assertEqual(result, Cases.UNKNOWN)
         result = self.processor.process("[,1]")
-        self.assertEqual(result, str(Cases.UNKNOWN))
+        self.assertEqual(result, Cases.UNKNOWN)

@@ -1,9 +1,9 @@
-from aenum import Enum, unique
+from aenum import unique, IntEnum
 
 
 # https://stackoverflow.com/a/43863085/3802589
 @unique
-class Cases(Enum):
+class Cases(IntEnum):
     _init_ = 'value string'
 
     NOT_IMPLEMENTED = 1, "Not implemented"

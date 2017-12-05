@@ -13,22 +13,22 @@ class CoqOutputProcessor:
 
     def process(self, output):
         if not output:
-            result = str(Cases.INVISIBLE)
+            result = Cases.INVISIBLE
         elif self.not_implemented.search(output):
-            result = str(Cases.NOT_IMPLEMENTED)
+            result = Cases.NOT_IMPLEMENTED
         elif self.impossible.search(output):
-            result = str(Cases.IMPOSSIBLE)
+            result = Cases.IMPOSSIBLE
         elif self.error_regex.search(output):
-            result = str(Cases.ERROR)
+            result = Cases.ERROR
         elif re.search(self.vec_res_regex, output):
             matches = self.vec_res_regex.findall(output)
             result = " ".join(matches)
         elif self.function_regex.search(output):
-            result = str(Cases.FUNCTION)
+            result = Cases.FUNCTION
         elif self.null_regex.search(output):
-            result = str(Cases.NULL)
+            result = Cases.NULL
         else:
-            result = str(Cases.UNKNOWN)
+            result = Cases.UNKNOWN
 
         return result
 
