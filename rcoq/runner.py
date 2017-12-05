@@ -4,10 +4,17 @@ import re
 import json
 import os
 import time
+import argparse
 
-filename = sys.argv[2]
+parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
-with open(filename) as file_:
+# #
+parser.add_argument('input')
+parser.add_argument('output')
+
+options = parser.parse_args()
+
+with open(options.input) as file_:
     lines = file_.readlines()
 
 results = []
@@ -43,5 +50,5 @@ for i, line in enumerate(filter(None, lines)):
 
     results.append(result)
 
-with open(sys.argv[3], "w") as file_:
+with open(options.output, "w") as file_:
     json.dump(results, file_, indent=2)
