@@ -11,12 +11,11 @@ class Cases(IntEnum):
     IMPOSSIBLE = 3, "Impossible"
     INVISIBLE = 4, "Invisible"
     SUCCESSFUL = 5, "Successful"
-    UNSUCCESSFUL = 6, "Unsuccesful"
+    UNSUCCESSFUL = 6, "Unsuccessful"
     FUNCTION = 7, "Function"
     UNKNOWN = 8, "Unknown"
     NULL = 9, "Null"
     TYPE = 10, "Type"
-
 
     def __str__(self):
         return self.string
@@ -26,4 +25,3 @@ class Cases(IntEnum):
         for member in cls:
             if member.string == value:
                 return member
-
