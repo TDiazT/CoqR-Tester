@@ -15,7 +15,7 @@ class ROutputProcessor:
             result = CASE_INVISIBLE
         elif self.error_regex.match(output):
             result = CASE_ERROR
-        elif self.vec_res_regex.match(output):
+        elif re.search(self.vec_res_regex, output):
             matches = self.vec_res_regex.findall(output)
             result = " ".join(matches)
         elif self.function_regex.match(output):
