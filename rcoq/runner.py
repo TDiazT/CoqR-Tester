@@ -12,7 +12,15 @@ parser.add_argument('input')
 parser.add_argument('output')
 
 
-def read_file(filename):
+def run(input_, output_):
+    lines = __read_file(input_)
+    lines = [line.strip() for line in lines]
+    reports = run_interpreter(lines)
+
+    __write_to_file(output_, reports)
+
+
+def __read_file(filename):
     with open(filename) as file_:
         return file_.readlines()
 
@@ -53,7 +61,7 @@ def run_interpreter(expressions):
     return results
 
 
-def write_to_file(filename, results):
+def __write_to_file(filename, results):
     with open(filename, "w") as file_:
         json.dump(results, file_, indent=2)
 
@@ -61,8 +69,4 @@ def write_to_file(filename, results):
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    lines = read_file(options.input)
-    lines = [line.strip() for line in lines]
-    reports = run_interpreter(lines)
-
-    write_to_file(options.output, reports)
+    run(options.input, options.output)
