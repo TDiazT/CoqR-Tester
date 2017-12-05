@@ -11,8 +11,6 @@ parser.add_argument('coq')
 parser.add_argument('r')
 parser.add_argument('output')
 
-options = parser.parse_args()
-
 
 def __read_file(filename):
     with open(filename) as file_:
