@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from rcoq.Constants import SUCCESSFUL
-from rcoq.runners.CoqRTestRunner import CoqRTestRunner
+from rcoq.interpreters.CoqRTestRunner import CoqRTestRunner
 
 
 class TestCoqRTestRunner(TestCase):

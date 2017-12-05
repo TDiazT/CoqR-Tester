@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from rcoq.runners.RRunner import RRunner
+from rcoq.interpreters.RInterpreter import RInterpreter
 
 
 class TestRRunner(TestCase):
     def setUp(self):
-        self.runner = RRunner()
+        self.runner = RInterpreter()
 
     def test_expression_number(self):
         result = self.runner.run_expression("2")

@@ -1,11 +1,11 @@
 import subprocess
 
 
-class RRunner:
+class RInterpreter:
     def __init__(self, rscript) -> None:
-        self.interpreter = "R"
+        self.name = "R"
         self.rscript = rscript
 
-    def run(self, expression):
+    def interpret(self, expression):
         return subprocess.run([self.rscript, '-e', expression], universal_newlines=True, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT).stdout
