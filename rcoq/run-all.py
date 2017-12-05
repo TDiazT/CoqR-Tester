@@ -18,20 +18,22 @@ parser.add_argument('-coqout', '--coqout', default='coq.json')
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    print("Running R interpreter")
-    runner.run(options.rsrc, options.rout, RInterpreter(settings.RSCRIPT))
-
-    print("Running Coq interpreter")
-    runner.run(options.rsrc, options.coqout, CoqInterpreter(settings.COQ_INTERP))
-
     directory = os.path.dirname(options.output)
+    rout = os.path.join(directory, options.rout)
+    coqout = os.path.join(directory, options.coqout)
+
+    print("Running R interpreter...")
+    runner.run(options.rsrc, rout, RInterpreter(settings.RSCRIPT))
+    print("Running Coq interpreter...")
+    runner.run(options.rsrc, coqout, CoqInterpreter(settings.COQ_INTERP))
+
     processed_r = os.path.join(directory, "processed-" + options.rout)
     processed_coq = os.path.join(directory, "processed-" + options.coqout)
 
     print("Processing R output")
-    cleaner.process_file(options.rout, processed_r, ROutputProcessor())
+    cleaner.process_file(rout, processed_r, ROutputProcessor())
     print("Processing Coq output")
-    cleaner.process_file(options.rout, processed_coq, CoqOutputProcessor())
+    cleaner.process_file(coqout, processed_coq, CoqOutputProcessor())
 
     print("Comparing")
     comparator.compare_files(processed_coq, processed_r, options.output)
