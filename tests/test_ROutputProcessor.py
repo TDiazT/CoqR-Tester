@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from rcoq.Constants import CASE_FUNCTION, CASE_UNKNOWN
-from rcoq.processors.ROutputProcessor import ROutputProcessor, NULL, CASE_ERROR, SEQ_TOKEN, CASE_INVISIBLE
+from rcoq.processors.ROutputProcessor import ROutputProcessor, CASE_ERROR, CASE_INVISIBLE
 
 
 class TestROutputProcessor(TestCase):
