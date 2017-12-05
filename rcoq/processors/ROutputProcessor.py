@@ -4,7 +4,7 @@ from rcoq.Constants import CASE_INVISIBLE, CASE_ERROR, NULL, CASE_FUNCTION, CASE
 
 
 class ROutputProcessor:
-    vec_res_regex = re.compile(r'\[\d+\][ \w-]+\n*')
+    vec_res_regex = re.compile(r'\[\d+\][ \w-]+')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'function')
