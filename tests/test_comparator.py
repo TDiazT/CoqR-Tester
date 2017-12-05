@@ -1,41 +1,35 @@
 from unittest import TestCase
 
 from rcoq.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE, SEQ_TOKEN, \
-    CASE_IMPOSSIBLE, NOT_EQUAL
-from rcoq.comparators.Comparator import Comparator
+    CASE_IMPOSSIBLE, UNSUCCESSFUL, CASE_UNKNOWN, NULL, CASE_FUNCTION
+from rcoq.comparators.Comparator import compare
 
 
 class TestComparator(TestCase):
-    def setUp(self):
-        self.comparator = Comparator()
+    def test_not_implemented(self):
+        cases = [CASE_ERROR, CASE_INVISIBLE, CASE_UNKNOWN, CASE_FUNCTION, '[1] TRUE', NULL]
 
-    def test_case_not_implemented(self):
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_ERROR]), [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_INVISIBLE]),
-                         [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [['[1]', "TRUE"]]),
-                         [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [['[1]', '1', '[2]', '4']]),
-                         [CASE_NOT_IMPLEMENTED])
+        for case in cases:
+            self.assertEqual(compare(CASE_NOT_IMPLEMENTED, case), CASE_NOT_IMPLEMENTED)
 
-    def test_simple_token(self):
-        self.assertEqual(self.comparator.compare_multiple([SEQ_TOKEN], [SEQ_TOKEN]), [])
+    def test_impossible(self):
+        cases = [CASE_ERROR, CASE_INVISIBLE, CASE_UNKNOWN, CASE_FUNCTION, '[1] TRUE', NULL]
 
-    def test_simple_assignment_with_tokens(self):
-        coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN]
-        r = [SEQ_TOKEN, SEQ_TOKEN]
-        self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL])
+        for case in cases:
+            self.assertEqual(compare(CASE_IMPOSSIBLE, case), CASE_IMPOSSIBLE)
 
-    def test_multiple_assignments_with_tokens(self):
-        coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN, SEQ_TOKEN, ['[1]', '2'], SEQ_TOKEN, ['[1]', '3'], SEQ_TOKEN]
-        r = [SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN]
-        self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL, SUCCESSFUL, SUCCESSFUL])
+    def test_error(self):
+        cases = [CASE_INVISIBLE, CASE_FUNCTION, '[1] TRUE', NULL]
 
-    def test_all_outputs_different(self):
-        coq = [SEQ_TOKEN, ['[1]', '1'], CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_IMPOSSIBLE]
-        r = list(reversed(coq))
-        self.assertEqual(self.comparator.compare_multiple(coq, r),
-                         [NOT_EQUAL, NOT_EQUAL, CASE_NOT_IMPLEMENTED, NOT_EQUAL, CASE_IMPOSSIBLE])
+        for case in cases:
+            self.assertEqual(compare(CASE_ERROR, case), UNSUCCESSFUL)
 
-    def test_mismatching_size_outputs(self):
-        self.fail()
+        self.assertEqual(compare(CASE_ERROR, CASE_ERROR), SUCCESSFUL)
+        self.assertEqual(compare(CASE_ERROR, CASE_UNKNOWN), CASE_UNKNOWN)
+
+    def test_unknown(self):
+        cases = [CASE_ERROR, CASE_INVISIBLE, CASE_UNKNOWN, CASE_FUNCTION, '[1] TRUE', NULL]
+
+        for case in cases:
+            self.assertEqual(compare(CASE_UNKNOWN, case), CASE_UNKNOWN)
+            self.assertEqual(compare(case, CASE_UNKNOWN), CASE_UNKNOWN)
