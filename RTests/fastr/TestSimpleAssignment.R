@@ -1,12 +1,12 @@
 a<-1 
-a<-FALSE ; b<-a 
+a<-FALSE ; "TOKEN" ; b<-a 
 x = if (FALSE) 1 
 x <<- 1 
-x <<- 1 ; x 
-f <- function() { x <<- 2 } ; f() ; x 
-x <- 10 ; f <- function() { x <<- 2 } ; f() ; x 
-x <- 10 ; f <- function() { x <<- 2 ; x } ; c(f(), f()) 
-x <- 10 ; f <- function() { x <- x ; x <<- 2 ; x } ; c(f(), f()) 
-x <- 10 ; g <- function() { f <- function() { x <- x ; x <<- 2 ; x } ; c(f(), f()) } ; g() 
-x <- 10 ; g <- function() { x ; f <- function() { x <- x ; x <<- 2 ; x } ; c(f(), f()) } ; g() 
-x <- 10 ; g <- function() { x <- 100 ; f <- function() { x <- x ; x <<- 2 ; x } ; c(f(), f()) } ; g() 
+x <<- 1 ; "TOKEN" ; x 
+f <- function() { x <<- 2 } ; "TOKEN" ; f() ; "TOKEN" ; x 
+x <- 10 ; "TOKEN" ; f <- function() { x <<- 2 } ; "TOKEN" ; f() ; "TOKEN" ; x 
+x <- 10 ; "TOKEN" ; f <- function() { x <<- 2 ; "TOKEN" ; x } ; "TOKEN" ; c(f(), f()) 
+x <- 10 ; "TOKEN" ; f <- function() { x <- x ; "TOKEN" ; x <<- 2 ; "TOKEN" ; x } ; "TOKEN" ; c(f(), f()) 
+x <- 10 ; "TOKEN" ; g <- function() { f <- function() { x <- x ; "TOKEN" ; x <<- 2 ; "TOKEN" ; x } ; "TOKEN" ; c(f(), f()) } ; "TOKEN" ; g() 
+x <- 10 ; "TOKEN" ; g <- function() { x ; "TOKEN" ; f <- function() { x <- x ; "TOKEN" ; x <<- 2 ; "TOKEN" ; x } ; "TOKEN" ; c(f(), f()) } ; "TOKEN" ; g() 
+x <- 10 ; "TOKEN" ; g <- function() { x <- 100 ; "TOKEN" ; f <- function() { x <- x ; "TOKEN" ; x <<- 2 ; "TOKEN" ; x } ; "TOKEN" ; c(f(), f()) } ; "TOKEN" ; g() 
