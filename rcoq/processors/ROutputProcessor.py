@@ -26,12 +26,13 @@ class ROutputProcessor:
             result = " ".join(matches)
         elif re.search(self.type_regex, output):
             result = Cases.TYPE
+        elif re.search(self.primitive_regex, output):
+            result = Cases.PRIMITIVE
         elif self.function_regex.match(output):
             result = Cases.FUNCTION
         elif self.null_regex.match(output):
             result = Cases.NULL
-        elif re.search(self.primitive_regex, output):
-            result = Cases.PRIMITIVE
+
         else:
             result = Cases.UNKNOWN
 

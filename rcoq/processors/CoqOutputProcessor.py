@@ -10,6 +10,7 @@ class CoqOutputProcessor:
     function_regex = re.compile(r'(closure)')
     not_implemented = re.compile(r'Not implemented')
     impossible = re.compile(r'Impossible')
+    special_builtin_regex = re.compile(r'\((builtin|special):.*\)')
 
     def process(self, output):
         if not output:
@@ -25,6 +26,8 @@ class CoqOutputProcessor:
             result = " ".join(matches)
         elif self.function_regex.search(output):
             result = Cases.FUNCTION
+        elif re.search(self.special_builtin_regex, output):
+            result = Cases.PRIMITIVE
         elif self.null_regex.search(output):
             result = Cases.NULL
         else:
