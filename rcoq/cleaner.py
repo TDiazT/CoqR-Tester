@@ -1,10 +1,10 @@
 import argparse
-import json
-import sys
 import re
+import sys
 
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
+from rcoq.utils.file import read_file, write_to_file
 
 parser = argparse.ArgumentParser(description='Processes output and returns a new standard one')
 
@@ -17,10 +17,10 @@ token_regex = re.compile(r'\[\d\]\s"TOKEN"\s')
 
 
 def process_file(input_, output_, processor):
-    previous_reports = __read_file(input_)
+    previous_reports = read_file(input_)
     new_reports = process_reports(previous_reports, processor)
 
-    __write_to_file(output_, new_reports)
+    write_to_file(output_, new_reports)
 
 
 def process_reports(rs, processor):
@@ -35,16 +35,6 @@ def process_reports(rs, processor):
         report['processed_output'] = result
 
     return rs
-
-
-def __read_file(filename):
-    with open(filename) as file_:
-        return json.load(file_)
-
-
-def __write_to_file(filename, processed_reports):
-    with open(filename, 'w') as file_:
-        json.dump(processed_reports, file_, indent=2)
 
 
 if __name__ == '__main__':

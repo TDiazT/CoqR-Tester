@@ -1,12 +1,11 @@
 import argparse
 import json
 import os
-import subprocess
-import time
 import sys
+import time
 
-from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
+from rcoq.interpreters.RInterpreter import RInterpreter
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 

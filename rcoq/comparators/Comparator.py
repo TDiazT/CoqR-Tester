@@ -1,5 +1,5 @@
 from rcoq.Cases import Cases
-from rcoq.comparator import __read_file, __write_to_file
+from rcoq.utils.file import read_file, write_to_file
 
 
 def compare(out1, out2):
@@ -31,8 +31,8 @@ def compare_outputs(coq_output, r_output):
 
 
 def compare_files(coq, r, output_):
-    coq_reports = __read_file(coq)
-    r_reports = __read_file(r)
+    coq_reports = read_file(coq)
+    r_reports = read_file(r)
     results = []
 
     for pair in zip(coq_reports, r_reports):
@@ -50,4 +50,4 @@ def compare_files(coq, r, output_):
         }
         results.append(report)
 
-    __write_to_file(output_, results)
+    write_to_file(output_, results)
