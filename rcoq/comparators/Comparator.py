@@ -1,4 +1,5 @@
 from rcoq.Cases import Cases
+from rcoq.comparator import __read_file, __write_to_file
 
 
 def compare(out1, out2):
@@ -16,3 +17,37 @@ def compare(out1, out2):
         else:
             return Cases.SUCCESSFUL if out1 == out2 else Cases.UNSUCCESSFUL
 
+
+def compare_outputs(coq_output, r_output):
+    i = j = 0
+    result = []
+    while i < len(coq_output) and j < len(r_output):
+        comparison = compare(coq_output[i], r_output[j])
+        result.append(comparison)
+        i += 1
+        j += 1
+
+    return result
+
+
+def compare_files(coq, r, output_):
+    coq_reports = __read_file(coq)
+    r_reports = __read_file(r)
+    results = []
+
+    for pair in zip(coq_reports, r_reports):
+        coq_output = pair[0]['processed_output']
+        r_output = pair[1]['processed_output']
+
+        result = compare_outputs(coq_output, r_output)
+        report = {
+            "status_code": result,
+            "expression": pair[0]['expression'],
+            "coq_output": pair[0]['output'],
+            "r_output": pair[1]['output'],
+            "processed_coq_output": coq_output,
+            "processed_r_output": r_output,
+        }
+        results.append(report)
+
+    __write_to_file(output_, results)

@@ -1,10 +1,11 @@
 import argparse
 import os
 import time
-from rcoq import settings, runner, cleaner, comparator
+
+import rcoq.comparators.Comparator
+from rcoq import settings, runner, cleaner
 from rcoq.Cases import Cases
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
-
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     cleaner.process_file(coqout, processed_coq, CoqOutputProcessor())
 
     print("Comparing")
-    comparator.compare_files(processed_coq, processed_r, options.output)
+    rcoq.comparators.Comparator.compare_files(processed_coq, processed_r, options.output)
 
     print("Done, you may find the results in %s" % options.output)
 
