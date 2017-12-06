@@ -38,6 +38,11 @@ class TestROutputProcessor(TestCase):
         result = self.processor.process("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced")
         self.assertEqual(result, "[1] NaN")
 
+    def test_process_string(self):
+        result = self.processor.process(
+            "> Success.\n(closure)\n> Success.\n[1] \" + input + \"\n> Success.\n[1] \" + input + \"\n> ")
+        self.assertEqual(result, "[1] \"  [1] \" ")
+
     def test_process_NULL(self):
         result = self.processor.process("NULL\n")
         self.assertEqual(result, Cases.NULL)

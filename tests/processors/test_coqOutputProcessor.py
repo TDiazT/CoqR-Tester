@@ -34,6 +34,11 @@ class TestCoqOutputProcessor(TestCase):
         result = self.processor.process("[1] -Inf\n")
         self.assertEqual(result, "[1] -Inf")
 
+    def test_process_string(self):
+        result = self.processor.process(
+            "> Success.\n(closure)\n> Success.\n[1] \" + input + \"\n> Success.\n[1] \" + input + \"\n> ")
+        self.assertEqual(result, "[1] \"  [1] \" ")
+
     def test_process_NULL(self):
         result = self.processor.process("Success.\nNULL\n")
         self.assertEqual(result, Cases.NULL)
@@ -50,7 +55,6 @@ class TestCoqOutputProcessor(TestCase):
     def test_vector_output(self):
         result = self.processor.process("Success.\n[1] 1 2 3\n[4] 5 6 7\n")
         self.assertEqual(result, '[1] 1 2 3 [4] 5 6 7')
-
 
     def test_assignment_with_empty_array(self):
         result = self.processor.process("")

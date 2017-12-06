@@ -4,7 +4,7 @@ from rcoq.Cases import Cases
 
 
 class CoqOutputProcessor:
-    vec_res_regex = re.compile(r'\[\d+\][ \w-]+')
+    vec_res_regex = re.compile(r'\[\d+\][ \w\-\"]+')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'(closure)')
