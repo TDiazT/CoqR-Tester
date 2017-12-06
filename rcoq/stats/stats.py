@@ -7,7 +7,7 @@ from rcoq.Cases import Cases
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')
 
-parser.add_argument('-input', default='out/compare.json')
+parser.add_argument('input')
 parser.add_argument('-g', '--g', action='store_true')
 parser.add_argument('-status')
 
