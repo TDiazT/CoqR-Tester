@@ -21,9 +21,9 @@ class TestComparator(TestCase):
         cases = [Cases.INVISIBLE, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
 
         for case in cases:
-            self.assertEqual(compare(Cases.ERROR, case), Cases.UNSUCCESSFUL)
+            self.assertEqual(compare(Cases.ERROR, case), Cases.FAIL)
 
-        self.assertEqual(compare(Cases.ERROR, Cases.ERROR), Cases.SUCCESSFUL)
+        self.assertEqual(compare(Cases.ERROR, Cases.ERROR), Cases.PASS)
         self.assertEqual(compare(Cases.ERROR, Cases.UNKNOWN), Cases.UNKNOWN)
 
     def test_unknown(self):

@@ -10,12 +10,12 @@ def compare(out1, out2):
     elif out1 == Cases.UNKNOWN or out2 == Cases.UNKNOWN:
         return Cases.UNKNOWN
     elif out1 == Cases.ERROR:
-        return Cases.SUCCESSFUL if out2 == Cases.ERROR else Cases.UNSUCCESSFUL
+        return Cases.PASS if out2 == Cases.ERROR else Cases.FAIL
     else:
         if out2 == Cases.INVISIBLE:
-            return Cases.SUCCESSFUL
+            return Cases.PASS
         else:
-            return Cases.SUCCESSFUL if out1 == out2 else Cases.UNSUCCESSFUL
+            return Cases.PASS if out1 == out2 else Cases.FAIL
 
 
 def compare_outputs(coq_output, r_output):
