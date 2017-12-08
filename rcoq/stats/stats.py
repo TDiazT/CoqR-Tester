@@ -40,7 +40,7 @@ def get_expressions(reports, status):
             if code == status:
 
                 result = {
-                    'context' : report['expression'],
+                    'context': report['expression'],
                     'expression': expressions[i],
                 }
                 cases_ = [case.value for case in Cases]
