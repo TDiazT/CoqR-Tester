@@ -4,14 +4,13 @@ import re
 from collections import Counter
 
 from rcoq.Cases import Cases
+from rcoq.utils import exp_extract
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')
 
 parser.add_argument('input')
 parser.add_argument('-g', '--g', action='store_true')
 parser.add_argument('-status')
-
-token_regex = re.compile(r';\s*"TOKEN"\s*;')
 
 
 def __read_file(filename):
@@ -35,7 +34,7 @@ def get_expressions(reports, status):
     results = []
 
     for report in reports:
-        expressions = token_regex.split(report['expression'])
+        expressions = exp_extract.extract_expressions(report['expression'])
         for i, code in enumerate(report['status_code']):
             if code == status:
 

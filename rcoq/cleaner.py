@@ -25,11 +25,9 @@ def process_file(input_, output_, processor):
 
 def process_reports(rs, processor):
     for report in rs:
-        stripped = token_regex.split(report['output'])
-
         result = []
 
-        for out in stripped:
+        for out in report['output']:
             result.append(processor.process(out))
 
         report['processed_output'] = result

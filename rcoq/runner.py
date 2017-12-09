@@ -3,15 +3,19 @@ import json
 import os
 import sys
 import time
+import re
 
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
+from rcoq.utils import exp_extract
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
 # #
 parser.add_argument('input')
 parser.add_argument('output')
+
+TOKEN = "TOKEN"
 
 
 def run(input_, output_, interpreter):
@@ -27,15 +31,33 @@ def __read_file(filename):
         return file_.readlines()
 
 
+def __pre_process_expression(expression):
+    expressions = exp_extract.extract_expressions(expression)
+    results = []
+    for exp in expressions:
+        results.append("(%s)" % exp)
+
+    expressions = ';'.join(results)
+
+    return re.sub(';', '; "%s" ;' % TOKEN, expressions)
+
+
+def __post_process_output(out):
+    return re.split(r'\[\d\]\s*"TOKEN"\s*', out)
+
+
 def run_interpreter(expressions, interpreter):
     results = []
     for i, expression in enumerate(filter(None, expressions)):
+        processed_expression = __pre_process_expression(expression)
         exec_time = time.time()
-        out = interpreter.interpret(expression)
+        out = interpreter.interpret(processed_expression)
         exec_time = time.time() - exec_time
 
+        processed_out = __post_process_output(out)
+
         result = {
-            "output": out,
+            "output": processed_out,
             "expression": expression,
             "execution_time": exec_time,
             "line": i + 1,
