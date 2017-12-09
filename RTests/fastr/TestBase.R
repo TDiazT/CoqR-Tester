@@ -1,3 +1,3 @@
-junitWrapper <- function() { " + input + " }; "TOKEN" ; junitWrapper(); "TOKEN" ; junitWrapper() 
-x<-function(){1} ; "TOKEN" ; x(y=1) 
-x<-function(){1} ; "TOKEN" ; x(1) 
+junitWrapper <- function() { " + input + " }; junitWrapper(); junitWrapper() 
+x<-function(){1} ; x(y=1) 
+x<-function(){1} ; x(1) 
