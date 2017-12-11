@@ -37,16 +37,16 @@ def compare_files(coq, r):
     r_reports = read_json_file(r)
     results = []
 
-    for pair in zip(coq_reports, r_reports):
-        coq_output = pair[0][ReportKeys.PROCESSED_OUT]
-        r_output = pair[1][ReportKeys.PROCESSED_OUT]
+    for coq_report, r_report in zip(coq_reports, r_reports):
+        coq_output = coq_report[ReportKeys.PROCESSED_OUT]
+        r_output = r_report[ReportKeys.PROCESSED_OUT]
 
         result = compare_outputs(coq_output, r_output)
         report = {
             ReportKeys.STATUS_CODE: result,
-            ReportKeys.EXPRESSION: pair[0][ReportKeys.EXPRESSION],
-            ReportKeys.COQ_OUT: pair[0][ReportKeys.OUTPUT],
-            ReportKeys.R_OUT: pair[1][ReportKeys.OUTPUT],
+            ReportKeys.EXPRESSION: coq_report[ReportKeys.EXPRESSION],
+            ReportKeys.COQ_OUT: coq_report[ReportKeys.OUTPUT],
+            ReportKeys.R_OUT: r_report[ReportKeys.OUTPUT],
             ReportKeys.PROCESSED_COQ: coq_output,
             ReportKeys.PROCESSED_R: r_output,
         }
