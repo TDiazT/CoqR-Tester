@@ -1,11 +1,13 @@
 import subprocess
 
+from rcoq.interpreters.AbstractInterpreter import AbstractInterpreter
 
-class RInterpreter:
-    def __init__(self, rscript) -> None:
+
+class RInterpreter(AbstractInterpreter):
+    def __init__(self, interp) -> None:
+        super().__init__(interp)
         self.name = "R"
-        self.rscript = rscript
 
     def interpret(self, expression):
-        return subprocess.run([self.rscript, '-e', expression], universal_newlines=True, stdout=subprocess.PIPE,
+        return subprocess.run([self.interpreter, '-e', expression], universal_newlines=True, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT).stdout

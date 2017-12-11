@@ -3,13 +3,13 @@ import os
 import time
 
 import rcoq.comparators.Comparator
-from rcoq import settings, cleaner
+from rcoq import settings
 from rcoq.constants.Status import Status
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
-from rcoq.scripts import runner
+from rcoq.scripts import runner, cleaner
 from rcoq.stats import stats
 
 parser = argparse.ArgumentParser(
