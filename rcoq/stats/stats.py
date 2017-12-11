@@ -1,9 +1,8 @@
 import argparse
 import json
-import re
 from collections import Counter
 
-from rcoq.Cases import Cases
+from rcoq.constants.Cases import Cases
 from rcoq.utils import exp_extract
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')

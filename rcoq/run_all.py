@@ -4,7 +4,7 @@ import time
 
 import rcoq.comparators.Comparator
 from rcoq import settings, runner, cleaner
-from rcoq.Cases import Cases
+from rcoq.constants.Cases import Cases
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor

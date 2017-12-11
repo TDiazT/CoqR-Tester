@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from rcoq.Cases import Cases
 from rcoq.comparators.Comparator import compare
+from rcoq.constants.Cases import Cases
 
 
 class TestComparator(TestCase):

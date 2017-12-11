@@ -1,4 +1,4 @@
-from rcoq.Cases import Cases
+from rcoq.constants.Cases import Cases
 from rcoq.utils.file import read_file, write_to_file
 
 

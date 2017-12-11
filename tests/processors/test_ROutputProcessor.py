@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from rcoq.Cases import Cases
+from rcoq.constants.Cases import Cases
 from rcoq.processors.ROutputProcessor import ROutputProcessor
 
 

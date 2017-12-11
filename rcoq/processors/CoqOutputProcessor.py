@@ -1,6 +1,6 @@
 import re
 
-from rcoq.Cases import Cases
+from rcoq.constants.Cases import Cases
 
 
 class CoqOutputProcessor:
