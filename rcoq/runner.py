@@ -37,9 +37,9 @@ def __pre_process_expression(expression):
     for exp in expressions:
         results.append("(%s)" % exp)
 
-    expressions = ';'.join(results)
+    expressions = '; "TOKEN" ;'.join(results)
 
-    return re.sub(';', '; "%s" ;' % TOKEN, expressions)
+    return expressions
 
 
 def __post_process_output(out):
