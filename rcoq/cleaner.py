@@ -1,5 +1,4 @@
 import argparse
-import re
 import sys
 
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
@@ -12,8 +11,6 @@ parser = argparse.ArgumentParser(description='Processes output and returns a new
 parser.add_argument('interp')
 parser.add_argument('input')
 parser.add_argument('output')
-
-token_regex = re.compile(r'\[\d\]\s"TOKEN"\s')
 
 
 def process_file(input_, output_, processor):
