@@ -2,6 +2,7 @@ import argparse
 import json
 from collections import Counter
 
+from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
 from rcoq.utils import exp_extract
 
@@ -41,17 +42,17 @@ def get_expressions(reports, status):
                     'context': report['expression'],
                     'expression': expressions[i],
                 }
-                cases_ = [case.value for case in Cases]
+                cases_ = [case.value for case in Status]
                 if report['processed_coq_output'][i] in cases_:
-                    result['coq'] = str(Cases(report['processed_coq_output'][i]))
+                    result['coq'] = str(Status(report['processed_coq_output'][i]))
                 else:
                     result['coq'] = report['processed_coq_output'][i]
 
-                if report['processed_r_output'][i] == Cases.UNKNOWN:
+                if report['processed_r_output'][i] == Status.UNKNOWN:
                     result['r'] = report['r_output']
                 else:
                     if report['processed_r_output'][i] in cases_:
-                        result['r'] = str(Cases(report['processed_r_output'][i]))
+                        result['r'] = str(Status(report['processed_r_output'][i]))
                     else:
                         result['r'] = report['processed_r_output'][i]
 

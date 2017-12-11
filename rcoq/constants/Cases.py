@@ -10,8 +10,6 @@ class Cases(IntEnum):
     ERROR = 2, "Error"
     IMPOSSIBLE = 3, "Impossible"
     INVISIBLE = 4, "Invisible"
-    PASS = 5, "Pass"
-    FAIL = 6, "Fail"
     FUNCTION = 7, "Function"
     UNKNOWN = 8, "Unknown"
     NULL = 9, "Null"

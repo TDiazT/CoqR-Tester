@@ -1,21 +1,22 @@
+from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
 from rcoq.utils.file import read_file, write_to_file
 
 
 def compare(out1, out2):
     if out1 == Cases.NOT_IMPLEMENTED:
-        return Cases.NOT_IMPLEMENTED
+        return Status.NOT_IMPLEMENTED
     elif out1 == Cases.IMPOSSIBLE:
-        return Cases.IMPOSSIBLE
+        return Status.IMPOSSIBLE
     elif out1 == Cases.UNKNOWN or out2 == Cases.UNKNOWN:
-        return Cases.UNKNOWN
+        return Status.UNKNOWN
     elif out1 == Cases.ERROR:
-        return Cases.PASS if out2 == Cases.ERROR else Cases.FAIL
+        return Status.PASS if out2 == Cases.ERROR else Status.FAIL
     else:
         if out2 == Cases.INVISIBLE:
-            return Cases.PASS
+            return Status.PASS
         else:
-            return Cases.PASS if out1 == out2 else Cases.FAIL
+            return Status.PASS if out1 == out2 else Status.FAIL
 
 
 def compare_outputs(coq_output, r_output):

@@ -1,8 +1,8 @@
-from aenum import Enum, unique
+from aenum import unique, IntEnum
 
 
 @unique
-class Status(Enum):
+class Status(IntEnum):
     _init_ = 'value string'
 
     NOT_IMPLEMENTED = 1, "Not implemented"
