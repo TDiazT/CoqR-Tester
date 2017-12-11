@@ -1,7 +1,7 @@
 from rcoq.constants import ReportKeys
-from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
-from rcoq.utils.file import read_json_file, write_to_file
+from rcoq.constants.Status import Status
+from rcoq.utils.file import read_json_file
 
 
 def compare(out1, out2):
@@ -32,7 +32,7 @@ def compare_outputs(coq_output, r_output):
     return result
 
 
-def compare_files(coq, r, output_):
+def compare_files(coq, r):
     coq_reports = read_json_file(coq)
     r_reports = read_json_file(r)
     results = []
@@ -52,5 +52,4 @@ def compare_files(coq, r, output_):
         }
         results.append(report)
 
-    # TODO: Move this somewhere else, it should return the result, not write
-    write_to_file(output_, results)
+    return results

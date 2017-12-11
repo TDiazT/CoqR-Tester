@@ -41,7 +41,7 @@ def process_outputs(rout, processed_r, coqout, processed_coq):
 
 def compare_processed_outputs(processed_r, processed_coq):
     print("Comparing")
-    rcoq.comparators.Comparator.compare_files(processed_coq, processed_r, options.output)
+    rcoq.comparators.Comparator.compare_files(processed_coq, processed_r)
 
 
 def print_general_stats():
