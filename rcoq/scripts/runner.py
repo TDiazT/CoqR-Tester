@@ -27,23 +27,9 @@ def run(input_, output_, interpreter):
     write_to_file(output_, reports)
 
 
-def __pre_process_expression(expression):
-    expressions = exp_extract.extract_expressions(expression)
-    results = []
-    for exp in expressions:
-        results.append("(%s)" % exp)
-
-    expressions = '; "TOKEN" ;'.join(results)
-
-    return expressions
-
-
-def __post_process_output(out):
-    return re.split(r'\[\d\]\s*"TOKEN"\s*', out)
-
-
 def run_interpreter(expressions, interpreter):
     results = []
+    # None filters blank lines
     for i, expression in enumerate(filter(None, expressions)):
         processed_expression = __pre_process_expression(expression)
         exec_time = time.time()
@@ -52,18 +38,32 @@ def run_interpreter(expressions, interpreter):
 
         processed_out = __post_process_output(out)
 
-        # TODO: Extract method
-        result = {
-            ReportKeys.OUTPUT: processed_out,
-            ReportKeys.EXPRESSION: expression,
-            ReportKeys.EXEC_TIME: exec_time,
-            ReportKeys.LINE: i + 1,
-            ReportKeys.INTERPRETER: interpreter.name
-        }
+        result = __generate_report(exec_time, expression, i, interpreter, processed_out)
 
         results.append(result)
 
     return results
+
+
+def __pre_process_expression(expression):
+    expressions = exp_extract.extract_expressions(expression)
+    parenthesized_exps = ["(%s)" % exp for exp in expressions]
+
+    return '; "TOKEN" ;'.join(parenthesized_exps)
+
+
+def __post_process_output(out):
+    return re.split(r'\[\d\]\s*"TOKEN"\s*', out)
+
+
+def __generate_report(exec_time, expression, i, interpreter, processed_out):
+    return {
+        ReportKeys.OUTPUT: processed_out,
+        ReportKeys.EXPRESSION: expression,
+        ReportKeys.EXEC_TIME: exec_time,
+        ReportKeys.LINE: i + 1,
+        ReportKeys.INTERPRETER: interpreter.name
+    }
 
 
 if __name__ == '__main__':
