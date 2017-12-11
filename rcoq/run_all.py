@@ -4,7 +4,7 @@ import time
 
 import rcoq.comparators.Comparator
 from rcoq import settings, runner, cleaner
-from rcoq.constants.Cases import Cases
+from rcoq.constants.Status import Status
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
@@ -52,4 +52,4 @@ if __name__ == '__main__':
     print("---------- GENERAL STATS ----------")
     stats = stats.get_general_stats(options.output)
     for k, v in stats.most_common():
-        print("%s : %d" % (str(Cases(k)), v))
+        print("%s : %d" % (str(Status(k)), v))

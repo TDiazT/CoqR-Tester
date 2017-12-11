@@ -5,6 +5,7 @@ import sys
 import time
 import re
 
+from rcoq.constants import ReportKeys
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.utils import exp_extract
@@ -56,12 +57,13 @@ def run_interpreter(expressions, interpreter):
 
         processed_out = __post_process_output(out)
 
+        # TODO: Extract method
         result = {
-            "output": processed_out,
-            "expression": expression,
-            "execution_time": exec_time,
-            "line": i + 1,
-            "interpreter": interpreter.name
+            ReportKeys.OUTPUT: processed_out,
+            ReportKeys.EXPRESSION: expression,
+            ReportKeys.EXEC_TIME: exec_time,
+            ReportKeys.LINE: i + 1,
+            ReportKeys.INTERPRETER: interpreter.name
         }
 
         results.append(result)

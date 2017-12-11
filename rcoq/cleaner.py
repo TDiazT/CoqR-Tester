@@ -1,6 +1,7 @@
 import argparse
 import sys
 
+from rcoq.constants import ReportKeys
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
 from rcoq.utils.file import read_file, write_to_file
@@ -24,10 +25,10 @@ def process_reports(rs, processor):
     for report in rs:
         result = []
 
-        for out in report['output']:
+        for out in report[ReportKeys.OUTPUT]:
             result.append(processor.process(out))
 
-        report['processed_output'] = result
+        report[ReportKeys.PROCESSED_OUT] = result
 
     return rs
 

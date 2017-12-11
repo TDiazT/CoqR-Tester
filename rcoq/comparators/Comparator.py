@@ -1,3 +1,4 @@
+from rcoq.constants import ReportKeys
 from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
 from rcoq.utils.file import read_file, write_to_file
@@ -37,18 +38,19 @@ def compare_files(coq, r, output_):
     results = []
 
     for pair in zip(coq_reports, r_reports):
-        coq_output = pair[0]['processed_output']
-        r_output = pair[1]['processed_output']
+        coq_output = pair[0][ReportKeys.PROCESSED_OUT]
+        r_output = pair[1][ReportKeys.PROCESSED_OUT]
 
         result = compare_outputs(coq_output, r_output)
         report = {
-            "status_code": result,
-            "expression": pair[0]['expression'],
-            "coq_output": pair[0]['output'],
-            "r_output": pair[1]['output'],
-            "processed_coq_output": coq_output,
-            "processed_r_output": r_output,
+            ReportKeys.STATUS_CODE: result,
+            ReportKeys.EXPRESSION: pair[0][ReportKeys.EXPRESSION],
+            ReportKeys.COQ_OUT: pair[0][ReportKeys.OUTPUT],
+            ReportKeys.R_OUT: pair[1][ReportKeys.OUTPUT],
+            ReportKeys.PROCESSED_COQ: coq_output,
+            ReportKeys.PROCESSED_R: r_output,
         }
         results.append(report)
 
+    # TODO: Move this somewhere else, it should return the result, not write
     write_to_file(output_, results)

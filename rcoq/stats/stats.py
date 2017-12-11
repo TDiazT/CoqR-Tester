@@ -2,6 +2,7 @@ import argparse
 import json
 from collections import Counter
 
+from rcoq.constants import ReportKeys
 from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
 from rcoq.utils import exp_extract
@@ -23,7 +24,7 @@ def get_general_stats(filename):
 
     counter = Counter()
     for report in reports:
-        codes = report['status_code']
+        codes = report[ReportKeys.STATUS_CODE]
         for status_code in codes:
             counter[status_code] += 1
 
@@ -34,27 +35,27 @@ def get_expressions(reports, status):
     results = []
 
     for report in reports:
-        expressions = exp_extract.extract_expressions(report['expression'])
-        for i, code in enumerate(report['status_code']):
+        expressions = exp_extract.extract_expressions(report[ReportKeys.EXPRESSION])
+        for i, code in enumerate(report[ReportKeys.STATUS_CODE]):
             if code == status:
 
                 result = {
-                    'context': report['expression'],
+                    'context': report[ReportKeys.EXPRESSION],
                     'expression': expressions[i],
                 }
                 cases_ = [case.value for case in Status]
-                if report['processed_coq_output'][i] in cases_:
-                    result['coq'] = str(Status(report['processed_coq_output'][i]))
+                if report[ReportKeys.PROCESSED_COQ][i] in cases_:
+                    result['coq'] = str(Status(report[ReportKeys.PROCESSED_COQ][i]))
                 else:
-                    result['coq'] = report['processed_coq_output'][i]
+                    result['coq'] = report[ReportKeys.PROCESSED_COQ][i]
 
-                if report['processed_r_output'][i] == Status.UNKNOWN:
-                    result['r'] = report['r_output']
+                if report[ReportKeys.PROCESSED_R][i] == Status.UNKNOWN:
+                    result['r'] = report[ReportKeys.R_OUT]
                 else:
-                    if report['processed_r_output'][i] in cases_:
-                        result['r'] = str(Status(report['processed_r_output'][i]))
+                    if report[ReportKeys.PROCESSED_R][i] in cases_:
+                        result['r'] = str(Status(report[ReportKeys.PROCESSED_R][i]))
                     else:
-                        result['r'] = report['processed_r_output'][i]
+                        result['r'] = report[ReportKeys.PROCESSED_R][i]
 
                 results.append(result)
 
