@@ -4,7 +4,7 @@ import sys
 from rcoq.constants import ReportKeys
 from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
-from rcoq.utils.file import read_file, write_to_file
+from rcoq.utils.file import read_json_file, write_to_file
 
 parser = argparse.ArgumentParser(description='Processes output and returns a new standard one')
 
@@ -15,7 +15,7 @@ parser.add_argument('output')
 
 
 def process_file(input_, output_, processor):
-    previous_reports = read_file(input_)
+    previous_reports = read_json_file(input_)
     new_reports = process_reports(previous_reports, processor)
 
     write_to_file(output_, new_reports)

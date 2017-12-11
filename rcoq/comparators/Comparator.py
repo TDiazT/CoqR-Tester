@@ -1,7 +1,7 @@
 from rcoq.constants import ReportKeys
 from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
-from rcoq.utils.file import read_file, write_to_file
+from rcoq.utils.file import read_json_file, write_to_file
 
 
 def compare(out1, out2):
@@ -33,8 +33,8 @@ def compare_outputs(coq_output, r_output):
 
 
 def compare_files(coq, r, output_):
-    coq_reports = read_file(coq)
-    r_reports = read_file(r)
+    coq_reports = read_json_file(coq)
+    r_reports = read_json_file(r)
     results = []
 
     for pair in zip(coq_reports, r_reports):

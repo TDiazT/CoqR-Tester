@@ -1,14 +1,14 @@
 import argparse
-import json
 import os
+import re
 import sys
 import time
-import re
 
 from rcoq.constants import ReportKeys
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.utils import exp_extract
+from rcoq.utils.file import write_to_file, read_file
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
@@ -20,16 +20,11 @@ TOKEN = "TOKEN"
 
 
 def run(input_, output_, interpreter):
-    lines = __read_file(input_)
+    lines = read_file(input_)
     lines = [line.strip() for line in lines]
     reports = run_interpreter(lines, interpreter)
 
-    __write_to_file(output_, reports)
-
-
-def __read_file(filename):
-    with open(filename) as file_:
-        return file_.readlines()
+    write_to_file(output_, reports)
 
 
 def __pre_process_expression(expression):
@@ -69,11 +64,6 @@ def run_interpreter(expressions, interpreter):
         results.append(result)
 
     return results
-
-
-def __write_to_file(filename, results):
-    with open(filename, "w") as file_:
-        json.dump(results, file_, indent=2)
 
 
 if __name__ == '__main__':
