@@ -13,6 +13,11 @@ parser.add_argument('input')
 parser.add_argument('-g', '--g', action='store_true')
 parser.add_argument('-status')
 
+CONTEXT = 'context'
+EXPRESSION = 'expression'
+COQ = 'Coq'
+R = 'R'
+
 
 def __read_file(filename):
     with open(filename) as file_:
@@ -40,22 +45,22 @@ def get_expressions(reports, status):
             if code == status:
 
                 result = {
-                    'context': report[ReportKeys.EXPRESSION],
-                    'expression': expressions[i],
+                    CONTEXT: report[ReportKeys.EXPRESSION],
+                    EXPRESSION: expressions[i],
                 }
                 cases_ = [case.value for case in Status]
                 if report[ReportKeys.PROCESSED_COQ][i] in cases_:
-                    result['coq'] = str(Status(report[ReportKeys.PROCESSED_COQ][i]))
+                    result[COQ] = str(Status(report[ReportKeys.PROCESSED_COQ][i]))
                 else:
-                    result['coq'] = report[ReportKeys.PROCESSED_COQ][i]
+                    result[COQ] = report[ReportKeys.PROCESSED_COQ][i]
 
                 if report[ReportKeys.PROCESSED_R][i] == Status.UNKNOWN:
-                    result['r'] = report[ReportKeys.R_OUT]
+                    result[R] = report[ReportKeys.R_OUT]
                 else:
                     if report[ReportKeys.PROCESSED_R][i] in cases_:
-                        result['r'] = str(Status(report[ReportKeys.PROCESSED_R][i]))
+                        result[R] = str(Status(report[ReportKeys.PROCESSED_R][i]))
                     else:
-                        result['r'] = report[ReportKeys.PROCESSED_R][i]
+                        result[R] = report[ReportKeys.PROCESSED_R][i]
 
                 results.append(result)
 
