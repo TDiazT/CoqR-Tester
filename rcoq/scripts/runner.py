@@ -16,7 +16,8 @@ parser = argparse.ArgumentParser(description='Run every expression in a file wit
 parser.add_argument('input')
 parser.add_argument('output')
 
-TOKEN = "TOKEN"
+SEQUENCE_TOKEN = '; "TOKEN" ;'
+token_regex = re.compile(r'\[\d\]\s*"TOKEN"\s*')
 
 
 def run(input_, output_, interpreter):
@@ -47,13 +48,13 @@ def run_interpreter(expressions, interpreter):
 
 def __pre_process_expression(expression):
     expressions = exp_extract.extract_expressions(expression)
-    parenthesized_exps = ["(%s)" % exp for exp in expressions]
+    parenthesized_expressions = ["(%s)" % exp for exp in expressions]
 
-    return '; "TOKEN" ;'.join(parenthesized_exps)
+    return SEQUENCE_TOKEN.join(parenthesized_expressions)
 
 
 def __post_process_output(out):
-    return re.split(r'\[\d\]\s*"TOKEN"\s*', out)
+    return re.split(token_regex, out)
 
 
 def __generate_report(exec_time, expression, i, interpreter, processed_out):
