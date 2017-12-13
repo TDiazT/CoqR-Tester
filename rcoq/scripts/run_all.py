@@ -11,6 +11,7 @@ from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
 from rcoq.processors.ROutputProcessor import ROutputProcessor
 from rcoq.scripts import runner, cleaner
 from rcoq.stats import stats
+from rcoq.utils.file import write_to_file
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
@@ -41,7 +42,7 @@ def process_outputs(rout, processed_r, coqout, processed_coq):
 
 def compare_processed_outputs(processed_r, processed_coq):
     print("Comparing")
-    rcoq.comparators.Comparator.compare_files(processed_coq, processed_r)
+    return rcoq.comparators.Comparator.compare_files(processed_coq, processed_r)
 
 
 def print_general_stats():
@@ -65,7 +66,8 @@ if __name__ == '__main__':
     processed_coq = os.path.join(directory, "processed-" + options.coqout)
     process_outputs(rout, processed_r, coqout, processed_coq)
 
-    compare_processed_outputs(processed_r, processed_coq)
+    comparison = compare_processed_outputs(processed_r, processed_coq)
+    write_to_file(options.output, comparison)
 
     print("Done, you may find the results in %s" % options.output)
 
