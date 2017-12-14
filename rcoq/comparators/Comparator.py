@@ -1,6 +1,7 @@
 from rcoq.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
     OtherComparable, UnknownComparable
 from rcoq.constants import ReportKeys
+from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
 from rcoq.utils.file import read_json_file
 
@@ -19,12 +20,21 @@ class Comparator:
 
         return first_out.compare_to(second_out)
 
-    def compare_outputs(self, coq_output, r_output):
+    def compare_outputs(self, coq_output: list, r_output: list):
         i = j = 0
         result = []
+        untrusted = False
         while i < len(coq_output) and j < len(r_output):
             comparison = self.compare(coq_output[i], r_output[j])
-            result.append(comparison)
+
+            if untrusted:
+                result.append(Status.untrusted(comparison))
+            else:
+                if comparison == Status.NOT_IMPLEMENTED or comparison == Status.FAIL or comparison == Status.IMPOSSIBLE:
+                    untrusted = True
+
+                result.append(comparison)
+
             i += 1
             j += 1
 
