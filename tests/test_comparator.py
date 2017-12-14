@@ -36,6 +36,9 @@ class TestComparator(TestCase):
             self.assertEqual(self.comparator.compare(Cases.UNKNOWN, case), Status.UNKNOWN)
             self.assertEqual(self.comparator.compare(case, Cases.UNKNOWN), Status.UNKNOWN)
 
+    def test_primitive(self):
+        self.assertEquals(self.comparator.compare(Cases.PRIMITIVE, Cases.FUNCTION), Status.PASS)
+
     def test_not_implemented_followed_by_untrusted(self):
         coq_outputs = [Cases.NOT_IMPLEMENTED, Cases.NULL, Cases.ERROR]
         r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE]

@@ -68,3 +68,19 @@ class UnknownComparable(Comparable):
 
     def compare_to(self, other):
         return Status.UNKNOWN
+
+
+class PrimitiveComparable(Comparable):
+    def __init__(self, case=Cases.UNKNOWN) -> None:
+        super().__init__(case)
+        self.case = Cases.PRIMITIVE
+
+    def compare_to(self, other):
+        if self.case == other.case:
+            return Status.PASS
+        elif other.case == Cases.UNKNOWN:
+            return Status.UNKNOWN
+        elif other.case == Cases.FUNCTION:
+            return Status.PASS
+        else:
+            return Status.FAIL

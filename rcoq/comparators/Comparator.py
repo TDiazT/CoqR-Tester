@@ -1,5 +1,5 @@
 from rcoq.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
-    OtherComparable, UnknownComparable
+    OtherComparable, UnknownComparable, PrimitiveComparable
 from rcoq.constants import ReportKeys
 from rcoq.constants.Status import Status
 from rcoq.constants.Cases import Cases
@@ -11,7 +11,8 @@ class Comparator:
         Cases.NOT_IMPLEMENTED: NotImplementedComparable(),
         Cases.IMPOSSIBLE: ImpossibleComparable(),
         Cases.UNKNOWN: UnknownComparable(),
-        Cases.ERROR: ErrorComparable()
+        Cases.ERROR: ErrorComparable(),
+        Cases.PRIMITIVE: PrimitiveComparable()
     }
 
     def compare(self, out1, out2):
