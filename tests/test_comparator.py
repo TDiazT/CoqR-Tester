@@ -11,19 +11,17 @@ class TestComparator(TestCase):
         self.comparator = Comparator()
 
     def test_not_implemented(self):
-        cases = [Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
-
-        for case in cases:
+        for case in Cases:
             self.assertEqual(self.comparator.compare(Cases.NOT_IMPLEMENTED, case), Status.NOT_IMPLEMENTED)
 
     def test_impossible(self):
-        cases = [Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
+        cases = [Cases.IMPOSSIBLE, Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
 
         for case in cases:
             self.assertEqual(self.comparator.compare(Cases.IMPOSSIBLE, case), Status.IMPOSSIBLE)
 
     def test_error(self):
-        cases = [Cases.INVISIBLE, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
+        cases = [Cases.INVISIBLE, Cases.FUNCTION, '[1] TRUE', Cases.NULL, Cases.PRIMITIVE, Cases.TYPE]
 
         for case in cases:
             self.assertEqual(self.comparator.compare(Cases.ERROR, case), Status.FAIL)
@@ -32,7 +30,7 @@ class TestComparator(TestCase):
         self.assertEqual(self.comparator.compare(Cases.ERROR, Cases.UNKNOWN), Status.UNKNOWN)
 
     def test_unknown(self):
-        cases = [Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
+        cases = [Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL, Cases.PRIMITIVE, Cases.TYPE]
 
         for case in cases:
             self.assertEqual(self.comparator.compare(Cases.UNKNOWN, case), Status.UNKNOWN)
