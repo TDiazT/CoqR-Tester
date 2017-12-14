@@ -48,17 +48,18 @@ def get_expressions(reports, status):
                     CONTEXT: report[ReportKeys.EXPRESSION],
                     EXPRESSION: expressions[i],
                 }
-                cases_ = [case.value for case in Status]
+                cases_ = [case.value for case in Cases]
                 if report[ReportKeys.PROCESSED_COQ][i] in cases_:
-                    result[COQ] = str(Status(report[ReportKeys.PROCESSED_COQ][i]))
+                    result[COQ] = str(Cases(report[ReportKeys.PROCESSED_COQ][i]))
                 else:
+                    # Cases like [1] 1 2 3, etc
                     result[COQ] = report[ReportKeys.PROCESSED_COQ][i]
 
-                if report[ReportKeys.PROCESSED_R][i] == Status.UNKNOWN:
+                if report[ReportKeys.PROCESSED_R][i] == Cases.UNKNOWN:
                     result[R] = report[ReportKeys.R_OUT]
                 else:
                     if report[ReportKeys.PROCESSED_R][i] in cases_:
-                        result[R] = str(Status(report[ReportKeys.PROCESSED_R][i]))
+                        result[R] = str(Cases(report[ReportKeys.PROCESSED_R][i]))
                     else:
                         result[R] = report[ReportKeys.PROCESSED_R][i]
 
