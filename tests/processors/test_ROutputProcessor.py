@@ -8,83 +8,107 @@ class TestROutputProcessor(TestCase):
     def setUp(self):
         self.processor = ROutputProcessor()
 
+    def assert_results(self, results, expected_case):
+        for result in results:
+            self.assertEqual(result, expected_case)
+
     def test_process_2(self):
-        result = self.processor.process("[1] 2\n")
+        result = self.processor.process_output("[1] 2\n")
         self.assertEqual(result, '[1] 2')
 
     def test_process_TRUE(self):
-        result = self.processor.process("[1] TRUE\n")
+        result = self.processor.process_output("[1] TRUE\n")
         self.assertEqual(result, "[1] TRUE")
 
     def test_process_FALSE(self):
-        result = self.processor.process("[1] FALSE\n")
+        result = self.processor.process_output("[1] FALSE\n")
         self.assertEqual(result, "[1] FALSE")
 
     def test_process_NA(self):
-        result = self.processor.process("[1] NA\n")
+        result = self.processor.process_output("[1] NA\n")
         self.assertEqual(result, "[1] NA")
 
     def test_process_NaN(self):
-        result = self.processor.process("[1] NaN\n")
+        result = self.processor.process_output("[1] NaN\n")
         self.assertEqual(result, "[1] NaN")
 
     def test_process_Inf(self):
-        result = self.processor.process("[1] Inf\n")
+        result = self.processor.process_output("[1] Inf\n")
         self.assertEqual(result, "[1] Inf")
-        result = self.processor.process("[1] -Inf\n")
+        result = self.processor.process_output("[1] -Inf\n")
         self.assertEqual(result, "[1] -Inf")
 
     def test_process_ignore_warning(self):
-        result = self.processor.process("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced")
+        result = self.processor.process_output("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced")
         self.assertEqual(result, "[1] NaN")
 
     def test_process_string(self):
-        result = self.processor.process(
+        result = self.processor.process_output(
             "> Success.\n(closure)\n> Success.\n[1] \" + input + \"\n> Success.\n[1] \" + input + \"\n> ")
         self.assertEqual(result, "[1] \"  [1] \" ")
 
     def test_process_NULL(self):
-        result = self.processor.process("NULL\n")
+        result = self.processor.process_output("NULL\n")
         self.assertEqual(result, Cases.NULL)
 
     #
     def test_process_error_object(self):
-        result = self.processor.process("Error: object 'e' not found")
+        result = self.processor.process_output("Error: object 'e' not found")
         self.assertEqual(result, Cases.ERROR)
 
     def test_process_error_function(self):
-        result = self.processor.process(
+        result = self.processor.process_output(
             "Error in e() : could not find function \"e\"")
         self.assertEqual(result, Cases.ERROR)
 
     def test_vector_output(self):
-        result = self.processor.process("[1] 1 2 3\n[4] 5 6 7\n")
+        result = self.processor.process_output("[1] 1 2 3\n[4] 5 6 7\n")
         self.assertEqual(result, "[1] 1 2 3 [4] 5 6 7")
 
     def test_assignment_with_empty_array(self):
-        result = self.processor.process("")
+        result = self.processor.process_output("")
         self.assertEqual(result, Cases.INVISIBLE)
 
     def test_function(self):
-        result = self.processor.process("function (x) x")
+        result = self.processor.process_output("function (x) x")
         self.assertEqual(result, Cases.FUNCTION)
 
     def test_unknown(self):
-        result = self.processor.process("anything")
+        result = self.processor.process_output("anything")
         self.assertEqual(result, Cases.UNKNOWN)
-        result = self.processor.process("adfasd")
+        result = self.processor.process_output("adfasd")
         self.assertEqual(result, Cases.UNKNOWN)
 
     def test_vector_type(self):
-        self.assertEqual(self.processor.process("integer(0)"), Cases.TYPE)
-        self.assertEqual(self.processor.process("numeric(0)"), Cases.TYPE)
-        self.assertEqual(self.processor.process("logical(0)"), Cases.TYPE)
-        self.assertEqual(self.processor.process("character(0)"), Cases.TYPE)
+        self.assertEqual(self.processor.process_output("integer(0)"), Cases.TYPE)
+        self.assertEqual(self.processor.process_output("numeric(0)"), Cases.TYPE)
+        self.assertEqual(self.processor.process_output("logical(0)"), Cases.TYPE)
+        self.assertEqual(self.processor.process_output("character(0)"), Cases.TYPE)
 
     def test_cbind_output(self):
-        result = self.processor.process("     [,1] [,2]\n[1,]    1    2\n[2,]    2    2\n[3,]    3    2\n")
+        result = self.processor.process_output("     [,1] [,2]\n[1,]    1    2\n[2,]    2    2\n[3,]    3    2\n")
         self.assertEqual(result, "[,1] [,2] [1,]    1    2 [2,]    2    2 [3,]    3    2")
 
     def test_primitive(self):
-        result = self.processor.process('.Primitive("return")\n')
+        result = self.processor.process_output('.Primitive("return")\n')
         self.assertEqual(result, Cases.PRIMITIVE)
+
+    def test_error_outputs(self):
+        errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
+                  "Error in .Primitive(cos) : string argument required"]
+        results = self.processor.process_outputs(errors)
+
+        self.assert_results(results, Cases.ERROR)
+
+    def test_null_outputs(self):
+        nulls = ['NULL', 'NULL', 'NULL', 'NULL']
+        results = self.processor.process_outputs(nulls)
+
+        self.assert_results(results, Cases.NULL)
+
+    def test_function_outputs(self):
+        functions = ['function (x) x', 'function (x, y) { x + y }', 'function() y', 'function    (     )       1']
+        results = self.processor.process_outputs(functions)
+
+        self.assert_results(results, Cases.FUNCTION)
+
