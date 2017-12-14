@@ -14,7 +14,10 @@ class ROutputProcessor(AbstractOutputProcessor):
     primitive_regex = re.compile(r'\.Primitive\(.*\)')
 
     def __init__(self):
-        self.output_cases = [
+        super().__init__()
+
+    def define_cases_handlers(self):
+        return [
             (self.error_regex, lambda x: Cases.ERROR),
             (self.null_regex, lambda x: Cases.NULL),
             (self.function_regex, lambda x: Cases.FUNCTION),
@@ -23,14 +26,3 @@ class ROutputProcessor(AbstractOutputProcessor):
             (self.primitive_regex, lambda x: Cases.PRIMITIVE),
             (self.type_regex, lambda x: Cases.TYPE)
         ]
-
-    def process_output(self, output):
-
-        if not output:
-            return Cases.INVISIBLE
-
-        for regex, handler in self.output_cases:
-            if regex.search(output):
-                return handler(output)
-
-        return Cases.UNKNOWN
