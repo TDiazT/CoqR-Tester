@@ -1,10 +1,11 @@
 import re
 
 from rcoq.constants.Cases import Cases
+from rcoq.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 
-class ROutputProcessor:
-    vec_res_regex = re.compile(r'\[\d+\][ \w\-\"]+')
+class ROutputProcessor(AbstractOutputProcessor):
+    vector_regex = re.compile(r'\[\d+\][ \w\-\"]+')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'function')
@@ -12,28 +13,16 @@ class ROutputProcessor:
     col_row_regex = re.compile(r'(\[,\d+\]|\[\d+,\][ \w\-\"]+)')
     primitive_regex = re.compile(r'\.Primitive\(.*\)')
 
-    def process(self, output):
+    def __init__(self):
+        super().__init__()
 
-        if not output:
-            result = Cases.INVISIBLE
-        elif self.error_regex.match(output):
-            result = Cases.ERROR
-        elif re.search(self.vec_res_regex, output):
-            matches = self.vec_res_regex.findall(output)
-            result = " ".join(matches)
-        elif re.search(self.col_row_regex, output):
-            matches = self.col_row_regex.findall(output)
-            result = " ".join(matches)
-        elif re.search(self.type_regex, output):
-            result = Cases.TYPE
-        elif re.search(self.primitive_regex, output):
-            result = Cases.PRIMITIVE
-        elif self.function_regex.match(output):
-            result = Cases.FUNCTION
-        elif self.null_regex.match(output):
-            result = Cases.NULL
-
-        else:
-            result = Cases.UNKNOWN
-
-        return result
+    def define_cases_handlers(self):
+        return [
+            (self.error_regex, lambda x: Cases.ERROR),
+            (self.null_regex, lambda x: Cases.NULL),
+            (self.function_regex, lambda x: Cases.FUNCTION),
+            (self.vector_regex, lambda x: " ".join(self.vector_regex.findall(x))),
+            (self.col_row_regex, lambda x: " ".join(self.col_row_regex.findall(x))),
+            (self.primitive_regex, lambda x: Cases.PRIMITIVE),
+            (self.type_regex, lambda x: Cases.TYPE)
+        ]

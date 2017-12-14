@@ -2,7 +2,6 @@ import argparse
 import os
 import time
 
-import rcoq.comparators.Comparator
 from rcoq import settings
 from rcoq.constants.Status import Status
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
@@ -12,6 +11,7 @@ from rcoq.processors.ROutputProcessor import ROutputProcessor
 from rcoq.scripts import runner, cleaner
 from rcoq.stats import stats
 from rcoq.utils.file import write_to_file
+from rcoq.comparators.Comparator import Comparator
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
@@ -42,7 +42,8 @@ def process_outputs(rout, processed_r, coqout, processed_coq):
 
 def compare_processed_outputs(processed_r, processed_coq):
     print("Comparing")
-    return rcoq.comparators.Comparator.compare_files(processed_coq, processed_r)
+    comparator = Comparator()
+    return comparator.compare_files(processed_coq, processed_r)
 
 
 def print_general_stats():

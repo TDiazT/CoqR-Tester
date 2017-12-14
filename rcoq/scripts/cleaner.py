@@ -16,21 +16,9 @@ parser.add_argument('output')
 
 def process_file(input_, output_, processor):
     previous_reports = read_json_file(input_)
-    new_reports = process_reports(previous_reports, processor)
+    new_reports = processor.process_reports(previous_reports)
 
     write_to_file(output_, new_reports)
-
-
-def process_reports(rs, processor):
-    for report in rs:
-        result = []
-
-        for out in report[ReportKeys.OUTPUT]:
-            result.append(processor.process(out))
-
-        report[ReportKeys.PROCESSED_OUT] = result
-
-    return rs
 
 
 if __name__ == '__main__':

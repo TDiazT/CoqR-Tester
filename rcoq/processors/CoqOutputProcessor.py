@@ -1,10 +1,12 @@
 import re
 
 from rcoq.constants.Cases import Cases
+from rcoq.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 
-class CoqOutputProcessor:
-    vec_res_regex = re.compile(r'\[\d+\][ \w\-\"]+')
+class CoqOutputProcessor(AbstractOutputProcessor):
+    vector_regex = re.compile(r'\[\d+\][ \w\-\"]+')
+
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'(closure)')
@@ -12,26 +14,16 @@ class CoqOutputProcessor:
     impossible = re.compile(r'Impossible')
     special_builtin_regex = re.compile(r'\((builtin|special):.*\)')
 
-    def process(self, output):
-        if not output:
-            result = Cases.INVISIBLE
-        elif self.not_implemented.search(output):
-            result = Cases.NOT_IMPLEMENTED
-        elif self.impossible.search(output):
-            result = Cases.IMPOSSIBLE
-        elif self.error_regex.search(output):
-            result = Cases.ERROR
-        elif re.search(self.vec_res_regex, output):
-            matches = self.vec_res_regex.findall(output)
-            result = " ".join(matches)
-        elif self.function_regex.search(output):
-            result = Cases.FUNCTION
-        elif re.search(self.special_builtin_regex, output):
-            result = Cases.PRIMITIVE
-        elif self.null_regex.search(output):
-            result = Cases.NULL
-        else:
-            result = Cases.UNKNOWN
+    def __init__(self):
+        super().__init__()
 
-        return result
-
+    def define_cases_handlers(self):
+        return [
+            (self.not_implemented, lambda x: Cases.NOT_IMPLEMENTED),
+            (self.impossible, lambda x: Cases.IMPOSSIBLE),
+            (self.error_regex, lambda x: Cases.ERROR),
+            (self.null_regex, lambda x: Cases.NULL),
+            (self.special_builtin_regex, lambda x: Cases.PRIMITIVE),
+            (self.vector_regex, lambda x: " ".join(self.vector_regex.findall(x))),
+            (self.function_regex, lambda x: Cases.FUNCTION),
+        ]
