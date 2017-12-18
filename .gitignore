@@ -5,3 +5,4 @@ venv/
 **/cr_out/
 out
 rcoq/settings.sh
+rcoq/settings.py
