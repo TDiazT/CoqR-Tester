@@ -63,7 +63,6 @@ class Comparator:
             report = {
                 ReportKeys.EXPRESSION: coq_report[ReportKeys.EXPRESSION],
                 ReportKeys.FILENAME: coq_report[ReportKeys.FILENAME],
-                ReportKeys.INTERPRETER: coq_report[ReportKeys.INTERPRETER],
                 ReportKeys.R_EXEC_TIME: r_report[ReportKeys.EXEC_TIME],
                 ReportKeys.COQ_EXEC_TIME:coq_report[ReportKeys.EXEC_TIME],
                 ReportKeys.LINE: coq_report[ReportKeys.LINE],
