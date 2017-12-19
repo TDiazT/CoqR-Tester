@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 
+from rcoq.constants import ReportKeys
 from rcoq.interpreters.CoqInterpreter import CoqInterpreter
 from rcoq.interpreters.RInterpreter import RInterpreter
 from rcoq.utils.file import write_to_file, read_file
@@ -16,6 +17,8 @@ def run(input_, output_, interpreter):
     lines = read_file(input_)
     lines = [line.strip() for line in lines]
     reports = interpreter.interpret_expressions(lines)
+    for report in reports:
+        report[ReportKeys.FILENAME] = input_
 
     write_to_file(output_, reports)
 

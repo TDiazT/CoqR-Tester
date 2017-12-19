@@ -27,3 +27,14 @@ def __generate_sub_report(expression, output):
         result.append(sub_report)
 
     return result
+
+
+def make_comparison_sub_report(sub_expression, status, raw_r, raw_coq, processed_r, processed_coq):
+    return {
+        ReportKeys.SUB_EXPRESSION: sub_expression,
+        ReportKeys.STATUS_CODE: status,
+        ReportKeys.R_OUT: raw_r,
+        ReportKeys.COQ_OUT: raw_coq,
+        ReportKeys.PROCESSED_R: processed_r,
+        ReportKeys.PROCESSED_COQ: processed_coq
+    }
