@@ -1,41 +1,92 @@
 from unittest import TestCase
 
-from Comparator.Comparator import Comparator
-from Comparator.Constants import SUCCESSFUL, CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_INVISIBLE, SEQ_TOKEN, \
-    CASE_IMPOSSIBLE, NOT_EQUAL
+from rcoq.comparators.Comparator import Comparator
+from rcoq.constants.Status import Status
+from rcoq.constants.Cases import Cases
 
 
 class TestComparator(TestCase):
     def setUp(self):
         self.comparator = Comparator()
 
-    def test_case_not_implemented(self):
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_ERROR]), [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [CASE_INVISIBLE]),
-                         [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [['[1]', "TRUE"]]),
-                         [CASE_NOT_IMPLEMENTED])
-        self.assertEqual(self.comparator.compare_multiple([CASE_NOT_IMPLEMENTED], [['[1]', '1', '[2]', '4']]),
-                         [CASE_NOT_IMPLEMENTED])
+    def test_not_implemented(self):
+        for case in Cases:
+            self.assertEqual(self.comparator.compare(Cases.NOT_IMPLEMENTED, case), Status.NOT_IMPLEMENTED)
 
-    def test_simple_token(self):
-        self.assertEqual(self.comparator.compare_multiple([SEQ_TOKEN], [SEQ_TOKEN]), [])
+    def test_impossible(self):
+        cases = [Cases.IMPOSSIBLE, Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL]
 
-    def test_simple_assignment_with_tokens(self):
-        coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN]
-        r = [SEQ_TOKEN, SEQ_TOKEN]
-        self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL])
+        for case in cases:
+            self.assertEqual(self.comparator.compare(Cases.IMPOSSIBLE, case), Status.IMPOSSIBLE)
 
-    def test_multiple_assignments_with_tokens(self):
-        coq = [SEQ_TOKEN, ['[1]', '1'], SEQ_TOKEN, SEQ_TOKEN, ['[1]', '2'], SEQ_TOKEN, ['[1]', '3'], SEQ_TOKEN]
-        r = [SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN, SEQ_TOKEN]
-        self.assertEqual(self.comparator.compare_multiple(coq, r), [SUCCESSFUL, SUCCESSFUL, SUCCESSFUL])
+    def test_error(self):
+        cases = [Cases.INVISIBLE, Cases.FUNCTION, '[1] TRUE', Cases.NULL, Cases.PRIMITIVE, Cases.TYPE]
 
-    def test_all_outputs_different(self):
-        coq = [SEQ_TOKEN, ['[1]', '1'], CASE_NOT_IMPLEMENTED, CASE_ERROR, CASE_IMPOSSIBLE]
-        r = list(reversed(coq))
-        self.assertEqual(self.comparator.compare_multiple(coq, r),
-                         [NOT_EQUAL, NOT_EQUAL, CASE_NOT_IMPLEMENTED, NOT_EQUAL, CASE_IMPOSSIBLE])
+        for case in cases:
+            self.assertEqual(self.comparator.compare(Cases.ERROR, case), Status.FAIL)
 
-    def test_mismatching_size_outputs(self):
-        self.fail()
+        self.assertEqual(self.comparator.compare(Cases.ERROR, Cases.ERROR), Status.PASS)
+        self.assertEqual(self.comparator.compare(Cases.ERROR, Cases.UNKNOWN), Status.UNKNOWN)
+
+    def test_unknown(self):
+        cases = [Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL, Cases.PRIMITIVE,
+                 Cases.TYPE]
+
+        for case in cases:
+            self.assertEqual(self.comparator.compare(Cases.UNKNOWN, case), Status.UNKNOWN)
+            self.assertEqual(self.comparator.compare(case, Cases.UNKNOWN), Status.UNKNOWN)
+
+    def test_primitive(self):
+        self.assertEquals(self.comparator.compare(Cases.PRIMITIVE, Cases.FUNCTION), Status.PASS)
+
+    def test_not_implemented_followed_by_untrusted(self):
+        coq_outputs = [Cases.NOT_IMPLEMENTED, Cases.NULL, Cases.ERROR]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results, [Status.NOT_IMPLEMENTED, Status.UNTRUSTED_PASS, Status.UNTRUSTED_FAIL])
+
+    def test_fail_followed_by_untrusted(self):
+        coq_outputs = [Cases.NULL, Cases.NULL, Cases.ERROR]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results, [Status.FAIL, Status.UNTRUSTED_PASS, Status.UNTRUSTED_FAIL])
+
+    def test_impossible_followed_by_untrusted(self):
+        coq_outputs = [Cases.IMPOSSIBLE, Cases.NULL, Cases.ERROR]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results, [Status.IMPOSSIBLE, Status.UNTRUSTED_PASS, Status.UNTRUSTED_FAIL])
+
+    def test_no_untrusted(self):
+        coq_outputs = [Cases.ERROR, Cases.NULL, Cases.ERROR, Cases.NOT_IMPLEMENTED]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE, Cases.PRIMITIVE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results, [Status.PASS, Status.PASS, Status.FAIL, Status.NOT_IMPLEMENTED])
+
+    def test_not_implemented_in_between_followed_by_untrusted(self):
+        coq_outputs = [Cases.ERROR, Cases.NULL, Cases.NOT_IMPLEMENTED, Cases.ERROR, Cases.FUNCTION]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE, Cases.ERROR, Cases.PRIMITIVE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results, [Status.PASS, Status.PASS, Status.NOT_IMPLEMENTED, Status.UNTRUSTED_PASS,
+                                    Status.UNTRUSTED_FAIL])
+
+    def test_fail_in_between_followed_by_untrusted(self):
+        coq_outputs = [Cases.ERROR, Cases.NULL, Cases.NULL, Cases.ERROR, Cases.FUNCTION]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE, Cases.ERROR, Cases.PRIMITIVE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results,
+                          [Status.PASS, Status.PASS, Status.FAIL, Status.UNTRUSTED_PASS, Status.UNTRUSTED_FAIL])
+
+    def test_impossible_in_between_followed_by_untrusted(self):
+        coq_outputs = [Cases.ERROR, Cases.NULL, Cases.IMPOSSIBLE, Cases.ERROR, Cases.FUNCTION]
+        r_outputs = [Cases.ERROR, Cases.NULL, Cases.TYPE, Cases.ERROR, Cases.PRIMITIVE]
+        results = self.comparator.compare_outputs(coq_outputs, r_outputs)
+
+        self.assertEquals(results,
+                          [Status.PASS, Status.PASS, Status.IMPOSSIBLE, Status.UNTRUSTED_PASS, Status.UNTRUSTED_FAIL])
