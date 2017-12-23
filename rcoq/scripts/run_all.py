@@ -68,7 +68,18 @@ if __name__ == '__main__':
     process_outputs(rout, processed_r, coqout, processed_coq)
 
     comparison = compare_processed_outputs(processed_r, processed_coq)
-    write_to_file(options.output, comparison)
+    (sysname, nodename, release, version, machine) = os.uname()
+    final_report = {
+        "r_interpreter_version": "3.4.2",
+        "coq_interpreter_version": '0.1',
+        "system": sysname,
+        "os_node_name": nodename,
+        "os_release": release,
+        "os_version": version,
+        "hardware": machine,
+        "expression_reports": comparison
+    }
+    write_to_file(options.output, final_report)
 
     print("Done, you may find the results in %s" % options.output)
 
