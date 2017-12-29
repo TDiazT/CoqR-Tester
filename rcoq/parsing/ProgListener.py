@@ -1,0 +1,17 @@
+from rcoq.parsing.RListener import RListener
+from rcoq.parsing.RParser import RParser
+
+
+class ProgListener(RListener):
+    exps = []
+
+    def __init__(self, stream) -> None:
+        super().__init__()
+        self.token_stream = stream
+
+    def enterProg(self, ctx: RParser.ProgContext):
+        for expr in ctx.expr():
+            start_index = expr.start.tokenIndex
+            stop_index = expr.stop.tokenIndex
+            text = self.token_stream.getText(interval=(start_index, stop_index))
+            self.exps.append(text)
