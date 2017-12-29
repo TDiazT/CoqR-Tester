@@ -1,19 +1,20 @@
 import sys
 
-import re
 from antlr4 import *
-from antlr4.Token import CommonToken
-from antlr4.tree.Trees import Trees
 
 from rcoq.parsing.ProgListener import ProgListener
 from rcoq.parsing.RFilter import RFilter
 from rcoq.parsing.RLexer import RLexer
-from rcoq.parsing.RListener import RListener
 from rcoq.parsing.RParser import RParser
 
 
-def main(argv):
-    input_ = FileStream(argv[1])
+def parse_file(filename) -> list:
+    """
+    Parses an R file and returns a list of expressions
+    :param filename: file to parse
+    :return: list of expressions (str)
+    """
+    input_ = FileStream(filename)
     lexer = RLexer(input_)
     tokens = CommonTokenStream(lexer)
 
@@ -24,19 +25,18 @@ def main(argv):
     tokens.reset()
 
     parser = RParser(tokens)
-    # parser.buildParseTrees = False
     tree = parser.prog()
 
-    # output = open("output.R", "w")
-    #
-    htmlChat = ProgListener(tokens)
+    progListener = ProgListener(tokens)
     walker = ParseTreeWalker()
-    walker.walk(htmlChat, tree)
+    walker.walk(progListener, tree)
 
-    # output.close()
+    return progListener.exps
 
-    for exp in htmlChat.exps:
-        print(exp)
+
+def main(argv):
+    print(parse_file(argv[1]))
+
 
 
 if __name__ == '__main__':
