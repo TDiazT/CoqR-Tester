@@ -20,8 +20,8 @@ def parse_file(filename) -> list:
 
     tokens.fill()
 
-    filter = RFilter(tokens)
-    filter.stream()
+    filter_ = RFilter(tokens)
+    filter_.stream()
     tokens.reset()
 
     parser = RParser(tokens)
