@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from rcoq.constants import ReportKeys
-from rcoq.constants.Cases import Cases
+from coqr.constants import ReportKeys
+from coqr.constants.Cases import Cases
 
 
 class AbstractOutputProcessor(ABC):

@@ -3,6 +3,6 @@
 venv/
 */**/*.pyc
 **/cr_out/
-out
-rcoq/settings.sh
-rcoq/settings.py
+out/
+coqr/settings.sh
+coqr/settings.py

@@ -1,7 +1,7 @@
 import re
 
-from rcoq.constants.Cases import Cases
-from rcoq.processors.AbstractOutputProcessor import AbstractOutputProcessor
+from coqr.constants.Cases import Cases
+from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 
 class ROutputProcessor(AbstractOutputProcessor):

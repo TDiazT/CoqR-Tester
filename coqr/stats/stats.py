@@ -2,10 +2,10 @@ import argparse
 import json
 from collections import Counter
 
-from rcoq.constants import ReportKeys
-from rcoq.constants.Status import Status
-from rcoq.constants.Cases import Cases
-from rcoq.utils import exp_extract
+from coqr.constants import ReportKeys
+from coqr.constants.Status import Status
+from coqr.constants.Cases import Cases
+from coqr.utils import exp_extract
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')
 

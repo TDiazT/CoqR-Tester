@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from rcoq.interpreters.RInterpreter import RInterpreter
+from coqr.interpreters.RInterpreter import RInterpreter
 
 
 class TestRRunner(TestCase):

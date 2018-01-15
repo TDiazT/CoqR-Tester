@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from rcoq.comparators.Comparator import Comparator
-from rcoq.constants.Status import Status
-from rcoq.constants.Cases import Cases
+from coqr.comparators.Comparator import Comparator
+from coqr.constants.Status import Status
+from coqr.constants.Cases import Cases
 
 
 class TestComparator(TestCase):

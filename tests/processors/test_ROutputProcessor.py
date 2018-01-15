@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from rcoq.constants.Cases import Cases
-from rcoq.processors.ROutputProcessor import ROutputProcessor
+from coqr.constants.Cases import Cases
+from coqr.processors.ROutputProcessor import ROutputProcessor
 
 
 class TestROutputProcessor(TestCase):

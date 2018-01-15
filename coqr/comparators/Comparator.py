@@ -1,9 +1,9 @@
-from rcoq.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
+from coqr.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
     OtherComparable, UnknownComparable, PrimitiveComparable
-from rcoq.constants import ReportKeys
-from rcoq.constants.Status import Status
-from rcoq.constants.Cases import Cases
-from rcoq.utils.file import read_json_file
+from coqr.constants import ReportKeys
+from coqr.constants.Status import Status
+from coqr.constants.Cases import Cases
+from coqr.utils.file import read_json_file
 
 
 class Comparator:

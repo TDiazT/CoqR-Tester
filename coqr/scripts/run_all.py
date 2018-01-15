@@ -2,16 +2,16 @@ import argparse
 import os
 import time
 
-from rcoq import settings
-from rcoq.constants.Status import Status
-from rcoq.interpreters.CoqInterpreter import CoqInterpreter
-from rcoq.interpreters.RInterpreter import RInterpreter
-from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
-from rcoq.processors.ROutputProcessor import ROutputProcessor
-from rcoq.scripts import runner, cleaner
-from rcoq.stats import stats
-from rcoq.utils.file import write_to_file
-from rcoq.comparators.Comparator import Comparator
+from coqr import settings
+from coqr.constants.Status import Status
+from coqr.interpreters.CoqInterpreter import CoqInterpreter
+from coqr.interpreters.RInterpreter import RInterpreter
+from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
+from coqr.processors.ROutputProcessor import ROutputProcessor
+from coqr.scripts import runner, cleaner
+from coqr.stats import stats
+from coqr.utils.file import write_to_file
+from coqr.comparators.Comparator import Comparator
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')

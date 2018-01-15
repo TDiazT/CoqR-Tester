@@ -1,5 +1,5 @@
 from unittest import TestCase
-from rcoq.utils import exp_extract
+from coqr.utils import exp_extract
 
 
 class TestExtract_expressions(TestCase):

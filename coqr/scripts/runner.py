@@ -2,9 +2,9 @@ import argparse
 import os
 import sys
 
-from rcoq.interpreters.CoqInterpreter import CoqInterpreter
-from rcoq.interpreters.RInterpreter import RInterpreter
-from rcoq.utils.file import write_to_file, read_file
+from coqr.interpreters.CoqInterpreter import CoqInterpreter
+from coqr.interpreters.RInterpreter import RInterpreter
+from coqr.utils.file import write_to_file, read_file
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
