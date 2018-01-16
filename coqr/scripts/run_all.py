@@ -2,12 +2,15 @@ import argparse
 import os
 import time
 
+from requests import HTTPError
+
 from coqr import settings
 from coqr.comparators.Comparator import Comparator
 from coqr.constants import ReportKeys
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
+from coqr.network.calls import send_reports
 from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
@@ -20,6 +23,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('src')
 parser.add_argument('output')
 parser.add_argument('--debug', action='store_true')
+parser.add_argument('--server', action='store_true')
 
 
 def interpret_file(src, interpreter, debug=False, out=None):
@@ -96,6 +100,14 @@ if __name__ == '__main__':
     }
 
     write_to_file(options.output, final_report)
+
+    if options.server:
+        print('Sending results to server')
+        try:
+            send_reports(final_report)
+            print('Sent successfully')
+        except HTTPError:
+            print('There was an error sending the report to server')
 
     print("Done, you may find the results in %s" % options.output)
 

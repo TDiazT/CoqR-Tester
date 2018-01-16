@@ -12,7 +12,7 @@ parser.add_argument('file')
 
 def send_reports(reports):
     headers = {'Authorization': 'Token %s' % os.environ.get('TOKEN')}
-    request = requests.post(os.environ.get('API_CREATE_REPORT'), headers=headers, json=reports)
+    request = requests.post(os.environ.get('API_CREATE_REPORTS'), headers=headers, json=reports)
     request.raise_for_status()
 
 
