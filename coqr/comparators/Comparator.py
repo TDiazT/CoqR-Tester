@@ -1,10 +1,10 @@
-from rcoq.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
+from coqr.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
     OtherComparable, UnknownComparable, PrimitiveComparable
-from rcoq.constants import ReportKeys
-from rcoq.constants.Cases import Cases
-from rcoq.constants.Status import Status
-from rcoq.utils import reports
-from rcoq.utils.file import read_json_file
+from coqr.constants import ReportKeys
+from coqr.constants.Status import Status
+from coqr.constants.Cases import Cases
+from coqr.utils import reports
+from coqr.utils.file import read_json_file
 
 
 class Comparator:
@@ -50,9 +50,7 @@ class Comparator:
 
         return result
 
-    def compare_files(self, coq, r):
-        coq_reports = read_json_file(coq)
-        r_reports = read_json_file(r)
+    def compare_reports(self, coq_reports, r_reports):
         results = []
 
         for coq_report, r_report in zip(coq_reports, r_reports):
@@ -71,3 +69,9 @@ class Comparator:
             results.append(report)
 
         return results
+
+    def compare_files(self, coq, r):
+        coq_reports = read_json_file(coq)
+        r_reports = read_json_file(r)
+
+        return self.compare_reports(coq_reports, r_reports)

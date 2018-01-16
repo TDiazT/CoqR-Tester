@@ -1,7 +1,8 @@
 from unittest import TestCase
 
-from rcoq.constants import ReportKeys
-from rcoq.utils import reports
+from coqr.constants import ReportKeys
+
+from coqr.utils import reports
 
 
 class TestReport(TestCase):

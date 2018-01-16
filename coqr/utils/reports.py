@@ -1,5 +1,5 @@
-from rcoq.constants import ReportKeys
-from rcoq.utils import exp_extract
+from coqr.constants import ReportKeys
+from coqr.utils import exp_extract
 
 
 def generate_report(expression, output: list, interpreter, exec_time=-1, filename="", line=-1):

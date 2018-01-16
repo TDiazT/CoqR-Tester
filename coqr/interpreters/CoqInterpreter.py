@@ -1,6 +1,6 @@
 import subprocess
 
-from rcoq.interpreters.AbstractInterpreter import AbstractInterpreter
+from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 
 
 class CoqInterpreter(AbstractInterpreter):

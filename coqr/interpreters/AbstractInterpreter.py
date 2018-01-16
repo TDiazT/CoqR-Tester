@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
-import time
 import re
+import time
+from abc import ABC, abstractmethod
 
-from rcoq.constants import ReportKeys
-from rcoq.utils import exp_extract
-from rcoq.utils import reports
+from coqr.utils import exp_extract
+from coqr.utils import reports
 
 
 class AbstractInterpreter(ABC):

@@ -1,7 +1,7 @@
 import argparse
 
-from rcoq.comparators.Comparator import Comparator
-from rcoq.utils.file import write_to_file
+from coqr.comparators.Comparator import Comparator
+from coqr.utils.file import write_to_file
 
 parser = argparse.ArgumentParser(description='Takes two files and compares processed outputs between them')
 
