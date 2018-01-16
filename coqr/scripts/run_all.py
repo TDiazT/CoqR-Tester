@@ -3,47 +3,48 @@ import os
 import time
 
 from coqr import settings
+from coqr.comparators.Comparator import Comparator
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
+from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
-from coqr.scripts import runner, cleaner
 from coqr.stats import stats
-from coqr.utils.file import write_to_file
-from coqr.comparators.Comparator import Comparator
+from coqr.utils.file import write_to_file, read_file
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
 
-parser.add_argument('rsrc')
+parser.add_argument('src')
 parser.add_argument('output')
-parser.add_argument('-rout', '--rout', default='r.json')
-parser.add_argument('-coqout', '--coqout', default='coq.json')
+parser.add_argument('--debug', action='store_true')
 
 
-def interpret_file(src, rout, coqout):
-    delta = time.time()
-    print("Running R interpreter...")
-    runner.run(src, rout, RInterpreter(settings.RSCRIPT))
-    print("Finished in %f seconds" % (time.time() - delta))
-    delta = time.time()
-    print("Running Coq interpreter...")
-    runner.run(src, coqout, CoqInterpreter(settings.COQ_INTERP))
-    print("Finished in %f seconds" % (time.time() - delta))
+def interpret_file(src, interpreter, debug=False, out=None):
+    lines = read_file(src)
+    lines = [line.strip() for line in lines]
+    reports = interpreter.interpret_expressions(lines)
+
+    if debug:
+        write_to_file(out, reports)
+
+    return reports
 
 
-def process_outputs(rout, processed_r, coqout, processed_coq):
-    print("Processing R output")
-    cleaner.process_file(rout, processed_r, ROutputProcessor())
-    print("Processing Coq output")
-    cleaner.process_file(coqout, processed_coq, CoqOutputProcessor())
+def process_outputs(output, processor: AbstractOutputProcessor, debug=False, out=None):
+    processed = processor.process_reports(output)
+
+    if debug:
+        write_to_file(out, processed)
+
+    return processed
 
 
 def compare_processed_outputs(processed_r, processed_coq):
     print("Comparing")
     comparator = Comparator()
-    return comparator.compare_files(processed_coq, processed_r)
+    return comparator.compare_reports(processed_coq, processed_r)
 
 
 def print_general_stats():
@@ -58,16 +59,25 @@ if __name__ == '__main__':
     options = parser.parse_args()
 
     directory = os.path.dirname(options.output)
-    rout = os.path.join(directory, options.rout)
-    coqout = os.path.join(directory, options.coqout)
+    debug = options.debug
 
-    interpret_file(options.rsrc, rout, coqout)
+    delta = time.time()
+    print("Interpreting %s file" % options.src)
+    print("Running R interpreter...")
+    r_results = interpret_file(options.src, RInterpreter(settings.RSCRIPT), debug, os.path.join(directory, 'r.json'))
+    print("Finished in %f seconds" % (time.time() - delta))
+    delta = time.time()
+    print("Running Coq interpreter...")
+    coq_results = interpret_file(options.src, CoqInterpreter(settings.COQ_INTERP), debug,
+                                 os.path.join(directory, 'coq.json'))
+    print("Finished in %f seconds" % (time.time() - delta))
 
-    processed_r = os.path.join(directory, "processed-" + options.rout)
-    processed_coq = os.path.join(directory, "processed-" + options.coqout)
-    process_outputs(rout, processed_r, coqout, processed_coq)
+    print("Processing R output")
+    r_process = process_outputs(r_results, ROutputProcessor(), debug, os.path.join(directory, 'processed-r.json'))
+    print("Processing Coq output")
+    coq_process = process_outputs(coq_results, CoqOutputProcessor(), debug, os.path.join(directory, 'processed-coq.json'))
 
-    comparison = compare_processed_outputs(processed_r, processed_coq)
+    comparison = compare_processed_outputs(r_process, coq_process)
     write_to_file(options.output, comparison)
 
     print("Done, you may find the results in %s" % options.output)

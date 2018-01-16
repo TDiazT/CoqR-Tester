@@ -41,9 +41,7 @@ class Comparator:
 
         return result
 
-    def compare_files(self, coq, r):
-        coq_reports = read_json_file(coq)
-        r_reports = read_json_file(r)
+    def compare_reports(self, coq_reports, r_reports):
         results = []
 
         for coq_report, r_report in zip(coq_reports, r_reports):
@@ -62,3 +60,9 @@ class Comparator:
             results.append(report)
 
         return results
+
+    def compare_files(self, coq, r):
+        coq_reports = read_json_file(coq)
+        r_reports = read_json_file(r)
+
+        return self.compare_reports(coq_reports, r_reports)
