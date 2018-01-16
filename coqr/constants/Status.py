@@ -10,8 +10,8 @@ class Status(IntEnum):
     PASS = 5, "Pass"
     FAIL = 6, "Fail"
     UNKNOWN = 8, "Unknown"
-    UNTRUSTED_PASS = 9, "Untrusted Pass"
-    UNTRUSTED_FAIL = 10, "Untrusted Fail"
+    POTENTIAL_PASS = 9, "Potential Pass"
+    POTENTIAL_FAIL = 10, "Potential Fail"
 
     def __str__(self):
         return self.string
@@ -25,8 +25,8 @@ class Status(IntEnum):
     @classmethod
     def untrusted(cls, status):
         if status == cls.PASS:
-            return cls.UNTRUSTED_PASS
+            return cls.POTENTIAL_PASS
         elif status == cls.FAIL:
-            return cls.UNTRUSTED_FAIL
+            return cls.POTENTIAL_FAIL
         else:
             return status
