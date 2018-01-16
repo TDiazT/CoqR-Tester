@@ -79,10 +79,23 @@ if __name__ == '__main__':
     print("Processing R output")
     r_process = process_outputs(r_results, ROutputProcessor(), debug, os.path.join(directory, 'processed-r.json'))
     print("Processing Coq output")
-    coq_process = process_outputs(coq_results, CoqOutputProcessor(), debug, os.path.join(directory, 'processed-coq.json'))
+    coq_process = process_outputs(coq_results, CoqOutputProcessor(), debug,
+                                  os.path.join(directory, 'processed-coq.json'))
 
     comparison = compare_processed_outputs(r_process, coq_process)
-    write_to_file(options.output, comparison)
+    (sysname, nodename, release, version, machine) = os.uname()
+    final_report = {
+        "r_interpreter_version": "3.4.2",
+        "coq_interpreter_version": '0.1',
+        "system": sysname,
+        "os_node_name": nodename,
+        "os_release": release,
+        "os_version": version,
+        "hardware": machine,
+        "expression_reports": comparison
+    }
+
+    write_to_file(options.output, final_report)
 
     print("Done, you may find the results in %s" % options.output)
 

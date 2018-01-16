@@ -5,6 +5,7 @@ from collections import Counter
 from coqr.constants import ReportKeys
 from coqr.constants.Cases import Cases
 from coqr.constants.Status import Status
+from coqr.utils.file import read_json_file
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')
 
@@ -24,7 +25,9 @@ def __read_file(filename):
 
 
 def get_general_stats(filename):
-    reports = __read_file(filename)
+    file_data = read_json_file(filename)
+
+    reports = file_data["expression_reports"]
 
     counter = Counter()
     for report in reports:
@@ -76,7 +79,7 @@ if __name__ == '__main__':
             print("%s : %d" % (str(Status(k)), v))
 
     if options.status:
-        reports = __read_file(options.input)
-
+        file_data = read_json_file(options.input)
+        reports = file_data["expression_reports"]
         results = get_expressions(reports, Status(options.status))
         print(json.dumps(results, indent=2))
