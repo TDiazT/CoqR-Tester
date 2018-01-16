@@ -3,9 +3,8 @@ import json
 from collections import Counter
 
 from coqr.constants import ReportKeys
-from coqr.constants.Status import Status
 from coqr.constants.Cases import Cases
-from coqr.utils import exp_extract
+from coqr.constants.Status import Status
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')
 
@@ -29,9 +28,9 @@ def get_general_stats(filename):
 
     counter = Counter()
     for report in reports:
-        codes = report[ReportKeys.STATUS_CODE]
-        for status_code in codes:
-            counter[status_code] += 1
+        for sub_report in report[ReportKeys.SUB_EXPRESSIONS_REPORT]:
+            code = sub_report[ReportKeys.STATUS_CODE]
+            counter[code] += 1
 
     return counter
 
@@ -40,30 +39,30 @@ def get_expressions(reports, status):
     results = []
 
     for report in reports:
-        expressions = exp_extract.extract_expressions(report[ReportKeys.EXPRESSION])
-        for i, code in enumerate(report[ReportKeys.STATUS_CODE]):
-            if code == status:
 
-                result = {
-                    CONTEXT: report[ReportKeys.EXPRESSION],
-                    EXPRESSION: expressions[i],
-                }
-                cases_ = [case.value for case in Cases]
-                if report[ReportKeys.PROCESSED_COQ][i] in cases_:
-                    result[COQ] = str(Cases(report[ReportKeys.PROCESSED_COQ][i]))
+        filtered_sub_reports = filter(lambda r: r[ReportKeys.STATUS_CODE] == status,
+                                      report[ReportKeys.SUB_EXPRESSIONS_REPORT])
+        for sub_report in filtered_sub_reports:
+            result = {
+                CONTEXT: report[ReportKeys.EXPRESSION],
+                EXPRESSION: sub_report[ReportKeys.SUB_EXPRESSION],
+            }
+            cases_ = [case.value for case in Cases]
+            if sub_report[ReportKeys.PROCESSED_COQ] in cases_:
+                result[COQ] = str(Cases(sub_report[ReportKeys.PROCESSED_COQ]))
+            else:
+                # Cases like [1] 1 2 3, etc
+                result[COQ] = sub_report[ReportKeys.PROCESSED_COQ]
+
+            if sub_report[ReportKeys.PROCESSED_R] == Cases.UNKNOWN:
+                result[R] = sub_report[ReportKeys.R_OUT]
+            else:
+                if sub_report[ReportKeys.PROCESSED_R] in cases_:
+                    result[R] = str(Cases(sub_report[ReportKeys.PROCESSED_R]))
                 else:
-                    # Cases like [1] 1 2 3, etc
-                    result[COQ] = report[ReportKeys.PROCESSED_COQ][i]
+                    result[R] = sub_report[ReportKeys.PROCESSED_R]
 
-                if report[ReportKeys.PROCESSED_R][i] == Cases.UNKNOWN:
-                    result[R] = report[ReportKeys.R_OUT]
-                else:
-                    if report[ReportKeys.PROCESSED_R][i] in cases_:
-                        result[R] = str(Cases(report[ReportKeys.PROCESSED_R][i]))
-                    else:
-                        result[R] = report[ReportKeys.PROCESSED_R][i]
-
-                results.append(result)
+            results.append(result)
 
     return results
 

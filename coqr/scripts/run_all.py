@@ -4,6 +4,7 @@ import time
 
 from coqr import settings
 from coqr.comparators.Comparator import Comparator
+from coqr.constants import ReportKeys
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
@@ -25,6 +26,9 @@ def interpret_file(src, interpreter, debug=False, out=None):
     lines = read_file(src)
     lines = [line.strip() for line in lines]
     reports = interpreter.interpret_expressions(lines)
+
+    for report in reports:
+        report[ReportKeys.FILENAME] = src
 
     if debug:
         write_to_file(out, reports)

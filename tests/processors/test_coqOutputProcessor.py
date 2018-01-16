@@ -76,21 +76,21 @@ class TestCoqOutputProcessor(TestCase):
         result = self.processor.process_output("[,1]")
         self.assertEqual(result, Cases.UNKNOWN)
 
-    def test_error_outputs(self):
-        errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
-                  "Error in .Primitive(cos) : string argument required"]
-        results = self.processor.process_outputs(errors)
-
-        self.assert_results(results, Cases.ERROR)
-
-    def test_null_outputs(self):
-        nulls = ['NULL', 'NULL', 'NULL', 'NULL']
-        results = self.processor.process_outputs(nulls)
-
-        self.assert_results(results, Cases.NULL)
-
-    def test_function_outputs(self):
-        functions = ['(closure)', '(closure)', '(closure)', '(closure)']
-        results = self.processor.process_outputs(functions)
-
-        self.assert_results(results, Cases.FUNCTION)
+    # def test_error_outputs(self):
+    #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
+    #               "Error in .Primitive(cos) : string argument required"]
+    #     results = self.processor.__process_rub_reports(errors)
+    #
+    #     self.assert_results(results, Cases.ERROR)
+    #
+    # def test_null_outputs(self):
+    #     nulls = ['NULL', 'NULL', 'NULL', 'NULL']
+    #     results = self.processor.__process_rub_reports(nulls)
+    #
+    #     self.assert_results(results, Cases.NULL)
+    #
+    # def test_function_outputs(self):
+    #     functions = ['(closure)', '(closure)', '(closure)', '(closure)']
+    #     results = self.processor.__process_rub_reports(functions)
+    #
+    #     self.assert_results(results, Cases.FUNCTION)
