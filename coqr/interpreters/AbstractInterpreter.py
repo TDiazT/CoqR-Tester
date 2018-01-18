@@ -1,6 +1,7 @@
 import re
 import time
 from abc import ABC, abstractmethod
+from typing import List
 
 from coqr.utils import exp_extract
 from coqr.utils import reports
@@ -13,6 +14,13 @@ class AbstractInterpreter(ABC):
     def __init__(self, interp) -> None:
         self.name = ''
         self.interpreter = interp
+
+    def interpret_multiple(self, expressions: List[str]) -> List[str]:
+        parenthesized_expressions = ["(%s)" % exp for exp in expressions]
+        tokenized = self.SEQUENCE_TOKEN.join(parenthesized_expressions)
+        output = self.interpret(tokenized)
+
+        return re.split(self.token_regex, output)
 
     def interpret_expressions(self, expressions: list):
         results = []
@@ -32,7 +40,7 @@ class AbstractInterpreter(ABC):
         return results
 
     @abstractmethod
-    def interpret(self, expression):
+    def interpret(self, expression) -> str:
         pass
 
     def __pre_process_expression(self, expression):

@@ -9,5 +9,8 @@ class RInterpreter(AbstractInterpreter):
         self.name = "R"
 
     def interpret(self, expression):
-        return subprocess.run([self.interpreter, '-e', expression], universal_newlines=True, stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT).stdout
+        p1 = subprocess.Popen(['echo', expression], stdout=subprocess.PIPE)
+        p2 = subprocess.Popen([self.interpreter, '--slave'], stdin=p1.stdout, stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT, universal_newlines=True)
+        p1.stdout.close()
+        return p2.communicate()[0]
