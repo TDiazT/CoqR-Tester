@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from rcoq.constants.Cases import Cases
-from rcoq.constants.Status import Status
+from coqr.constants.Cases import Cases
+from coqr.constants.Status import Status
 
 
 class Comparable(ABC):

@@ -1,10 +1,10 @@
 import argparse
 import sys
 
-from rcoq.constants import ReportKeys
-from rcoq.processors.CoqOutputProcessor import CoqOutputProcessor
-from rcoq.processors.ROutputProcessor import ROutputProcessor
-from rcoq.utils.file import read_json_file, write_to_file
+from coqr.constants import ReportKeys
+from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
+from coqr.processors.ROutputProcessor import ROutputProcessor
+from coqr.utils.file import read_json_file, write_to_file
 
 parser = argparse.ArgumentParser(description='Processes output and returns a new standard one')
 

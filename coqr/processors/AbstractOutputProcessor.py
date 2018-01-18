@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from rcoq.constants import ReportKeys
-from rcoq.constants.Cases import Cases
+from coqr.constants import ReportKeys
+from coqr.constants.Cases import Cases
 
 
 class AbstractOutputProcessor(ABC):
@@ -10,16 +10,13 @@ class AbstractOutputProcessor(ABC):
 
     def process_reports(self, rs):
         for report in rs:
-            report[ReportKeys.PROCESSED_OUT] = self.process_outputs(report[ReportKeys.OUTPUT])
+            self.__process_sub_reports(report[ReportKeys.SUB_EXPRESSIONS_REPORT])
 
         return rs
 
-    def process_outputs(self, outputs):
-        result = []
-        for out in outputs:
-            result.append(self.process_output(out))
-
-        return result
+    def __process_sub_reports(self, sub_reports):
+        for sub_report in sub_reports:
+            sub_report[ReportKeys.PROCESSED_OUT] = self.process_output(sub_report[ReportKeys.OUTPUT])
 
     def process_output(self, output):
 

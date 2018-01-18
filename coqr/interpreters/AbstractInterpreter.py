@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
-import time
 import re
+import time
+from abc import ABC, abstractmethod
 
-from rcoq.constants import ReportKeys
-from rcoq.utils import exp_extract
+from coqr.utils import exp_extract
+from coqr.utils import reports
 
 
 class AbstractInterpreter(ABC):
@@ -25,7 +25,7 @@ class AbstractInterpreter(ABC):
 
             processed_out = self.__post_process_output(out)
 
-            result = self.__generate_report(exec_time, expression, i, processed_out)
+            result = reports.generate_report(expression, processed_out, self.name, exec_time=exec_time, line=i + 1)
 
             results.append(result)
 
@@ -44,11 +44,3 @@ class AbstractInterpreter(ABC):
     def __post_process_output(self, out):
         return re.split(self.token_regex, out)
 
-    def __generate_report(self, exec_time, expression, i, processed_out):
-        return {
-            ReportKeys.OUTPUT: processed_out,
-            ReportKeys.EXPRESSION: expression,
-            ReportKeys.EXEC_TIME: exec_time,
-            ReportKeys.LINE: i + 1,
-            ReportKeys.INTERPRETER: self.name
-        }

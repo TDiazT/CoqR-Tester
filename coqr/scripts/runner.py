@@ -2,9 +2,11 @@ import argparse
 import os
 import sys
 
-from rcoq.interpreters.CoqInterpreter import CoqInterpreter
-from rcoq.interpreters.RInterpreter import RInterpreter
-from rcoq.utils.file import write_to_file, read_file
+from coqr.constants import ReportKeys
+from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
+from coqr.interpreters.CoqInterpreter import CoqInterpreter
+from coqr.interpreters.RInterpreter import RInterpreter
+from coqr.utils.file import write_to_file, read_file
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
@@ -12,12 +14,17 @@ parser.add_argument('input')
 parser.add_argument('output')
 
 
-def run(input_, output_, interpreter):
+def run(input_, interpreter: AbstractInterpreter, debug=False):
     lines = read_file(input_)
     lines = [line.strip() for line in lines]
     reports = interpreter.interpret_expressions(lines)
+    for report in reports:
+        report[ReportKeys.FILENAME] = input_
 
-    write_to_file(output_, reports)
+    if debug:
+        write_to_file(interpreter.name + '.json', reports)
+
+    return reports
 
 
 if __name__ == '__main__':
