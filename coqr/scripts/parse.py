@@ -1,6 +1,6 @@
 import sys
 
-from rcoq.parsing.parse import parse_file
+from coqr.parsing.parse import parse_file
 
 
 def main(argv):

@@ -1,5 +1,6 @@
-from rcoq.parsing.RListener import RListener
-from rcoq.parsing.RParser import RParser
+from coqr.parsing.RParser import RParser
+
+from coqr.parsing.RListener import RListener
 
 
 class ProgListener(RListener):

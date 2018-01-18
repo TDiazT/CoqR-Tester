@@ -1,11 +1,9 @@
-import sys
-
 from antlr4 import *
+from coqr.parsing.ProgListener import ProgListener
+from coqr.parsing.RFilter import RFilter
+from coqr.parsing.RParser import RParser
 
-from rcoq.parsing.ProgListener import ProgListener
-from rcoq.parsing.RFilter import RFilter
-from rcoq.parsing.RLexer import RLexer
-from rcoq.parsing.RParser import RParser
+from coqr.parsing.RLexer import RLexer
 
 
 def parse_file(filename) -> list:
