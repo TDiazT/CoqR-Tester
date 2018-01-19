@@ -1,7 +1,9 @@
-from typing import List
+from typing import List, Tuple
 
 import io
 from antlr4 import *
+
+from coqr.parsing.LineExpListener import LineExpListener
 from coqr.parsing.ProgListener import ProgListener
 from coqr.parsing.RFilter import RFilter
 from coqr.parsing.RParser import RParser
@@ -35,7 +37,7 @@ def parse_expression(expression: str) -> List[str]:
     return progListener.exps
 
 
-def parse_file(filename) -> list:
+def parse_file(filename) -> List[Tuple[int, str]]:
     """
     Parses an R file and returns a list of expressions
     :param filename: file to parse
@@ -54,7 +56,7 @@ def parse_file(filename) -> list:
     parser = RParser(tokens)
     tree = parser.prog()
 
-    progListener = ProgListener(tokens)
+    progListener = LineExpListener(tokens)
     walker = ParseTreeWalker()
     walker.walk(progListener, tree)
 
