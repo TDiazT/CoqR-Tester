@@ -72,6 +72,11 @@ class TestROutputProcessor(TestCase):
         result = self.processor.process_output(output)
         self.assertEqual(result, "[[1]] [[1]]$input [1]  TRUE FALSE [[1]]$any [1] TRUE [[1]]$all [1] FALSE [[2]]")
 
+    def test_vector_double_bracket_2(self):
+        output = "[[2]]$input\n[[2]]$input[[1]]\n[1] FALSE\n\n"
+        result = self.processor.process_output(output)
+        self.assertEqual(result, "[[2]]$input [[2]]$input[[1]] [1] FALSE")
+
     def test_assignment_with_empty_array(self):
         result = self.processor.process_output("")
         self.assertEqual(result, Cases.INVISIBLE)
