@@ -17,6 +17,7 @@ class RInterpreter(AbstractInterpreter):
 
     def interpret(self, expression):
         try:
+            # FIXME: For some expressions (eg. printing) it returns last result
             output = str(robjects.r(expression))
         except ri.RRuntimeError as err:
             output = err.args[0]
