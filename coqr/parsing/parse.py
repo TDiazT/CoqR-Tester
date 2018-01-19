@@ -9,7 +9,12 @@ from coqr.parsing.RParser import RParser
 from coqr.parsing.RLexer import RLexer
 
 
-def parse(expression: str) -> List[str]:
+def parse_expression(expression: str) -> List[str]:
+    """
+    Parses a string and returns a list of expressions
+    :param expression: String to parse
+    :return: List of expressions (str)
+    """
     stream = InputStream(expression)
     lexer = RLexer(stream)
     tokens = CommonTokenStream(lexer)
@@ -26,7 +31,6 @@ def parse(expression: str) -> List[str]:
     progListener = ProgListener(tokens)
     walker = ParseTreeWalker()
     walker.walk(progListener, tree)
-
 
     return progListener.exps
 

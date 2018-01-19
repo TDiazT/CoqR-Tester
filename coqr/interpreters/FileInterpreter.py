@@ -21,7 +21,7 @@ class FileInterpreter:
         results = []
         # None filters blank lines
         for i, line in enumerate(filter(None, lines)):
-            expressions = parse.parse(line)
+            expressions = parse.parse_expression(line)
             exec_time = time.time()
             outputs = self.interpreter.interpret_expressions(expressions)
             exec_time = time.time() - exec_time
