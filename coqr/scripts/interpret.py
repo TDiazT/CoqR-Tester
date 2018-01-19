@@ -3,6 +3,8 @@ import json
 import os
 import sys
 
+import time
+
 from coqr.constants import ReportKeys
 from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
@@ -31,30 +33,32 @@ def run(input_, interpreter: AbstractInterpreter, debug=False):
     return reports
 
 
-if __name__ == '__main__':
-    options = parser.parse_args()
-
+def get_interpreter():
+    global interpreter
     if os.environ.get('RSCRIPT'):
-        interpreter = RInterpreter(os.environ.get('RSCRIPT'))
+        return RInterpreter(os.environ.get('RSCRIPT'))
     elif os.environ.get('COQ_INTERP'):
-        interpreter = CoqInterpreter(os.environ.get('COQ_INTERP'))
+        return CoqInterpreter(os.environ.get('COQ_INTERP'))
     else:
         sys.exit("No valid interpreter set in environment. Define either 'RSCRIPT' or 'COQ_INTERP' variables.")
 
+
+if __name__ == '__main__':
+    options = parser.parse_args()
+
+    interpreter = get_interpreter()
     file_interpreter = FileInterpreter(interpreter)
-    print('Interpreting file %s ...')
+
+    print('Interpreting file %s with %s interpreter' % (options.input, interpreter.name))
+    current_time = time.time()
     if not options.line:
         reports = file_interpreter.interpret_multiline(options.input)
-        if options.output:
-            print('You may find the results in %s' % options.output)
-            write_to_file(options.output, reports)
-        else:
-            print(json.dumps(reports, indent=2))
     else:
         reports = file_interpreter.interpret_line_by_line(options.input)
 
-        if options.output:
-            print('You may find the results in %s' % options.output)
-            write_to_file(options.output, reports)
-        else:
-            print(json.dumps(reports, indent=2))
+    print('Done! It took %f' % (time.time() - current_time))
+    if options.output:
+        print('You may find the results in %s' % options.output)
+        write_to_file(options.output, reports)
+    else:
+        print(json.dumps(reports, indent=2))
