@@ -28,7 +28,11 @@ class ErrorComparable(Comparable):
         self.case = Cases.ERROR
 
     def compare_to(self, other):
-        if other.case == Cases.UNKNOWN:
+        if other.case == Cases.NOT_IMPLEMENTED:
+            return Status.NOT_IMPLEMENTED
+        elif other.case == Cases.IMPOSSIBLE:
+            return Status.IMPOSSIBLE
+        elif other.case == Cases.UNKNOWN:
             return Status.UNKNOWN
         elif self.case == other.case:
             return Status.PASS
@@ -50,6 +54,10 @@ class OtherComparable(Comparable):
         super().__init__(case)
 
     def compare_to(self, other):
+        if other.case == Cases.NOT_IMPLEMENTED:
+            return Status.NOT_IMPLEMENTED
+        elif other.case == Cases.IMPOSSIBLE:
+            return Status.IMPOSSIBLE
         if other.case == Cases.UNKNOWN:
             return Status.UNKNOWN
         elif other.case == Cases.INVISIBLE:
@@ -67,6 +75,10 @@ class UnknownComparable(Comparable):
         self.case = Cases.UNKNOWN
 
     def compare_to(self, other):
+        if other.case == Cases.NOT_IMPLEMENTED:
+            return Status.NOT_IMPLEMENTED
+        elif other.case == Cases.IMPOSSIBLE:
+            return Status.IMPOSSIBLE
         return Status.UNKNOWN
 
 
@@ -76,6 +88,10 @@ class PrimitiveComparable(Comparable):
         self.case = Cases.PRIMITIVE
 
     def compare_to(self, other):
+        if other.case == Cases.NOT_IMPLEMENTED:
+            return Status.NOT_IMPLEMENTED
+        elif other.case == Cases.IMPOSSIBLE:
+            return Status.IMPOSSIBLE
         if self.case == other.case:
             return Status.PASS
         elif other.case == Cases.UNKNOWN:
