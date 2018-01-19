@@ -13,6 +13,7 @@ class RInterpreter(AbstractInterpreter):
     def __init__(self, interp) -> None:
         super().__init__(interp)
         self.name = "R"
+        # TODO: Set R_HOME when creating this interpreter, based on param interp
 
     def interpret(self, expression):
         try:
