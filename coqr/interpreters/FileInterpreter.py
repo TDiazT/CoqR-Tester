@@ -13,10 +13,24 @@ class FileInterpreter:
         self.interpreter = interpreter
 
     def interpret_multiline(self, filename):
-        pass
+        parsed = parse.parse_file(filename)
+        split_ = list(zip(*parsed))
+        lines = split_[0]
+        expressions = split_[1]
+
+        exec_time = time.time()
+        outputs = self.interpreter.interpret_expressions(expressions)
+        exec_time = time.time() - exec_time
+
+        results = []
+        for expression, output, line in zip(expressions, outputs, lines):
+            results.append(
+                reports.generate_report(expression, output, self.interpreter.name, line=line, exec_time=exec_time,
+                                        filename=filename))
+
+        return results
 
     def interpret_line_by_line(self, filename: str) -> List[Dict]:
-
         lines = read_file(filename)
         results = []
         # None filters blank lines

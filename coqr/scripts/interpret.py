@@ -41,12 +41,16 @@ if __name__ == '__main__':
     else:
         sys.exit("No valid interpreter set in environment. Define either 'RSCRIPT' or 'COQ_INTERP' variables.")
 
+    file_interpreter = FileInterpreter(interpreter)
+    print('Interpreting file %s ...')
     if not options.line:
-        expressions = parse.parse_file(options.input)
-        outputs = interpreter.interpret_multiple(expressions)
-        print(outputs)
+        reports = file_interpreter.interpret_multiline(options.input)
+        if options.output:
+            print('You may find the results in %s' % options.output)
+            write_to_file(options.output, reports)
+        else:
+            print(json.dumps(reports, indent=2))
     else:
-        file_interpreter = FileInterpreter(interpreter)
         reports = file_interpreter.interpret_line_by_line(options.input)
 
         if options.output:
