@@ -34,7 +34,6 @@ def run(input_, interpreter: AbstractInterpreter, debug=False):
 
 
 def get_interpreter():
-    global interpreter
     if os.environ.get('RSCRIPT'):
         return RInterpreter(os.environ.get('RSCRIPT'))
     elif os.environ.get('COQ_INTERP'):
