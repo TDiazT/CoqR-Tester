@@ -5,7 +5,7 @@ from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 
 class ROutputProcessor(AbstractOutputProcessor):
-    vector_regex = re.compile(r'(\[\[*\d+\]*\][ $\w\-\"]*(\[\[\d+\]\])?)')
+    vector_regex = re.compile(r'(\[\[*\d+\]*\][ $\w\.\-\"]*(\[\[\d+\]\])?)')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'function')

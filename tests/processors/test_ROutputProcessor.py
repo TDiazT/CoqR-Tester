@@ -77,6 +77,11 @@ class TestROutputProcessor(TestCase):
         result = self.processor.process_output(output)
         self.assertEqual(result, "[[2]]$input [[2]]$input[[1]] [1] FALSE")
 
+    def test_vector_with_decimals(self):
+        output = "[1] 2.4259 3.4293 3.9896 5.2832 5.3386 4.9822\n"
+        result = self.processor.process_output(output)
+        self.assertEqual(result, "[1] 2.4259 3.4293 3.9896 5.2832 5.3386 4.9822")
+
     def test_assignment_with_empty_array(self):
         result = self.processor.process_output("")
         self.assertEqual(result, Cases.INVISIBLE)
