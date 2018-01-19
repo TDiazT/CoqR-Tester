@@ -86,6 +86,22 @@ class TestCoqOutputProcessor(TestCase):
         result = self.processor.process_output("[,1]")
         self.assertEqual(result, Cases.UNKNOWN)
 
+    def test_not_implemented(self):
+        output = "> Not implemented: [do_c]\nAn error lead to an undefined state. Continuing using the old one.\n" \
+                 "An error lead to an undefined result.\n> "
+        result = self.processor.process_output(output)
+        self.assertEquals(result, Cases.NOT_IMPLEMENTED)
+
+    def test_parse_error_over_not_implemented(self):
+        output = "> Error: Parser error at offset 2133.\n> Error: [findFun3] Could not find function \u201cf\u201d.\n" \
+                 "An error lead to an undefined result.\n> Error: Parser error at offset 2166.\n" \
+                 "> > > (closure)\n> Error: [findFun3] Could not find function \u201cdeparse\u201d.\n" \
+                 "An error lead to an undefined result.\n" \
+                 "> Not implemented: [do_for]\nAn error lead to an undefined state. Continuing using the old one.\n" \
+                 "An error lead to an undefined result."
+        result = self.processor.process_output(output)
+        self.assertEquals(result, Cases.ERROR)
+
     # def test_error_outputs(self):
     #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
     #               "Error in .Primitive(cos) : string argument required"]

@@ -18,9 +18,9 @@ class CoqOutputProcessor(AbstractOutputProcessor):
 
     def define_cases_handlers(self):
         return [
+            (self.error_regex, lambda x: Cases.ERROR),
             (self.not_implemented, lambda x: Cases.NOT_IMPLEMENTED),
             (self.impossible, lambda x: Cases.IMPOSSIBLE),
-            (self.error_regex, lambda x: Cases.ERROR),
             (self.null_regex, lambda x: Cases.NULL),
             (self.special_builtin_regex, lambda x: Cases.PRIMITIVE),
             (self.vector_regex, lambda x: " ".join([x[0] for x in self.vector_regex.findall(x)])),
