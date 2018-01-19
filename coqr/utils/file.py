@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 
 def read_json_file(filename):
@@ -11,6 +12,6 @@ def write_to_file(filename, content):
         json.dump(content, file_, indent=2)
 
 
-def read_file(filename):
+def read_file(filename: str) -> List[str]:
     with open(filename) as file_:
         return file_.readlines()

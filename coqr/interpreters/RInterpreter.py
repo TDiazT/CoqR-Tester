@@ -21,16 +21,13 @@ class RInterpreter(AbstractInterpreter):
             output = err.args[0]
         return output
 
-    def interpret_multiple(self, expressions: List[str]) -> List[str]:
+    def interpret_expressions(self, expressions: list):
         parenthesized_expressions = ["(%s)" % exp for exp in expressions]
         results = []
         robjects.r('rm(list = ls(all.names=TRUE))')
         for expression in parenthesized_expressions:
-            try:
-                output = str(robjects.r(expression))
-            except ri.RRuntimeError as err:
-                output = err.args[0]
-            finally:
-                results.append(output)
+            output = self.interpret(expression)
+            results.append(output)
 
         return results
+
