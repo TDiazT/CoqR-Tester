@@ -28,7 +28,6 @@ parser.add_argument('--server', action='store_true')
 
 def interpret_file(src, interpreter, debug=False, out=None):
     lines = read_file(src)
-    lines = [line.strip() for line in lines]
     reports = interpreter.interpret_expressions(lines)
 
     for report in reports:

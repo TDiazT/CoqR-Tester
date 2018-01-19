@@ -1,12 +1,14 @@
+from typing import List
+
 from coqr.constants import ReportKeys
 from coqr.utils import exp_extract
 
 
-def generate_report(expression, output: list, interpreter, exec_time=-1, filename="", line=-1):
+def generate_report(expression: List[str], output: list, interpreter, exec_time=-1, filename="", line=-1):
     sub_report = __generate_sub_report(expression, output)
 
     return {
-        ReportKeys.EXPRESSION: expression,
+        ReportKeys.EXPRESSION: ";".join(expression),
         ReportKeys.FILENAME: filename,
         ReportKeys.INTERPRETER: interpreter,
         ReportKeys.EXEC_TIME: exec_time,
@@ -16,11 +18,10 @@ def generate_report(expression, output: list, interpreter, exec_time=-1, filenam
 
 
 def __generate_sub_report(expression, output):
-    sub_expressions = exp_extract.extract_expressions(expression)
     result = []
     for i, out in enumerate(output):
         sub_report = {
-            ReportKeys.SUB_EXPRESSION: sub_expressions[i],
+            ReportKeys.SUB_EXPRESSION: expression[i],
             ReportKeys.OUTPUT: out
         }
 

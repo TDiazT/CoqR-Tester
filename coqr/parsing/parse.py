@@ -1,9 +1,34 @@
+from typing import List
+
+import io
 from antlr4 import *
 from coqr.parsing.ProgListener import ProgListener
 from coqr.parsing.RFilter import RFilter
 from coqr.parsing.RParser import RParser
 
 from coqr.parsing.RLexer import RLexer
+
+
+def parse(expression: str) -> List[str]:
+    stream = InputStream(expression)
+    lexer = RLexer(stream)
+    tokens = CommonTokenStream(lexer)
+
+    tokens.fill()
+
+    filter_ = RFilter(tokens)
+    filter_.stream()
+    tokens.reset()
+
+    parser = RParser(tokens)
+    tree = parser.prog()
+
+    progListener = ProgListener(tokens)
+    walker = ParseTreeWalker()
+    walker.walk(progListener, tree)
+
+
+    return progListener.exps
 
 
 def parse_file(filename) -> list:
@@ -30,4 +55,3 @@ def parse_file(filename) -> list:
     walker.walk(progListener, tree)
 
     return progListener.exps
-
