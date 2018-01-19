@@ -6,7 +6,7 @@ from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 class CoqOutputProcessor(AbstractOutputProcessor):
     vector_regex = re.compile(r'\[\d+\][ \w\-\"]+')
-
+    complex_vector_regex = re.compile(r'\[\[*\d+\]*\][ $\w\-\"]*')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'(closure)')
@@ -24,6 +24,7 @@ class CoqOutputProcessor(AbstractOutputProcessor):
             (self.error_regex, lambda x: Cases.ERROR),
             (self.null_regex, lambda x: Cases.NULL),
             (self.special_builtin_regex, lambda x: Cases.PRIMITIVE),
+            (self.complex_vector_regex, lambda x: " ".join(self.complex_vector_regex.findall(x))),
             (self.vector_regex, lambda x: " ".join(self.vector_regex.findall(x))),
             (self.function_regex, lambda x: Cases.FUNCTION),
         ]

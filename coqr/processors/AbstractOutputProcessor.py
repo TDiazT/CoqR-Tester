@@ -10,13 +10,13 @@ class AbstractOutputProcessor(ABC):
 
     def process_reports(self, rs):
         for report in rs:
-            self.__process_sub_reports(report[ReportKeys.SUB_EXPRESSIONS_REPORT])
+            report[ReportKeys.PROCESSED_OUT] = self.process_output(report[ReportKeys.OUTPUT])
 
         return rs
 
-    def __process_sub_reports(self, sub_reports):
-        for sub_report in sub_reports:
-            sub_report[ReportKeys.PROCESSED_OUT] = self.process_output(sub_report[ReportKeys.OUTPUT])
+    # def __process_sub_reports(self, sub_reports):
+    #     for sub_report in sub_reports:
+    #         sub_report[ReportKeys.PROCESSED_OUT] = self.process_output(sub_report[ReportKeys.OUTPUT])
 
     def process_output(self, output):
 

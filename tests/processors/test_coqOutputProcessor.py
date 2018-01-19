@@ -60,6 +60,12 @@ class TestCoqOutputProcessor(TestCase):
         result = self.processor.process_output("Success.\n[1] 1 2 3\n[4] 5 6 7\n")
         self.assertEqual(result, '[1] 1 2 3 [4] 5 6 7')
 
+    def test_vector_double_bracket(self):
+        output = "[[1]]\n[[1]]$input\n[1]  TRUE FALSE\n\n[[1]]$any\n[1] TRUE\n\n[[1]]$all\n[1] FALSE\n\n\n[[2]]\n"
+        result = self.processor.process_output(output)
+        self.assertEqual(result, "[[1]] [[1]]$input [1]  TRUE FALSE [[1]]$any [1] TRUE [[1]]$all [1] FALSE [[2]]")
+
+
     def test_assignment_with_empty_array(self):
         result = self.processor.process_output("")
         self.assertEqual(result, Cases.INVISIBLE)
