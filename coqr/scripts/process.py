@@ -1,7 +1,6 @@
 import argparse
 import sys
 
-from coqr.constants import ReportKeys
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.utils.file import read_json_file, write_to_file
