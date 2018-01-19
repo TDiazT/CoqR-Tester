@@ -51,7 +51,7 @@ def process_outputs(output, processor: AbstractOutputProcessor, debug=False, out
 def compare_processed_outputs(processed_r, processed_coq):
     print("Comparing")
     comparator = Comparator()
-    return comparator.compare_reports(processed_coq, processed_r)
+    return comparator.compare_results(processed_coq, processed_r)
 
 
 def print_general_stats():
