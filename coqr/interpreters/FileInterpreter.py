@@ -24,7 +24,7 @@ class FileInterpreter:
             'multi': self.interpret_multiline
         }
 
-    def interpret_directory(self, directory) -> List[Dict]:
+    def interpret_directory(self, directory, recursive=False) -> List[Dict]:
         results = []
         files = os.listdir(directory)
 
@@ -32,9 +32,11 @@ class FileInterpreter:
 
         for f in files:
             file_ = os.path.join(directory, f)
-            # if os.path.isdir(file_):
-            #     results.extend(self.interpret_directory(file_))
-
+            if os.path.isdir(file_):
+                if recursive:
+                    current_strategy = self.strategy
+                    results.extend(self.interpret_directory(file_))
+                    self.strategy = current_strategy
             if os.path.isfile(file_):
                 if file_.endswith('.R'):
                     current_strategy = self.strategy
