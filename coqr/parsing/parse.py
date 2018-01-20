@@ -43,7 +43,7 @@ def parse_file(filename) -> List[Tuple[int, str]]:
     :param filename: file to parse
     :return: list of expressions (str)
     """
-    input_ = FileStream(filename)
+    input_ = FileStream(filename, encoding='utf-8')
     lexer = RLexer(input_)
     tokens = CommonTokenStream(lexer)
 
