@@ -20,8 +20,8 @@ class ROutputProcessor(AbstractOutputProcessor):
     def define_cases_handlers(self):
         return [
             (self.error_regex, lambda x: Cases.ERROR),
-            (self.null_regex, lambda x: Cases.NULL),
             (self.function_regex, lambda x: Cases.FUNCTION),
+            (self.null_regex, lambda x: Cases.NULL),
             (self.digit_regex, lambda x: " ".join(self.digit_regex.findall(x))),
             (self.vector_regex, lambda x: " ".join([x[0] for x in self.vector_regex.findall(x)])),
             (self.col_row_regex, lambda x: " ".join(self.col_row_regex.findall(x))),

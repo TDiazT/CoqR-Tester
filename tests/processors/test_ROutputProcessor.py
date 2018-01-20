@@ -28,6 +28,9 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         result = self.processor.process_output("NULL\n")
         self.assertEqual(result, Cases.NULL)
 
+    def test_null_in_function(self):
+        self.assert_output("function(n, trans.mat, init.dist=NULL, states=colnames(trans.mat)) { }", Cases.FUNCTION)
+
     #
     def test_process_error_object(self):
         result = self.processor.process_output("Error: object 'e' not found")
