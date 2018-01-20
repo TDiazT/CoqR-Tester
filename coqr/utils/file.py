@@ -13,5 +13,10 @@ def write_to_file(filename, content):
 
 
 def read_file(filename: str) -> List[str]:
+    """
+    Reads a file and returns a list with its lines
+    :param filename: File to read
+    :return: List of lines
+    """
     with open(filename) as file_:
         return file_.readlines()

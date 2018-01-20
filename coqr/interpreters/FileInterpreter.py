@@ -1,5 +1,10 @@
+import glob
 import time
 from typing import Dict, List
+
+import os
+
+import re
 
 from coqr.interpreters import AbstractInterpreter
 from coqr.parsing import parse
@@ -8,11 +13,57 @@ from coqr.utils.file import read_file
 
 
 class FileInterpreter:
+    settings_regex = re.compile(r'\@(\w+)')
+
     def __init__(self, interpreter: AbstractInterpreter) -> None:
         super().__init__()
         self.interpreter = interpreter
+        self.strategy = self.interpret_multiline
+        self.strategies = {
+            'line': self.interpret_line_by_line,
+            'multi': self.interpret_multiline
+        }
 
-    def interpret_multiline(self, filename):
+    def interpret_directory(self, directory) -> List[Dict]:
+        results = []
+        files = os.listdir(directory)
+
+        self.__set_dir_strategy(directory)
+
+        for f in files:
+            file_ = os.path.join(directory, f)
+            # if os.path.isdir(file_):
+            #     results.extend(self.interpret_directory(file_))
+
+            if os.path.isfile(file_):
+                if file_.endswith('.R'):
+                    current_strategy = self.strategy
+                    self.__set_file_strategy(file_)
+
+                    result = self.strategy(file_)
+                    results.extend(result)
+
+                    self.strategy = current_strategy
+
+        return results
+
+    def __set_file_strategy(self, filename):
+        with open(filename) as file_:
+            line = file_.readline()
+        tag = self.settings_regex.search(line)
+        if tag:
+            strategy = tag.group(1)
+            self.strategy = self.strategies.get(strategy, self.strategy)
+
+    def __set_dir_strategy(self, directory):
+        rsettings = os.path.join(directory, 'RSettings')
+        if os.path.isfile(rsettings):
+            with open(rsettings) as settings_:
+                strat = settings_.readline()
+
+            self.strategy = self.strategies.get(strat, self.interpret_multiline)
+
+    def interpret_multiline(self, filename) -> List[Dict]:
         parsed = parse.parse_file(filename)
         split_ = list(zip(*parsed))
         lines = split_[0]
