@@ -1,4 +1,6 @@
 import argparse
+import glob
+import json
 import os
 import time
 
@@ -9,6 +11,7 @@ from coqr.comparators.Comparator import Comparator
 from coqr.constants import ReportKeys
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
+from coqr.interpreters.FileInterpreter import FileInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
 from coqr.network.calls import send_reports
 from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
@@ -32,6 +35,15 @@ def interpret_file(src, interpreter, debug=False, out=None):
 
     for report in reports:
         report[ReportKeys.FILENAME] = src
+
+    if debug:
+        write_to_file(out, reports)
+
+    return reports
+
+
+def interpret_directory(src, interpreter: FileInterpreter, debug=False, out=None):
+    reports = interpreter.interpret_directory(src)
 
     if debug:
         write_to_file(out, reports)
@@ -68,14 +80,17 @@ if __name__ == '__main__':
     directory = os.path.dirname(options.output)
     debug = options.debug
 
+    file_interpreter = FileInterpreter(RInterpreter('R'))
+    results = file_interpreter.interpret_directory(options.src)
     delta = time.time()
-    print("Interpreting %s file" % options.src)
+    print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
-    r_results = interpret_file(options.src, RInterpreter(settings.RSCRIPT), debug, os.path.join(directory, 'r.json'))
+    r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug,
+                               os.path.join(directory, 'r.json'))
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
-    coq_results = interpret_file(options.src, CoqInterpreter(settings.COQ_INTERP), debug,
+    coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)), debug,
                                  os.path.join(directory, 'coq.json'))
     print("Finished in %f seconds" % (time.time() - delta))
 
