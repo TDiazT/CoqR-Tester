@@ -1,10 +1,10 @@
 import argparse
-import glob
-import json
 import os
 import time
 
 from requests import HTTPError
+
+from rpy2.rinterface import R_VERSION_BUILD
 
 from coqr import settings
 from coqr.comparators.Comparator import Comparator
@@ -19,6 +19,7 @@ from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.stats import stats
 from coqr.utils.file import write_to_file, read_file
+
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
@@ -103,7 +104,7 @@ if __name__ == '__main__':
     comparison = compare_processed_outputs(r_process, coq_process)
     (sysname, nodename, release, version, machine) = os.uname()
     final_report = {
-        "r_interpreter_version": "3.4.2",
+        "r_interpreter_version": ".".join(list(map(str, R_VERSION_BUILD))[0:2]),
         "coq_interpreter_version": '0.1',
         "system": sysname,
         "os_node_name": nodename,
