@@ -28,6 +28,7 @@ parser.add_argument('src')
 parser.add_argument('output')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--server', action='store_true')
+parser.add_argument('-r', '--recursive', action='store_true')
 
 
 def interpret_file(src, interpreter, debug=False, out=None):
@@ -43,8 +44,8 @@ def interpret_file(src, interpreter, debug=False, out=None):
     return reports
 
 
-def interpret_directory(src, interpreter: FileInterpreter, debug=False, out=None):
-    reports = interpreter.interpret_directory(src)
+def interpret_directory(src, interpreter: FileInterpreter, recursive=False, debug=False, out=None):
+    reports = interpreter.interpret_directory(src, recursive=recursive)
 
     if debug:
         write_to_file(out, reports)
@@ -86,13 +87,13 @@ if __name__ == '__main__':
     delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
-    r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug,
-                               os.path.join(directory, 'r.json'))
+    r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
+                               out=os.path.join(directory, 'r.json'), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
-    coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)), debug,
-                                 os.path.join(directory, 'coq.json'))
+    coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)), debug=debug,
+                                 out=os.path.join(directory, 'coq.json'), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")
