@@ -5,7 +5,8 @@ from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 
 class ROutputProcessor(AbstractOutputProcessor):
-    vector_regex = re.compile(r'\[\d+\][ \w\-\"]+')
+    vector_regex = re.compile(r'(\[\[*\d+\]*\][ \$\w\.\-\"]*(\[\[\d+\]\])?)')
+    digit_regex = re.compile(r'\$digits\n\[\d+\][ \w]+')
     error_regex = re.compile(r'Error:*')
     null_regex = re.compile(r'NULL')
     function_regex = re.compile(r'function')
@@ -19,9 +20,10 @@ class ROutputProcessor(AbstractOutputProcessor):
     def define_cases_handlers(self):
         return [
             (self.error_regex, lambda x: Cases.ERROR),
-            (self.null_regex, lambda x: Cases.NULL),
             (self.function_regex, lambda x: Cases.FUNCTION),
-            (self.vector_regex, lambda x: " ".join(self.vector_regex.findall(x))),
+            (self.null_regex, lambda x: Cases.NULL),
+            (self.digit_regex, lambda x: " ".join(self.digit_regex.findall(x))),
+            (self.vector_regex, lambda x: " ".join([x[0] for x in self.vector_regex.findall(x)])),
             (self.col_row_regex, lambda x: " ".join(self.col_row_regex.findall(x))),
             (self.primitive_regex, lambda x: Cases.PRIMITIVE),
             (self.type_regex, lambda x: Cases.TYPE)

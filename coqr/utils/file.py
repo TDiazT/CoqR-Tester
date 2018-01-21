@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 
 def read_json_file(filename):
@@ -11,6 +12,11 @@ def write_to_file(filename, content):
         json.dump(content, file_, indent=2)
 
 
-def read_file(filename):
+def read_file(filename: str) -> List[str]:
+    """
+    Reads a file and returns a list with its lines
+    :param filename: File to read
+    :return: List of lines
+    """
     with open(filename) as file_:
         return file_.readlines()

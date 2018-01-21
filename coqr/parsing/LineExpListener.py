@@ -1,9 +1,10 @@
+
 from coqr.parsing.RParser import RParser
 
 from coqr.parsing.RListener import RListener
 
 
-class ProgListener(RListener):
+class LineExpListener(RListener):
 
     def __init__(self, stream) -> None:
         super().__init__()
@@ -16,4 +17,4 @@ class ProgListener(RListener):
             stop_index = expr.stop.tokenIndex
             # In order to get spaces and newlines correctly
             text = self.token_stream.getText(interval=(start_index, stop_index))
-            self.exps.append(text)
+            self.exps.append((expr.start.line, text))
