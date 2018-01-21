@@ -63,6 +63,7 @@ class Comparator:
 
             report = {
                 ReportKeys.EXPRESSION: report_1[ReportKeys.EXPRESSION],
+                ReportKeys.CONTEXT: report_2.get(ReportKeys.CONTEXT, ''),
                 ReportKeys.FILENAME: report_1[ReportKeys.FILENAME],
                 ReportKeys.R_EXEC_TIME: report_2[ReportKeys.EXEC_TIME],
                 ReportKeys.COQ_EXEC_TIME:report_1[ReportKeys.EXEC_TIME],
@@ -73,6 +74,8 @@ class Comparator:
                 ReportKeys.PROCESSED_R: report_2[ReportKeys.PROCESSED_OUT],
                 ReportKeys.PROCESSED_COQ: report_1[ReportKeys.PROCESSED_OUT]
             }
+
+
             results.append(report)
 
         return results
