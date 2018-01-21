@@ -3,7 +3,8 @@ from typing import Dict
 from coqr.constants import ReportKeys
 
 
-def generate_report(expression: str, context:str, output: str, interpreter, exec_time=-1, filename="", line=-1) -> Dict:
+def generate_report(expression: str, output: str, interpreter, exec_time=-1, filename="", line=-1,
+                    context: str = '') -> Dict:
     return {
         ReportKeys.EXPRESSION: expression,
         ReportKeys.CONTEXT: context,

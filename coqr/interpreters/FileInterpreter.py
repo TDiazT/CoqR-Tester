@@ -95,7 +95,7 @@ class FileInterpreter:
 
             for expression, output in zip(expressions, outputs):
                 results.append(
-                    reports.generate_report(expression, line, output, self.interpreter.name, line=i + 1, exec_time=exec_time,
-                                            filename=filename))
+                    reports.generate_report(expression, output, self.interpreter.name, line=i + 1, exec_time=exec_time,
+                                            filename=filename, context=line))
 
         return results
