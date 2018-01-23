@@ -1,10 +1,7 @@
-import glob
+import os
+import re
 import time
 from typing import Dict, List
-
-import os
-
-import re
 
 from coqr.interpreters import AbstractInterpreter
 from coqr.parsing import parse
@@ -31,6 +28,7 @@ class FileInterpreter:
         self.__set_dir_strategy(directory)
 
         for f in files:
+            print("Interpreting file %s" % f)
             file_ = os.path.join(directory, f)
             if os.path.isdir(file_):
                 if recursive:

@@ -1,6 +1,5 @@
+import os
 import subprocess
-
-import re
 
 from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 
@@ -12,14 +11,25 @@ class RInterpreter(AbstractInterpreter):
 
     def interpret(self, expression):
         p1 = subprocess.Popen(['echo', expression], stdout=subprocess.PIPE)
-        p2 = subprocess.Popen([self.interpreter, '--slave'], stdin=p1.stdout, stdout=subprocess.PIPE,
+        p2 = subprocess.Popen([self.interpreter, '--slave', '--save', '--restore'], stdin=p1.stdout,
+                              stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT, universal_newlines=True)
         p1.stdout.close()
         return p2.communicate()[0]
 
-
     def interpret_expressions(self, expressions: list):
         parenthesized_expressions = ["(%s)" % exp for exp in expressions]
-        tokenized = self.SEQUENCE_TOKEN.join(parenthesized_expressions)
-        results = self.interpret(tokenized)
-        return re.split(self.token_regex, results)
+
+        self.__remove_saved_data()
+        results = []
+        for expression in parenthesized_expressions:
+            results.append(self.interpret(expression))
+
+        self.__remove_saved_data()
+        return results
+
+    def __remove_saved_data(self):
+        try:
+            os.remove('.RData')
+        except OSError:
+            pass
