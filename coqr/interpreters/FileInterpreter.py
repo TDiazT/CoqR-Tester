@@ -1,12 +1,10 @@
 import os
 import re
-import time
 from typing import Dict, List
 
 from coqr.interpreters import AbstractInterpreter
 from coqr.parsing import parse
 from coqr.reports.interpretation import Report, generate_sub_reports, SubReport
-from coqr.utils import reports
 from coqr.utils.file import read_file
 
 
