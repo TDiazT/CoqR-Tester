@@ -5,6 +5,7 @@ from typing import Dict, List
 
 from coqr.interpreters import AbstractInterpreter
 from coqr.parsing import parse
+from coqr.reports.interpretation import Report, generate_sub_reports, SubReport
 from coqr.utils import reports
 from coqr.utils.file import read_file
 
@@ -63,37 +64,31 @@ class FileInterpreter:
 
             self.strategy = self.strategies.get(strat, self.interpret_multiline)
 
-    def interpret_multiline(self, filename) -> List[Dict]:
+    def interpret_multiline(self, filename) -> List[Report]:
         parsed = parse.parse_file(filename)
         split_ = list(zip(*parsed))
         lines = split_[0]
         expressions = split_[1]
 
-        exec_time = time.time()
         outputs = self.interpreter.interpret_expressions(expressions)
-        exec_time = time.time() - exec_time
 
         results = []
-        for expression, output, line in zip(expressions, outputs, lines):
-            results.append(
-                reports.generate_report(expression, output, self.interpreter.name, line=line, exec_time=exec_time,
-                                        filename=filename))
+
+        for (expression, output, exec_time), line in zip(outputs, lines):
+            sub_report = SubReport(expression, output, exec_time)
+            results.append(Report(expression, filename, self.interpreter.name, line=line, sub_reports=[sub_report]))
 
         return results
 
-    def interpret_line_by_line(self, filename: str) -> List[Dict]:
+    def interpret_line_by_line(self, filename: str) -> List[Report]:
         lines = read_file(filename)
         results = []
         # None filters blank lines
         for i, line in enumerate(filter(None, lines)):
             expressions = parse.parse_expression(line)
-            exec_time = time.time()
             outputs = self.interpreter.interpret_expressions(expressions)
-            exec_time = time.time() - exec_time
 
-            for expression, output in zip(expressions, outputs):
-                results.append(
-                    reports.generate_report(expression, output, self.interpreter.name, line=i + 1, exec_time=exec_time,
-                                            filename=filename, context=line))
+            sub_reports = generate_sub_reports(outputs)
+            results.append(Report(line, filename, self.interpreter.name, line=i + 1, sub_reports=sub_reports))
 
         return results

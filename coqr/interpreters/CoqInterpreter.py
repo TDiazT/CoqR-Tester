@@ -1,9 +1,7 @@
-import subprocess
-from typing import List
-
-import re
-
 import os
+import subprocess
+import time
+from typing import List, Tuple
 
 from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 
@@ -32,14 +30,17 @@ class CoqInterpreter(AbstractInterpreter):
 
         return p2.communicate()[0]
 
-    def interpret_expressions(self, expressions: list):
+    def interpret_expressions(self, expressions: list) -> List[Tuple[str, str, int]]:
         parenthesized_expressions = ["(%s)" % exp for exp in expressions]
+
         self.__remove_saved_data()
         results = []
         for expression in parenthesized_expressions:
-            results.append(self.interpret(expression))
-        self.__remove_saved_data()
+            time_ = time.time()
+            output = self.interpret(expression)
+            results.append((expression, output, time.time() - time_))
 
+        self.__remove_saved_data()
         return results
 
     def __remove_saved_data(self):

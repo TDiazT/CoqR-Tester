@@ -1,5 +1,8 @@
 import os
 import subprocess
+from typing import Tuple, List
+
+import time
 
 from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 
@@ -17,13 +20,15 @@ class RInterpreter(AbstractInterpreter):
         p1.stdout.close()
         return p2.communicate()[0]
 
-    def interpret_expressions(self, expressions: list):
+    def interpret_expressions(self, expressions: list) -> List[Tuple[str, str, int]]:
         parenthesized_expressions = ["(%s)" % exp for exp in expressions]
 
         self.__remove_saved_data()
         results = []
         for expression in parenthesized_expressions:
-            results.append(self.interpret(expression))
+            time_ = time.time()
+            output = self.interpret(expression)
+            results.append((expression, output, time.time() - time_))
 
         self.__remove_saved_data()
         return results

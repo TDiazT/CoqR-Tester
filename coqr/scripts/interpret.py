@@ -42,6 +42,10 @@ def get_interpreter():
         sys.exit("No valid interpreter set in environment. Define either 'RSCRIPT' or 'COQ_INTERP' variables.")
 
 
+def obj_dict(obj):
+    return obj.__dict__
+
+
 if __name__ == '__main__':
     options = parser.parse_args()
 
@@ -60,4 +64,4 @@ if __name__ == '__main__':
         print('You may find the results in %s' % options.output)
         write_to_file(options.output, reports)
     else:
-        print(json.dumps(reports, indent=2))
+        print(json.dumps(reports, indent=2, default=obj_dict))

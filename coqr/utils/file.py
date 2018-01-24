@@ -7,9 +7,13 @@ def read_json_file(filename):
         return json.load(file_)
 
 
+def obj_dict(obj):
+    return obj.__dict__
+
+
 def write_to_file(filename, content):
     with open(filename, 'w') as file_:
-        json.dump(content, file_, indent=2)
+        json.dump(content, file_, indent=2, default=obj_dict)
 
 
 def read_file(filename: str) -> List[str]:
