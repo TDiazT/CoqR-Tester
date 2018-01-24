@@ -57,12 +57,12 @@ class FileInterpreter:
             self.strategy = self.strategies.get(strategy, self.strategy)
 
     def __set_dir_strategy(self, directory):
-        rsettings = os.path.join(directory, 'RSettings')
-        if os.path.isfile(rsettings):
-            with open(rsettings) as settings_:
-                strat = settings_.readline()
+        r_settings = os.path.join(directory, 'RSettings')
+        if os.path.isfile(r_settings):
+            with open(r_settings) as settings_:
+                strategy = settings_.readline()
 
-            self.strategy = self.strategies.get(strat, self.interpret_multiline)
+            self.strategy = self.strategies.get(strategy, self.interpret_multiline)
 
     def interpret_multiline(self, filename) -> List[Report]:
         parsed = parse.parse_file(filename)
