@@ -20,7 +20,19 @@ class FileInterpreter:
             'multi': self.interpret_multiline
         }
 
-    def interpret_directory(self, directory, recursive=False) -> List[Dict]:
+    def interpret_file(self, filename):
+        results = []
+        current_strategy = self.strategy
+        self.__set_file_strategy(filename)
+
+        result = self.strategy(filename)
+        results.extend(result)
+
+        self.strategy = current_strategy
+
+        return results
+
+    def interpret_directory(self, directory, recursive=False) -> List[Report]:
         results = []
         files = os.listdir(directory)
 

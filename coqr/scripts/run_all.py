@@ -4,7 +4,6 @@ import time
 
 from requests import HTTPError
 
-
 from coqr import settings
 from coqr.comparators.Comparator import Comparator
 from coqr.constants import ReportKeys
@@ -19,13 +18,13 @@ from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.stats import stats
 from coqr.utils.file import write_to_file, read_file
 
-
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
 
 parser.add_argument('src')
 parser.add_argument('output')
 parser.add_argument('--debug', action='store_true')
+parser.add_argument('--file', action='store_true')
 parser.add_argument('--server', action='store_true')
 parser.add_argument('-r', '--recursive', action='store_true')
 
@@ -81,18 +80,23 @@ if __name__ == '__main__':
     directory = os.path.dirname(options.output)
     debug = options.debug
 
-    file_interpreter = FileInterpreter(RInterpreter('R'))
-    results = file_interpreter.interpret_directory(options.src)
     delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
-    r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
-                               out=os.path.join(directory, 'r.json'), recursive=options.recursive)
+    if options.file:
+        r_results = FileInterpreter(RInterpreter(settings.RSCRIPT)).interpret_file(options.src)
+    else:
+        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
+                                        out=os.path.join(directory, 'r.json'), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
-    coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)), debug=debug,
-                                 out=os.path.join(directory, 'coq.json'), recursive=options.recursive)
+    if options.file:
+        coq_results = FileInterpreter(CoqInterpreter(settings.COQ_INTERP)).interpret_file(options.src)
+    else:
+        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
+                                          debug=debug,
+                                          out=os.path.join(directory, 'coq.json'), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")
