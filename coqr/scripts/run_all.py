@@ -24,7 +24,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument('src')
 parser.add_argument('output')
 parser.add_argument('--debug', action='store_true')
-parser.add_argument('--file', action='store_true')
 parser.add_argument('--server', action='store_true')
 parser.add_argument('-r', '--recursive', action='store_true')
 
@@ -83,7 +82,7 @@ if __name__ == '__main__':
     delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
-    if options.file:
+    if os.path.isfile(options.src):
         r_results = FileInterpreter(RInterpreter(settings.RSCRIPT)).interpret_file(options.src)
     else:
         r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
@@ -91,7 +90,7 @@ if __name__ == '__main__':
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
-    if options.file:
+    if os.path.isfile(options.src):
         coq_results = FileInterpreter(CoqInterpreter(settings.COQ_INTERP)).interpret_file(options.src)
     else:
         coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
