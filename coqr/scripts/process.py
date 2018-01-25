@@ -4,15 +4,23 @@ import sys
 
 import time
 
+from collections import namedtuple
+
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
-from coqr.utils.file import read_json_file, write_to_file
+from coqr.utils.file import write_to_file
 
 parser = argparse.ArgumentParser(description='Processes output and returns a new standard one')
 
 parser.add_argument('interp')
 parser.add_argument('input')
 parser.add_argument('-output')
+
+
+def read_json_file(filename):
+    with open(filename) as file_:
+        data = file_.read()
+        return json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
 
 
 if __name__ == '__main__':
