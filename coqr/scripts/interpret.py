@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 import sys
-
 import time
 
 from coqr.constants import ReportKeys
@@ -10,9 +9,7 @@ from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
 from coqr.interpreters.FileInterpreter import FileInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
-from coqr.utils import reports
 from coqr.utils.file import write_to_file, read_file
-from coqr.parsing import parse
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
