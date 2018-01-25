@@ -95,6 +95,7 @@ class FileInterpreter:
         results = []
         # None filters blank lines
         for i, line in enumerate(filter(None, lines)):
+            print("Interpreting line %i" % i)
             expressions = parse.parse_expression(line)
             outputs = self.interpreter.interpret_expressions(expressions)
 
