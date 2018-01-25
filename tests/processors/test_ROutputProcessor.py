@@ -1,42 +1,19 @@
 from unittest import TestCase
 
+import re
+
 from coqr.constants.Cases import Cases
 from coqr.processors.ROutputProcessor import ROutputProcessor
+from tests.processors.test_processor import TestCommonProcessor
 
 
-class TestROutputProcessor(TestCase):
+class TestROutputProcessor(TestCase, TestCommonProcessor):
     def setUp(self):
         self.processor = ROutputProcessor()
 
     def assert_results(self, results, expected_case):
         for result in results:
             self.assertEqual(result, expected_case)
-
-    def test_process_2(self):
-        result = self.processor.process_output("[1] 2\n")
-        self.assertEqual(result, '[1] 2')
-
-    def test_process_TRUE(self):
-        result = self.processor.process_output("[1] TRUE\n")
-        self.assertEqual(result, "[1] TRUE")
-
-    def test_process_FALSE(self):
-        result = self.processor.process_output("[1] FALSE\n")
-        self.assertEqual(result, "[1] FALSE")
-
-    def test_process_NA(self):
-        result = self.processor.process_output("[1] NA\n")
-        self.assertEqual(result, "[1] NA")
-
-    def test_process_NaN(self):
-        result = self.processor.process_output("[1] NaN\n")
-        self.assertEqual(result, "[1] NaN")
-
-    def test_process_Inf(self):
-        result = self.processor.process_output("[1] Inf\n")
-        self.assertEqual(result, "[1] Inf")
-        result = self.processor.process_output("[1] -Inf\n")
-        self.assertEqual(result, "[1] -Inf")
 
     def test_process_ignore_warning(self):
         result = self.processor.process_output("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced")
@@ -51,6 +28,9 @@ class TestROutputProcessor(TestCase):
         result = self.processor.process_output("NULL\n")
         self.assertEqual(result, Cases.NULL)
 
+    def test_null_in_function(self):
+        self.assert_output("function(n, trans.mat, init.dist=NULL, states=colnames(trans.mat)) { }", Cases.FUNCTION)
+
     #
     def test_process_error_object(self):
         result = self.processor.process_output("Error: object 'e' not found")
@@ -60,10 +40,6 @@ class TestROutputProcessor(TestCase):
         result = self.processor.process_output(
             "Error in e() : could not find function \"e\"")
         self.assertEqual(result, Cases.ERROR)
-
-    def test_vector_output(self):
-        result = self.processor.process_output("[1] 1 2 3\n[4] 5 6 7\n")
-        self.assertEqual(result, "[1] 1 2 3 [4] 5 6 7")
 
     def test_assignment_with_empty_array(self):
         result = self.processor.process_output("")
@@ -93,22 +69,21 @@ class TestROutputProcessor(TestCase):
         result = self.processor.process_output('.Primitive("return")\n')
         self.assertEqual(result, Cases.PRIMITIVE)
 
-    # def test_error_outputs(self):
-    #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
-    #               "Error in .Primitive(cos) : string argument required"]
-    #     results = self.processor.__process_sub_reports(errors)
-    #
-    #     self.assert_results(results, Cases.ERROR)
-    #
-    # def test_null_outputs(self):
-    #     nulls = ['NULL', 'NULL', 'NULL', 'NULL']
-    #     results = self.processor.__process_sub_reports(nulls)
-    #
-    #     self.assert_results(results, Cases.NULL)
-    #
-    # def test_function_outputs(self):
-    #     functions = ['function (x) x', 'function (x, y) { x + y }', 'function() y', 'function    (     )       1']
-    #     results = self.processor.__process_sub_reports(functions)
-    #
-    #     self.assert_results(results, Cases.FUNCTION)
-
+        # def test_error_outputs(self):
+        #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
+        #               "Error in .Primitive(cos) : string argument required"]
+        #     results = self.processor.__process_sub_reports(errors)
+        #
+        #     self.assert_results(results, Cases.ERROR)
+        #
+        # def test_null_outputs(self):
+        #     nulls = ['NULL', 'NULL', 'NULL', 'NULL']
+        #     results = self.processor.__process_sub_reports(nulls)
+        #
+        #     self.assert_results(results, Cases.NULL)
+        #
+        # def test_function_outputs(self):
+        #     functions = ['function (x) x', 'function (x, y) { x + y }', 'function() y', 'function    (     )       1']
+        #     results = self.processor.__process_sub_reports(functions)
+        #
+        #     self.assert_results(results, Cases.FUNCTION)

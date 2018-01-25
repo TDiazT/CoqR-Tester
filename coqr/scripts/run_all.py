@@ -9,6 +9,7 @@ from coqr.comparators.Comparator import Comparator
 from coqr.constants import ReportKeys
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
+from coqr.interpreters.FileInterpreter import FileInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
 from coqr.network.calls import send_reports
 from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
@@ -24,15 +25,24 @@ parser.add_argument('src')
 parser.add_argument('output')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--server', action='store_true')
+parser.add_argument('-r', '--recursive', action='store_true')
 
 
 def interpret_file(src, interpreter, debug=False, out=None):
     lines = read_file(src)
-    lines = [line.strip() for line in lines]
     reports = interpreter.interpret_expressions(lines)
 
     for report in reports:
         report[ReportKeys.FILENAME] = src
+
+    if debug:
+        write_to_file(out, reports)
+
+    return reports
+
+
+def interpret_directory(src, interpreter: FileInterpreter, recursive=False, debug=False, out=None):
+    reports = interpreter.interpret_directory(src, recursive=recursive)
 
     if debug:
         write_to_file(out, reports)
@@ -52,7 +62,7 @@ def process_outputs(output, processor: AbstractOutputProcessor, debug=False, out
 def compare_processed_outputs(processed_r, processed_coq):
     print("Comparing")
     comparator = Comparator()
-    return comparator.compare_reports(processed_coq, processed_r)
+    return comparator.compare_results(processed_coq, processed_r)
 
 
 def print_general_stats():
@@ -70,14 +80,22 @@ if __name__ == '__main__':
     debug = options.debug
 
     delta = time.time()
-    print("Interpreting %s file" % options.src)
+    print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
-    r_results = interpret_file(options.src, RInterpreter(settings.RSCRIPT), debug, os.path.join(directory, 'r.json'))
+    if os.path.isfile(options.src):
+        r_results = FileInterpreter(RInterpreter(settings.RSCRIPT)).interpret_file(options.src)
+    else:
+        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
+                                        out=os.path.join(directory, 'r.json'), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
-    coq_results = interpret_file(options.src, CoqInterpreter(settings.COQ_INTERP), debug,
-                                 os.path.join(directory, 'coq.json'))
+    if os.path.isfile(options.src):
+        coq_results = FileInterpreter(CoqInterpreter(settings.COQ_INTERP)).interpret_file(options.src)
+    else:
+        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
+                                          debug=debug,
+                                          out=os.path.join(directory, 'coq.json'), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")

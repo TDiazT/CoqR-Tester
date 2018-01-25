@@ -2,41 +2,16 @@ from unittest import TestCase
 
 from coqr.constants.Cases import Cases
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
+from tests.processors.test_processor import TestCommonProcessor
 
 
-class TestCoqOutputProcessor(TestCase):
+class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
     def setUp(self):
         self.processor = CoqOutputProcessor()
 
     def assert_results(self, results, expected_case):
         for result in results:
             self.assertEqual(result, expected_case)
-
-    def test_process_2(self):
-        result = self.processor.process_output("Success.\n[1] 2\n")
-        self.assertEqual(result, '[1] 2')
-
-    def test_process_TRUE(self):
-        result = self.processor.process_output("Success.\n[1] TRUE\n")
-        self.assertEqual(result, '[1] TRUE')
-
-    def test_process_FALSE(self):
-        result = self.processor.process_output("Success.\n[1] FALSE\n")
-        self.assertEqual(result, '[1] FALSE')
-
-    def test_process_NA(self):
-        result = self.processor.process_output("Success.\n[1] NA\n")
-        self.assertEqual(result, '[1] NA')
-
-    def test_process_NaN(self):
-        result = self.processor.process_output("Success.\n[1] NaN\n")
-        self.assertEqual(result, '[1] NaN')
-
-    def test_process_Inf(self):
-        result = self.processor.process_output("[1] Inf\n")
-        self.assertEqual(result, "[1] Inf")
-        result = self.processor.process_output("[1] -Inf\n")
-        self.assertEqual(result, "[1] -Inf")
 
     def test_process_string(self):
         result = self.processor.process_output(
@@ -56,10 +31,6 @@ class TestCoqOutputProcessor(TestCase):
             "> Error: [findFun3] Could not find function “e”.\nAn error lead to an undefined result.\n")
         self.assertEqual(result, Cases.ERROR)
 
-    def test_vector_output(self):
-        result = self.processor.process_output("Success.\n[1] 1 2 3\n[4] 5 6 7\n")
-        self.assertEqual(result, '[1] 1 2 3 [4] 5 6 7')
-
     def test_assignment_with_empty_array(self):
         result = self.processor.process_output("")
         self.assertEqual(result, Cases.INVISIBLE)
@@ -75,6 +46,22 @@ class TestCoqOutputProcessor(TestCase):
         self.assertEqual(result, Cases.UNKNOWN)
         result = self.processor.process_output("[,1]")
         self.assertEqual(result, Cases.UNKNOWN)
+
+    def test_not_implemented(self):
+        output = "> Not implemented: [do_c]\nAn error lead to an undefined state. Continuing using the old one.\n" \
+                 "An error lead to an undefined result.\n> "
+        result = self.processor.process_output(output)
+        self.assertEqual(result, Cases.NOT_IMPLEMENTED)
+
+    def test_parse_error_over_not_implemented(self):
+        output = "> Error: Parser error at offset 2133.\n> Error: [findFun3] Could not find function \u201cf\u201d.\n" \
+                 "An error lead to an undefined result.\n> Error: Parser error at offset 2166.\n" \
+                 "> > > (closure)\n> Error: [findFun3] Could not find function \u201cdeparse\u201d.\n" \
+                 "An error lead to an undefined result.\n" \
+                 "> Not implemented: [do_for]\nAn error lead to an undefined state. Continuing using the old one.\n" \
+                 "An error lead to an undefined result."
+        result = self.processor.process_output(output)
+        self.assertEquals(result, Cases.ERROR)
 
     # def test_error_outputs(self):
     #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",

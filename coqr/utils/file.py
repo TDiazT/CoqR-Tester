@@ -1,4 +1,6 @@
 import json
+from collections import namedtuple
+from typing import List
 
 
 def read_json_file(filename):
@@ -6,11 +8,26 @@ def read_json_file(filename):
         return json.load(file_)
 
 
+def read_json_to_report(filename):
+    with open(filename) as file_:
+        data = file_.read()
+        return json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+
+
+def obj_dict(obj):
+    return obj.__dict__
+
+
 def write_to_file(filename, content):
     with open(filename, 'w') as file_:
-        json.dump(content, file_, indent=2)
+        json.dump(content, file_, indent=2, default=obj_dict)
 
 
-def read_file(filename):
+def read_file(filename: str) -> List[str]:
+    """
+    Reads a file and returns a list with its lines
+    :param filename: File to read
+    :return: List of lines
+    """
     with open(filename) as file_:
         return file_.readlines()
