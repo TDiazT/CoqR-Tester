@@ -1,10 +1,17 @@
 import json
+from collections import namedtuple
 from typing import List
 
 
 def read_json_file(filename):
     with open(filename) as file_:
         return json.load(file_)
+
+
+def read_json_to_report(filename):
+    with open(filename) as file_:
+        data = file_.read()
+        return json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
 
 
 def obj_dict(obj):

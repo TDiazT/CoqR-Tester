@@ -28,6 +28,7 @@ class RInterpreter(AbstractInterpreter):
         for expression in parenthesized_expressions:
             time_ = time.time()
             output = self.interpret(expression)
+            # TODO: Strip parenthesis
             results.append((expression, output, time.time() - time_))
 
         self.__remove_saved_data()

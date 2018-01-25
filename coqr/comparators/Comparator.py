@@ -1,12 +1,16 @@
-from typing import List, Dict
+from typing import List, Tuple
 
 from coqr.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
     OtherComparable, UnknownComparable, PrimitiveComparable
-from coqr.constants import ReportKeys
-from coqr.constants.Status import Status
 from coqr.constants.Cases import Cases
-from coqr.utils import reports
-from coqr.utils.file import read_json_file
+from coqr.constants.Status import Status
+from coqr.reports import comparison
+from coqr.reports import processing
+from coqr.utils.file import read_json_to_report
+
+
+def comparison_failed(comparison):
+    return comparison == Status.NOT_IMPLEMENTED or comparison == Status.FAIL or comparison == Status.IMPOSSIBLE
 
 
 class Comparator:
@@ -18,70 +22,58 @@ class Comparator:
         Cases.PRIMITIVE: PrimitiveComparable()
     }
 
-    def compare(self, out1, out2) -> Status:
+    def compare(self, out1: Cases, out2: Cases) -> Status:
         first_out = self.output_cases.get(out1, OtherComparable(out1))
         second_out = self.output_cases.get(out2, OtherComparable(out2))
 
         return first_out.compare_to(second_out)
 
-    def compare_sub_reports(self, coq_sub_reports: list, r_sub_reports: list):
+    def compare_sub_reports(self, coq_sub_reports: List[processing.SubReport],
+                            r_sub_reports: List[processing.SubReport]) -> List[
+                            Tuple[processing.SubReport, processing.SubReport, Status]]:
+
         i = j = 0
-        result = []
-        untrusted = False
+        results = []
+        fail_occurred = False
         while i < len(coq_sub_reports) and j < len(r_sub_reports):
 
             coq_sub_report = coq_sub_reports[i]
-            out_1 = coq_sub_report[ReportKeys.PROCESSED_OUT]
             r_sub_report = r_sub_reports[j]
-            out_2 = r_sub_report[ReportKeys.PROCESSED_OUT]
-            comparison = self.compare(out_1, out_2)
-            if untrusted:
+            comparison = self.compare(coq_sub_report.processed_output, r_sub_report.processed_output)
+            if fail_occurred:
                 comparison = Status.untrusted(comparison)
             else:
-                if comparison == Status.NOT_IMPLEMENTED or comparison == Status.FAIL or comparison == Status.IMPOSSIBLE:
-                    untrusted = True
+                if comparison_failed(comparison):
+                    fail_occurred = True
 
-            comparison_sub_report = reports.make_comparison_sub_report(coq_sub_report[ReportKeys.SUB_EXPRESSION],
-                                                                       comparison, r_sub_report[ReportKeys.OUTPUT],
-                                                                       coq_sub_report[ReportKeys.OUTPUT],
-                                                                       r_sub_report[ReportKeys.PROCESSED_OUT],
-                                                                       coq_sub_report[ReportKeys.PROCESSED_OUT])
-            result.append(comparison_sub_report)
+            results.append((coq_sub_report, r_sub_report, comparison))
             i += 1
             j += 1
 
-        return result
+        return results
 
-    def compare_results(self, developed_language_results: List[Dict], target_language_results: List[Dict]):
+    def compare_results(self, developed_language_results: List[processing.Report],
+                        target_language_results: List[processing.Report]) -> List[comparison.Report]:
         results = []
 
         for report_1, report_2 in zip(developed_language_results, target_language_results):
+            comparisons = self.compare_sub_reports(report_1.sub_reports, report_2.sub_reports)
+            result = []
+            for (sub_report_1, sub_report_2, status) in comparisons:
+                final_report = comparison.Report(sub_report_1.expression, status, sub_report_1.output,
+                                                 sub_report_2.output, sub_report_1.processed_output,
+                                                 sub_report_2.processed_output, report_1.filename,
+                                                 sub_report_1.exec_time, sub_report_2.exec_time, report_1.line,
+                                                 report_1.expression)
 
-            out_1 = report_1[ReportKeys.PROCESSED_OUT]
-            out_2 = report_2[ReportKeys.PROCESSED_OUT]
-            comparison = self.compare(out_1, out_2)
+                result.append(final_report)
 
-            report = {
-                ReportKeys.EXPRESSION: report_1[ReportKeys.EXPRESSION],
-                ReportKeys.CONTEXT: report_2.get(ReportKeys.CONTEXT, ''),
-                ReportKeys.FILENAME: report_1[ReportKeys.FILENAME],
-                ReportKeys.R_EXEC_TIME: report_2[ReportKeys.EXEC_TIME],
-                ReportKeys.COQ_EXEC_TIME:report_1[ReportKeys.EXEC_TIME],
-                ReportKeys.LINE: report_1[ReportKeys.LINE],
-                ReportKeys.STATUS_CODE: comparison,
-                ReportKeys.R_OUT: report_2[ReportKeys.OUTPUT],
-                ReportKeys.COQ_OUT: report_1[ReportKeys.OUTPUT],
-                ReportKeys.PROCESSED_R: report_2[ReportKeys.PROCESSED_OUT],
-                ReportKeys.PROCESSED_COQ: report_1[ReportKeys.PROCESSED_OUT]
-            }
-
-
-            results.append(report)
+            results.extend(result)
 
         return results
 
     def compare_files(self, developed_language_file: str, target_language_file: str):
-        developed_language_results = read_json_file(developed_language_file)
-        target_language_results = read_json_file(target_language_file)
+        developed_language_results = read_json_to_report(developed_language_file)
+        target_language_results = read_json_to_report(target_language_file)
 
         return self.compare_results(developed_language_results, target_language_results)
