@@ -2,10 +2,8 @@ import argparse
 import json
 from collections import Counter
 
-from coqr.constants import ReportKeys
-from coqr.constants.Cases import Cases
 from coqr.constants.Status import Status
-from coqr.utils.file import read_json_file
+from coqr.utils.file import read_json_file, read_json_to_report
 
 parser = argparse.ArgumentParser('Processes a comparison file and prints results')
 
@@ -27,13 +25,13 @@ def __read_file(filename):
 
 
 def get_general_stats(filename):
-    file_data = read_json_file(filename)
+    file_data = read_json_to_report(filename)
 
-    reports = file_data["expression_reports"]
+    reports = file_data.expression_reports
 
     counter = Counter()
     for report in reports:
-        code = report[ReportKeys.STATUS_CODE]
+        code = report.status_code
         counter[code] += 1
 
     return counter
@@ -42,28 +40,11 @@ def get_general_stats(filename):
 def get_expressions(reports, status):
     results = []
 
-    filtered_reports = filter(lambda r: r[ReportKeys.STATUS_CODE] == status, reports)
+    filtered_reports = filter(lambda r: r.status_code == status, reports)
     for report in filtered_reports:
 
-        result = {
-            EXPRESSION: report[ReportKeys.EXPRESSION],
-            FILENAME: report[ReportKeys.FILENAME],
-            LINE: report[ReportKeys.LINE]
-        }
-        cases_ = [case.value for case in Cases]
-        if report[ReportKeys.PROCESSED_COQ] in cases_:
-            result[COQ] = str(Cases(report[ReportKeys.PROCESSED_COQ]))
-        else:
-            # Cases like [1] 1 2 3, etc
-            result[COQ] = report[ReportKeys.PROCESSED_COQ]
-
-        if report[ReportKeys.PROCESSED_R] == Cases.UNKNOWN:
-            result[R] = report[ReportKeys.R_OUT]
-        else:
-            if report[ReportKeys.PROCESSED_R] in cases_:
-                result[R] = str(Cases(report[ReportKeys.PROCESSED_R]))
-            else:
-                result[R] = report[ReportKeys.PROCESSED_R]
+        result = {EXPRESSION: report.expression, FILENAME: report.filename, LINE: report.line, COQ: report.dev_output,
+                  R: report.target_output}
 
         results.append(result)
 
@@ -80,6 +61,6 @@ if __name__ == '__main__':
 
     if options.status:
         file_data = read_json_file(options.input)
-        reports = file_data["expression_reports"]
+        reports = file_data.expression_reports
         results = get_expressions(reports, Status(options.status))
         print(json.dumps(results, indent=2))
