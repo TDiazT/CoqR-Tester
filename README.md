@@ -22,10 +22,28 @@ RSCRIPT='path/to/rscript'  # Or just name if it's in global scope
 
 ```
 
-To execute the script just do the following.
-
+Doc of the script:
 ```bash
-$ python -m coqr.scripts.run_all r_file output
+usage: run_all.py [-h] [--debug] [--server] [-r] src output
+
+Run given file with R and Coq interpreters, processes outputs and compares
+
+positional arguments:
+  src
+  output
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --debug          generates output files for each subprocess
+  --server         sends results to server
+  -r, --recursive  traverses directory recursively
+
+
+```
+
+Usage of the script:
+```bash
+$ python -m coqr.scripts.run_all r_dir/r_source_file output
 
 ```
 
