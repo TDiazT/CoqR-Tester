@@ -29,11 +29,7 @@ parser.add_argument('-r', '--recursive', action='store_true')
 
 
 def interpret_file(src, interpreter, debug=False, out=None):
-    lines = read_file(src)
-    reports = interpreter.interpret_expressions(lines)
-
-    for report in reports:
-        report[ReportKeys.FILENAME] = src
+    reports = interpreter.interpret_file(src)
 
     if debug:
         write_to_file(out, reports)
@@ -83,7 +79,8 @@ if __name__ == '__main__':
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
     if os.path.isfile(options.src):
-        r_results = FileInterpreter(RInterpreter(settings.RSCRIPT)).interpret_file(options.src)
+        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=options.debug,
+                                   out=os.path.join(directory, 'r.json'))
     else:
         r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
                                         out=os.path.join(directory, 'r.json'), recursive=options.recursive)
@@ -91,7 +88,8 @@ if __name__ == '__main__':
     delta = time.time()
     print("Running Coq interpreter...")
     if os.path.isfile(options.src):
-        coq_results = FileInterpreter(CoqInterpreter(settings.COQ_INTERP)).interpret_file(options.src)
+        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
+                                     debug=options.debug, out=os.path.join(directory, 'coq.json'))
     else:
         coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
                                           debug=debug,
