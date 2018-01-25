@@ -60,7 +60,8 @@ if __name__ == '__main__':
             print("%s : %d" % (str(Status(k)), v))
 
     if options.status:
-        file_data = read_json_file(options.input)
+        file_data = read_json_to_report(options.input)
+
         reports = file_data.expression_reports
         results = get_expressions(reports, Status(options.status))
         print(json.dumps(results, indent=2))
