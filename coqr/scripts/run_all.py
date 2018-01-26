@@ -6,7 +6,6 @@ from requests import HTTPError
 
 from coqr import settings
 from coqr.comparators.Comparator import Comparator
-from coqr.constants import ReportKeys
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
 from coqr.interpreters.FileInterpreter import FileInterpreter
@@ -16,7 +15,7 @@ from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.stats import stats
-from coqr.utils.file import write_to_file, read_file
+from coqr.utils.file import write_to_file
 
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
