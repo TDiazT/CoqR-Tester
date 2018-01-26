@@ -3,6 +3,23 @@ This project provides a set of tools to test out [proveR](https://github.com/Mbo
 It executes R code with both an R and Coq interpreter, and then proceeds to
 compare their outputs.
 
+# Setup
+
+Requirements:
+- Python 3.5
+- R binary (tested on v3.4.2)
+- proveR
+
+First of all, Python libraries should be installed. You can do it with the
+following command:
+```bash
+$ pip install -r requirements.txt
+or
+$ pip3 install -r requirements.txt
+```
+
+You may need to provide permissions to install (or install in a virtualenv)
+
 # Scripts
 
 It is possible to either execute the whole process with both interpreters
