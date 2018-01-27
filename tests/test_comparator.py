@@ -26,15 +26,18 @@ class TestComparator(TestCase):
             self.assertEqual(self.comparator.compare(Cases.ERROR, case), Status.FAIL)
 
         self.assertEqual(self.comparator.compare(Cases.ERROR, Cases.ERROR), Status.PASS)
-        self.assertEqual(self.comparator.compare(Cases.ERROR, Cases.UNKNOWN), Status.UNKNOWN)
+        self.assertEqual(self.comparator.compare(Cases.ERROR, Cases.UNKNOWN), Status.FAIL)
+        self.assertEqual(self.comparator.compare(Cases.UNKNOWN, Cases.ERROR), Status.FAIL)
 
     def test_unknown(self):
-        cases = [Cases.ERROR, Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL, Cases.PRIMITIVE,
+        cases = [Cases.INVISIBLE, Cases.UNKNOWN, Cases.FUNCTION, '[1] TRUE', Cases.NULL, Cases.PRIMITIVE,
                  Cases.TYPE]
 
         for case in cases:
             self.assertEqual(self.comparator.compare(Cases.UNKNOWN, case), Status.UNKNOWN)
             self.assertEqual(self.comparator.compare(case, Cases.UNKNOWN), Status.UNKNOWN)
+
+
 
     def test_primitive(self):
         self.assertEquals(self.comparator.compare(Cases.PRIMITIVE, Cases.FUNCTION), Status.PASS)

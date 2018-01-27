@@ -32,8 +32,6 @@ class ErrorComparable(Comparable):
             return Status.NOT_IMPLEMENTED
         elif other.case == Cases.IMPOSSIBLE:
             return Status.IMPOSSIBLE
-        elif other.case == Cases.UNKNOWN:
-            return Status.UNKNOWN
         elif self.case == other.case:
             return Status.PASS
         else:
@@ -79,6 +77,8 @@ class UnknownComparable(Comparable):
             return Status.NOT_IMPLEMENTED
         elif other.case == Cases.IMPOSSIBLE:
             return Status.IMPOSSIBLE
+        elif other.case == Cases.ERROR:
+            return Status.FAIL
         return Status.UNKNOWN
 
 
