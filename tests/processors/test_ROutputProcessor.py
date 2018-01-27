@@ -39,6 +39,9 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assert_output("[1] NA NaN 1 1.2 0.3 2e-12 -Inf\n[12] NA NA\n",
                            "[1] NA NaN 1 1.2 0.3 2e-12 -Inf\n[12] NA NA")
 
+    def test_simple_number(self):
+        self.assert_output("[1]  TRUE FALSE\n", "[1]  TRUE FALSE")
+
     def test_string_function_not_mistaken_by_real_function(self):
         self.assert_output('[1] "function"\n', '[1] "function"')
 

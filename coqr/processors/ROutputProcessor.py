@@ -9,9 +9,10 @@ class ROutputProcessor(AbstractOutputProcessor):
     function_regex = re.compile(r'^function.*$')
     primitive_regex = re.compile(r'^\.Primitive.*$', re.MULTILINE)
     null_regex = re.compile(r'^ *NULL *$', re.MULTILINE)
-    boolean_regex = re.compile(r'^ *\[\d+\](?: TRUE| FALSE)+ *$', re.MULTILINE)
-    string_regex = re.compile(r'^ *\[\d+\](?: \".*\")+ *$', re.MULTILINE)
-    number_regex = re.compile(r'^ *\[\d+\](?: (?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$', re.MULTILINE)
+    boolean_regex = re.compile(r'^ *\[\d+\] *(?: TRUE| FALSE)+ *$', re.MULTILINE)
+    string_regex = re.compile(r'^ *\[\d+\] *(?: \".*\")+ *$', re.MULTILINE)
+    number_regex = re.compile(r'^ *\[\d+\] *(?: (?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
+                              re.MULTILINE)
 
     def __init__(self):
         super().__init__()
