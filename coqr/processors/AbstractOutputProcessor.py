@@ -32,7 +32,7 @@ class AbstractOutputProcessor(ABC):
             return Cases.INVISIBLE
 
         for regex, handler in self.output_cases:
-            if regex.search(output):
+            if regex.match(output):
                 return handler(output)
 
         return Cases.UNKNOWN

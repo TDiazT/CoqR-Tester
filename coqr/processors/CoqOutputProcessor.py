@@ -5,14 +5,17 @@ from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 
 
 class CoqOutputProcessor(AbstractOutputProcessor):
-    vector_regex = re.compile(r'(\[\[*\d+\]*\][ \$\w\.\-\"]*(\[\[\d+\]\])?)')
-    digit_regex = re.compile(r'\$digits\n\[\d+\][ \w]+')
-    error_regex = re.compile(r'Error:*')
-    null_regex = re.compile(r'NULL')
-    function_regex = re.compile(r'(closure)')
-    not_implemented = re.compile(r'Not implemented')
-    impossible = re.compile(r'Impossible')
-    special_builtin_regex = re.compile(r'\((builtin|special):.*\)')
+    error_regex = re.compile(r'^Error:?.*$', re.MULTILINE)
+    function_regex = re.compile(r'^\(closure\).*$', re.MULTILINE)
+    special_builtin_regex = re.compile(r'^\((builtin|special):.*\)$', re.MULTILINE)
+    null_regex = re.compile(r'^ *NULL *$', re.MULTILINE)
+    boolean_regex = re.compile(r'^ *\[\d+\] *(?: TRUE| FALSE)+ *$', re.MULTILINE)
+    string_regex = re.compile(r'^ *\[\d+\] *(?: \".*\")+ *$', re.MULTILINE)
+    number_regex = re.compile(r'^ *\[\d+\] *(?: (?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
+                              re.MULTILINE)
+
+    not_implemented = re.compile(r'^Not implemented:.*$', re.MULTILINE)
+    impossible = re.compile(r'^Impossible.*$', re.MULTILINE)
 
     def __init__(self):
         super().__init__()
@@ -23,8 +26,11 @@ class CoqOutputProcessor(AbstractOutputProcessor):
             (self.not_implemented, lambda x: Cases.NOT_IMPLEMENTED),
             (self.impossible, lambda x: Cases.IMPOSSIBLE),
             (self.null_regex, lambda x: Cases.NULL),
-            (self.special_builtin_regex, lambda x: Cases.PRIMITIVE),
-            (self.digit_regex, lambda x: " ".join(self.digit_regex.findall(x))),
-            (self.vector_regex, lambda x: " ".join([x[0] for x in self.vector_regex.findall(x)])),
+            (self.special_builtin_regex, lambda x: Cases.FUNCTION),
             (self.function_regex, lambda x: Cases.FUNCTION),
+            (self.null_regex, lambda x: Cases.NULL),
+            (self.boolean_regex, lambda x: "\n".join(self.boolean_regex.findall(x))),
+            (self.string_regex, lambda x: "\n".join(self.string_regex.findall(x))),
+            (self.number_regex, lambda x: "\n".join(self.number_regex.findall(x))),
+
         ]

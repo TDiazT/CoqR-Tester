@@ -15,20 +15,31 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
 
     def test_process_string(self):
         result = self.processor.process_output(
-            "> Success.\n(closure)\n> Success.\n[1] \" + input + \"\n> Success.\n[1] \" + input + \"\n> ")
-        self.assertEqual(result, "[1] \"  [1] \" ")
+            "[1] \" + input + \"\n[1] \" + input + \"\n> ")
+        self.assertEqual(result, "[1] \" + input + \"\n[1] \" + input + \"")
 
     def test_process_NULL(self):
-        result = self.processor.process_output("Success.\nNULL\n")
+        result = self.processor.process_output("NULL\n")
         self.assertEqual(result, Cases.NULL)
 
+    def test_simple_number(self):
+        self.assert_output("[1]  TRUE FALSE\n", "[1]  TRUE FALSE")
+
+    def test_booleans(self):
+        self.assert_output('[1] TRUE\n', '[1] TRUE')
+        self.assert_output('[1] FALSE\n', '[1] FALSE')
+        self.assert_output('[1] TRUE\n[2] TRUE', '[1] TRUE\n[2] TRUE')
+        self.assert_output('[1] TRUE\n[1] FALSE', '[1] TRUE\n[1] FALSE')
+        self.assert_output('[1] TRUE    ', '[1] TRUE    ')
+
     def test_process_error_object(self):
-        result = self.processor.process_output("> Error: [eval] Object not found.\nAn error lead to an undefined result.\n")
+        result = self.processor.process_output(
+            "Error: [eval] Object not found.\nAn error lead to an undefined result.\n")
         self.assertEqual(result, Cases.ERROR)
 
     def test_process_error_function(self):
         result = self.processor.process_output(
-            "> Error: [findFun3] Could not find function “e”.\nAn error lead to an undefined result.\n")
+            "Error: [findFun3] Could not find function “e”.\nAn error lead to an undefined result.\n")
         self.assertEqual(result, Cases.ERROR)
 
     def test_assignment_with_empty_array(self):
@@ -36,7 +47,7 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         self.assertEqual(result, Cases.INVISIBLE)
 
     def test_function(self):
-        result = self.processor.process_output("Success.\n(closure)\n")
+        result = self.processor.process_output("(closure)\n")
         self.assertEqual(result, Cases.FUNCTION)
 
     def test_unknown(self):
@@ -48,13 +59,12 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         self.assertEqual(result, Cases.UNKNOWN)
 
     def test_not_implemented(self):
-        output = "> Not implemented: [do_c]\nAn error lead to an undefined state. Continuing using the old one.\n" \
-                 "An error lead to an undefined result.\n> "
-        result = self.processor.process_output(output)
-        self.assertEqual(result, Cases.NOT_IMPLEMENTED)
+        self.assert_output(
+            "Not implemented: [do_c]\nAn error lead to an undefined state. Continuing using the old one.\nAn error lead to an undefined result.\n> ",
+            Cases.NOT_IMPLEMENTED)
 
     def test_parse_error_over_not_implemented(self):
-        output = "> Error: Parser error at offset 2133.\n> Error: [findFun3] Could not find function \u201cf\u201d.\n" \
+        output = "Error: Parser error at offset 2133.\n> Error: [findFun3] Could not find function \u201cf\u201d.\n" \
                  "An error lead to an undefined result.\n> Error: Parser error at offset 2166.\n" \
                  "> > > (closure)\n> Error: [findFun3] Could not find function \u201cdeparse\u201d.\n" \
                  "An error lead to an undefined result.\n" \
@@ -63,21 +73,21 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         result = self.processor.process_output(output)
         self.assertEquals(result, Cases.ERROR)
 
-    # def test_error_outputs(self):
-    #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
-    #               "Error in .Primitive(cos) : string argument required"]
-    #     results = self.processor.__process_rub_reports(errors)
-    #
-    #     self.assert_results(results, Cases.ERROR)
-    #
-    # def test_null_outputs(self):
-    #     nulls = ['NULL', 'NULL', 'NULL', 'NULL']
-    #     results = self.processor.__process_rub_reports(nulls)
-    #
-    #     self.assert_results(results, Cases.NULL)
-    #
-    # def test_function_outputs(self):
-    #     functions = ['(closure)', '(closure)', '(closure)', '(closure)']
-    #     results = self.processor.__process_rub_reports(functions)
-    #
-    #     self.assert_results(results, Cases.FUNCTION)
+        # def test_error_outputs(self):
+        #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
+        #               "Error in .Primitive(cos) : string argument required"]
+        #     results = self.processor.__process_rub_reports(errors)
+        #
+        #     self.assert_results(results, Cases.ERROR)
+        #
+        # def test_null_outputs(self):
+        #     nulls = ['NULL', 'NULL', 'NULL', 'NULL']
+        #     results = self.processor.__process_rub_reports(nulls)
+        #
+        #     self.assert_results(results, Cases.NULL)
+        #
+        # def test_function_outputs(self):
+        #     functions = ['(closure)', '(closure)', '(closure)', '(closure)']
+        #     results = self.processor.__process_rub_reports(functions)
+        #
+        #     self.assert_results(results, Cases.FUNCTION)
