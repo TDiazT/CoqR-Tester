@@ -6,6 +6,7 @@ from coqr.constants.Cases import Cases
 from coqr.constants.Status import Status
 from coqr.reports import comparison
 from coqr.reports import processing
+from coqr.reports.results import ProcessedResult
 from coqr.utils.file import read_json_to_report
 
 
@@ -22,15 +23,12 @@ class Comparator:
         Cases.PRIMITIVE: PrimitiveComparable()
     }
 
-    def compare(self, out1, out2) -> Status:
-        first_out = self.output_cases.get(out1, OtherComparable(out1))
-        second_out = self.output_cases.get(out2, OtherComparable(out2))
-
-        return first_out.compare_to(second_out)
+    def compare(self, out1: ProcessedResult, out2: ProcessedResult) -> Status:
+        return out1.compare_to(out2)
 
     def compare_sub_reports(self, coq_sub_reports: List[processing.SubReport],
                             r_sub_reports: List[processing.SubReport]) -> List[
-                            Tuple[processing.SubReport, processing.SubReport, Status]]:
+        Tuple[processing.SubReport, processing.SubReport, Status]]:
 
         i = j = 0
         results = []
