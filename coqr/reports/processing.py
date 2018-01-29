@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 from coqr.constants import Cases
 from coqr.reports import interpretation
@@ -13,7 +13,7 @@ class SubReport:
         self.exec_time = exec_time
 
     @classmethod
-    def from_interp_sub_report(cls, sub_report: interpretation.SubReport, processed_output: Cases):
+    def from_interp_sub_report(cls, sub_report: interpretation.InterpretationResult, processed_output: Cases):
         return cls(sub_report.expression, sub_report.output, processed_output, sub_report.exec_time)
 
 
@@ -36,5 +36,3 @@ class Report:
 
     def add_sub_reports(self, sub_reports: List[SubReport]) -> None:
         self.sub_reports.extend(sub_reports.copy())
-
-

@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 
-class SubReport:
+class InterpretationResult:
     def __init__(self, expression: str, output: str, exec_time: float = -1) -> None:
         super().__init__()
         self.expression = expression
@@ -11,7 +11,7 @@ class SubReport:
 
 class Report:
     def __init__(self, expression: str, filename: str, interpreter: str, line: int = -1,
-                 sub_reports: List[SubReport] = None) -> None:
+                 sub_reports: List[InterpretationResult] = None) -> None:
         super().__init__()
         if sub_reports is None:
             sub_reports = []
@@ -21,13 +21,13 @@ class Report:
         self.filename = filename
         self.sub_reports = sub_reports
 
-    def add_sub_report(self, sub_report: SubReport) -> None:
+    def add_sub_report(self, sub_report: InterpretationResult) -> None:
         self.sub_reports.append(sub_report)
 
 
-def generate_sub_reports(results: List[Tuple[str, str, int]]) -> List[SubReport]:
+def generate_sub_reports(results: List[Tuple[str, str, int]]) -> List[InterpretationResult]:
     reports = []
     for tuple_ in results:
-        reports.append(SubReport(tuple_[0], tuple_[1], tuple_[2]))
+        reports.append(InterpretationResult(tuple_[0], tuple_[1], tuple_[2]))
 
     return reports

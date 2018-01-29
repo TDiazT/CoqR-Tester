@@ -1,7 +1,8 @@
 from unittest import TestCase
 
-from coqr.constants.Cases import Cases
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
+from coqr.reports.results import VectorResult, NullResult, FunctionResult, ErrorResult, InvisibleResult, UnknownResult, \
+    NotImplementedResult
 from tests.processors.test_processor import TestCommonProcessor
 
 
@@ -9,59 +10,26 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
     def setUp(self):
         self.processor = CoqOutputProcessor()
 
-    def assert_results(self, results, expected_case):
-        for result in results:
-            self.assertEqual(result, expected_case)
+    def assert_vector(self, output, expected: list):
+        result = self.processor.process_output(output)
+        self.assertIsInstance(result, VectorResult)
+        self.assertEqual(result.result, expected)
 
-    def test_process_string(self):
-        result = self.processor.process_output(
-            "[1] \" + input + \"\n[1] \" + input + \"\n> ")
-        self.assertEqual(result, "[1] \" + input + \"\n[1] \" + input + \"")
-
-    def test_process_NULL(self):
-        result = self.processor.process_output("NULL\n")
-        self.assertEqual(result, Cases.NULL)
-
-    def test_simple_number(self):
-        self.assert_output("[1]  TRUE FALSE\n", "[1]  TRUE FALSE")
-
-    def test_booleans(self):
-        self.assert_output('[1] TRUE\n', '[1] TRUE')
-        self.assert_output('[1] FALSE\n', '[1] FALSE')
-        self.assert_output('[1] TRUE\n[2] TRUE', '[1] TRUE\n[2] TRUE')
-        self.assert_output('[1] TRUE\n[1] FALSE', '[1] TRUE\n[1] FALSE')
-        self.assert_output('[1] TRUE    ', '[1] TRUE    ')
+    def assert_is_instance(self, output, instance):
+        result = self.processor.process_output(output)
+        self.assertIsInstance(result, instance)
 
     def test_process_error_object(self):
-        result = self.processor.process_output(
-            "Error: [eval] Object not found.\nAn error lead to an undefined result.\n")
-        self.assertEqual(result, Cases.ERROR)
-
-    def test_process_error_function(self):
-        result = self.processor.process_output(
-            "Error: [findFun3] Could not find function “e”.\nAn error lead to an undefined result.\n")
-        self.assertEqual(result, Cases.ERROR)
-
-    def test_assignment_with_empty_array(self):
-        result = self.processor.process_output("")
-        self.assertEqual(result, Cases.INVISIBLE)
+        self.assert_is_instance("Error: [eval] Object not found.\nAn error lead to an undefined result.\n", ErrorResult)
+        self.assert_is_instance("Error: [eval] Object not found.\nAn error lead to an undefined result.\n", ErrorResult)
 
     def test_function(self):
-        result = self.processor.process_output("(closure)\n")
-        self.assertEqual(result, Cases.FUNCTION)
-
-    def test_unknown(self):
-        result = self.processor.process_output("anything")
-        self.assertEqual(result, Cases.UNKNOWN)
-        result = self.processor.process_output("adfasd")
-        self.assertEqual(result, Cases.UNKNOWN)
-        result = self.processor.process_output("[,1]")
-        self.assertEqual(result, Cases.UNKNOWN)
+        self.assert_is_instance("(closure)\n", FunctionResult)
 
     def test_not_implemented(self):
-        self.assert_output(
-            "Not implemented: [do_c]\nAn error lead to an undefined state. Continuing using the old one.\nAn error lead to an undefined result.\n> ",
-            Cases.NOT_IMPLEMENTED)
+        self.assert_is_instance(
+            "Not implemented: [do_c]\nAn error lead to an undefined state. Continuing using the old one.\n"
+            "An error lead to an undefined result.\n> ", NotImplementedResult)
 
     def test_parse_error_over_not_implemented(self):
         output = "Error: Parser error at offset 2133.\n> Error: [findFun3] Could not find function \u201cf\u201d.\n" \
@@ -70,24 +38,70 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
                  "An error lead to an undefined result.\n" \
                  "> Not implemented: [do_for]\nAn error lead to an undefined state. Continuing using the old one.\n" \
                  "An error lead to an undefined result."
-        result = self.processor.process_output(output)
-        self.assertEquals(result, Cases.ERROR)
+        self.assert_is_instance(output, ErrorResult)
 
-        # def test_error_outputs(self):
-        #     errors = ["Error in e() : could not find function \"e\"", "Error: object 'e' not found",
-        #               "Error in .Primitive(cos) : string argument required"]
-        #     results = self.processor.__process_rub_reports(errors)
-        #
-        #     self.assert_results(results, Cases.ERROR)
-        #
-        # def test_null_outputs(self):
-        #     nulls = ['NULL', 'NULL', 'NULL', 'NULL']
-        #     results = self.processor.__process_rub_reports(nulls)
-        #
-        #     self.assert_results(results, Cases.NULL)
-        #
-        # def test_function_outputs(self):
-        #     functions = ['(closure)', '(closure)', '(closure)', '(closure)']
-        #     results = self.processor.__process_rub_reports(functions)
-        #
-        #     self.assert_results(results, Cases.FUNCTION)
+    def test_process_NULL(self):
+        self.assert_is_instance("NULL", NullResult)
+
+    def test_process_ignore_warning(self):
+        self.assert_vector("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced", ['NaN'])
+
+    def test_booleans(self):
+        self.assert_vector('[1] TRUE\n', ['TRUE'])
+        self.assert_vector('[1] FALSE\n', ['FALSE'])
+        self.assert_vector('[1] TRUE\n[2] TRUE', ['TRUE', 'TRUE'])
+        self.assert_vector('[1] TRUE\n[1] FALSE', ['TRUE', 'FALSE'])
+        self.assert_vector('[1] TRUE    ', ['TRUE'])
+
+    def test_simple_number(self):
+        self.assert_vector("[1] 1", ['1'])
+
+    def test_process_string(self):
+        self.assert_vector("[1] \" + input + \"\n[1] \" + input + \"\n> ", ["\" + input + \"", "\" + input + \""])
+
+    def test_process_NA(self):
+        self.assert_vector("[1] NA", ['NA'])
+
+    def test_process_NaN(self):
+        self.assert_vector("[1] NaN", ['NaN'])
+
+    def test_process_Inf(self):
+        self.assert_vector("[1] Inf", ['Inf'])
+        self.assert_vector("[1] -Inf", ['-Inf'])
+
+    def test_vector_output(self):
+        self.assert_vector("[1] 1 2 3\n[4] 5 6 7\n", ['1', '2', '3', '5', '6', '7'])
+
+    def test_vector_with_decimals(self):
+        self.assert_vector("[1] 2.4259 3.4293 3.9896 5.2832 5.3386 4.9822\n",
+                           ['2.4259', '3.4293', '3.9896', '5.2832', '5.3386', '4.9822'])
+
+    def test_process_multiple_nan(self):
+        self.assert_vector("[1] NaN\n [1] NaN\n [4] NaN\n", ['NaN'] * 3)
+        self.assert_vector("[1] NaN NaN NaN\n[1] NaN\n [4] NaN\n", ['NaN'] * 5)
+
+    def test_numeric_output(self):
+        self.assert_vector("[1] NA NaN 1 1.2 0.3 2e-12 -Inf\n[12] NA NA\n",
+                           ['NA', 'NaN', '1', '1.2', '0.3', '2e-12', '-Inf', 'NA', 'NA'])
+
+    def test_string_function_not_mistaken_by_real_function(self):
+        self.assert_vector('[1] "function"\n', ['"function"'])
+
+    def test_process_error_function(self):
+        self.assert_is_instance("Error in e() : could not find function \"e\"", ErrorResult)
+
+    def test_assignment_with_empty_array(self):
+        self.assert_is_instance("", InvisibleResult)
+
+    def test_unknown(self):
+        self.assert_is_instance("anything", UnknownResult)
+        self.assert_is_instance("adfasd", UnknownResult)
+
+    def test_vector_type_to_unknown(self):
+        self.assert_is_instance("integer(0)", UnknownResult)
+        self.assert_is_instance("numeric(0)", UnknownResult)
+        self.assert_is_instance("logical(0)", UnknownResult)
+        self.assert_is_instance("character(0)", UnknownResult)
+
+    def test_cbind_output(self):
+        self.assert_is_instance("     [,1] [,2]\n[1,]    1    2\n[2,]    2    2\n[3,]    3    2\n", UnknownResult)

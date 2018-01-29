@@ -3,6 +3,7 @@ from typing import List
 
 from coqr.constants.Cases import Cases
 from coqr.reports import interpretation, processing
+from coqr.reports.results import InvisibleResult, UnknownResult
 
 
 class AbstractOutputProcessor(ABC):
@@ -19,23 +20,25 @@ class AbstractOutputProcessor(ABC):
 
         return results
 
-    def __process_sub_reports(self, sub_reports: List[interpretation.SubReport]) -> List[processing.SubReport]:
+    def __process_sub_reports(self, sub_reports: List[interpretation.InterpretationResult]) -> List[
+                                                                                            processing.SubReport]:
         results = []
         for sub_report in sub_reports:
-            results.append(processing.SubReport.from_interp_sub_report(sub_report, self.process_output(sub_report.output)))
+            results.append(
+                processing.SubReport.from_interp_sub_report(sub_report, self.process_output(sub_report.output)))
 
         return results
 
     def process_output(self, output):
 
         if not output:
-            return Cases.INVISIBLE
+            return InvisibleResult()
 
         for regex, handler in self.output_cases:
             if regex.match(output):
                 return handler(output)
 
-        return Cases.UNKNOWN
+        return UnknownResult()
 
     @abstractmethod
     def define_cases_handlers(self):

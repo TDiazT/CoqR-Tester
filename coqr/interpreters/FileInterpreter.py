@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from coqr.interpreters import AbstractInterpreter
 from coqr.parsing import parse
-from coqr.reports.interpretation import Report, generate_sub_reports, SubReport
+from coqr.reports.interpretation import Report, generate_sub_reports, InterpretationResult
 from coqr.utils.file import read_file
 
 
@@ -85,7 +85,7 @@ class FileInterpreter:
         results = []
 
         for (expression, output, exec_time), line in zip(outputs, lines):
-            sub_report = SubReport(expression, output, exec_time)
+            sub_report = InterpretationResult(expression, output, exec_time)
             results.append(Report(expression, filename, self.interpreter.name, line=line, sub_reports=[sub_report]))
 
         return results
