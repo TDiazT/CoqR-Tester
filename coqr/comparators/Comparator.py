@@ -22,7 +22,7 @@ class Comparator:
         Cases.PRIMITIVE: PrimitiveComparable()
     }
 
-    def compare(self, out1: Cases, out2: Cases) -> Status:
+    def compare(self, out1, out2) -> Status:
         first_out = self.output_cases.get(out1, OtherComparable(out1))
         second_out = self.output_cases.get(out2, OtherComparable(out2))
 
