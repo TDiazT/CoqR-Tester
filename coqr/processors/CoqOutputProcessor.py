@@ -11,9 +11,9 @@ class CoqOutputProcessor(AbstractOutputProcessor):
     function_regex = re.compile(r'^\(closure\).*$', re.MULTILINE)
     special_builtin_regex = re.compile(r'^\((builtin|special):.*\)$', re.MULTILINE)
     null_regex = re.compile(r'^ *NULL *$', re.MULTILINE)
-    boolean_regex = re.compile(r'^ *\[\d+\] *(?: TRUE| FALSE)+ *$', re.MULTILINE)
-    string_regex = re.compile(r'^ *\[\d+\] *(?: \".*\")+ *$', re.MULTILINE)
-    number_regex = re.compile(r'^ *\[\d+\] *(?: (?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
+    boolean_regex = re.compile(r'^ *\[\d+\] *(?: +TRUE| FALSE)+ *$', re.MULTILINE)
+    string_regex = re.compile(r'^ *\[\d+\] *(?: +\".*\")+ *$', re.MULTILINE)
+    number_regex = re.compile(r'^ *\[\d+\] *(?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
                               re.MULTILINE)
 
     not_implemented = re.compile(r'^Not implemented:.*$', re.MULTILINE)

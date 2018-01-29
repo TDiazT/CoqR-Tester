@@ -1,11 +1,11 @@
 from typing import List
 
-from coqr.constants import Cases
 from coqr.reports import interpretation
+from coqr.reports.results import ProcessedResult
 
 
 class SubReport:
-    def __init__(self, expression: str, output: str, processed_output: Cases, exec_time: float = -1) -> None:
+    def __init__(self, expression: str, output: str, processed_output: ProcessedResult, exec_time: float = -1) -> None:
         super().__init__()
         self.expression = expression
         self.output = output
@@ -13,7 +13,7 @@ class SubReport:
         self.exec_time = exec_time
 
     @classmethod
-    def from_interp_sub_report(cls, sub_report: interpretation.InterpretationResult, processed_output: Cases):
+    def from_interp_sub_report(cls, sub_report: interpretation.InterpretationResult, processed_output: ProcessedResult):
         return cls(sub_report.expression, sub_report.output, processed_output, sub_report.exec_time)
 
 

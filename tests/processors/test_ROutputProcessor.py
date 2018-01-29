@@ -40,6 +40,17 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
     def test_simple_number(self):
         self.assert_vector("[1] 1", ['1'])
 
+    def test_vector_with_spaces(self):
+        self.assert_vector('[1] TRUE\n', ['TRUE'])
+        self.assert_vector('[1]     FALSE    TRUE  \n', ['FALSE', 'TRUE'])
+        self.assert_vector('[1]     "test"    "test2"  \n', ['"test"', '"test2"'])
+        self.assert_vector('[1]     1   2 3\n', ['1', '2', '3'])
+        self.assert_vector('    [1] 1      3', ['1', '3'])
+
+    def test_vector_with_newlines(self):
+        self.assert_vector('[1] 1 2 3 4\n[4] 5 6 7 8', ['1', '2', '3', '4', '5', '6', '7', '8'])
+        self.assert_vector('[1] TRUE\n[2] FALSE\n[3] TRUE\n[4] FALSE', ['TRUE', 'FALSE', 'TRUE', 'FALSE'])
+
     def test_process_string(self):
         self.assert_vector("[1] \" + input + \"\n[1] \" + input + \"\n> ", ["\" + input + \"", "\" + input + \""])
 
