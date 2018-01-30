@@ -22,10 +22,11 @@ class CoqInterpreter(AbstractInterpreter):
         else:
             initial_state = os.path.join(self.interpreter, 'low', 'initial.state')
 
-        p2 = subprocess.Popen([self.exec_path, '-initial-state', initial_state, '-final-state', self.final_state],
-                              stdin=p1.stdout, stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT,
-                              universal_newlines=True)
+        p2 = subprocess.Popen(
+            [self.exec_path, '-initial-state', initial_state, '-final-state', self.final_state, '-hide-prompt'],
+            stdin=p1.stdout, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True)
         p1.stdout.close()
 
         return p2.communicate()[0]
