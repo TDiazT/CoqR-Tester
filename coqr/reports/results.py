@@ -6,6 +6,8 @@ from coqr.constants.Status import Status
 
 # noinspection PyMethodMayBeStatic
 class ProcessedResult(ABC):
+    processed_output = ''
+
     @abstractmethod
     def compare_to(self, other) -> Status:
         return Status.FAIL
@@ -34,8 +36,15 @@ class ProcessedResult(ABC):
     def compare_to_invisible(self, other) -> Status:
         return Status.FAIL
 
+    def to_json(self):
+        return self.processed_output
+
 
 class NullResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'NULL'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_null(self)
 
@@ -44,6 +53,10 @@ class NullResult(ProcessedResult):
 
 
 class ImpossibleResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'Impossible'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_impossible(self)
 
@@ -70,6 +83,10 @@ class ImpossibleResult(ProcessedResult):
 
 
 class NotImplementedResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'Not Implemented'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_not_implemented(self)
 
@@ -93,6 +110,10 @@ class NotImplementedResult(ProcessedResult):
 
 
 class ErrorResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'ERROR'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_error(self)
 
@@ -101,6 +122,10 @@ class ErrorResult(ProcessedResult):
 
 
 class FunctionResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'FUNCTION'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_function(self)
 
@@ -109,6 +134,10 @@ class FunctionResult(ProcessedResult):
 
 
 class UnknownResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'UNKNOWN'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_unknown(self)
 
@@ -120,6 +149,7 @@ class VectorResult(ProcessedResult):
     def __init__(self, vector: List[str]) -> None:
         super().__init__()
         self.result = vector
+        self.processed_output = 'VECTOR'
 
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_vector(self)
@@ -127,8 +157,15 @@ class VectorResult(ProcessedResult):
     def compare_to_vector(self, other):
         return Status.PASS if self.result == other.result else Status.FAIL
 
+    def to_json(self):
+        return str(self.result)
+
 
 class InvisibleResult(ProcessedResult):
+    def __init__(self) -> None:
+        super().__init__()
+        self.processed_output = 'INVISIBLE'
+
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_invisible(self)
 

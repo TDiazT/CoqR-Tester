@@ -16,6 +16,9 @@ class SubReport:
     def from_interp_sub_report(cls, sub_report: interpretation.InterpretationResult, processed_output: ProcessedResult):
         return cls(sub_report.expression, sub_report.output, processed_output, sub_report.exec_time)
 
+    def to_json(self):
+        return self.__dict__
+
 
 class Report:
     def __init__(self, expression: str, filename: str, interpreter: str, line: int = -1,
@@ -36,3 +39,6 @@ class Report:
 
     def add_sub_reports(self, sub_reports: List[SubReport]) -> None:
         self.sub_reports.extend(sub_reports.copy())
+
+    def to_json(self):
+        return self.__dict__

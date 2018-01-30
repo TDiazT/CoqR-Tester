@@ -13,3 +13,6 @@ class Report:
         self.line = line
         self.filename = filename
         self.context = context
+
+    def to_json(self):
+        return self.__dict__

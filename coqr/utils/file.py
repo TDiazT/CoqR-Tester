@@ -2,6 +2,8 @@ import json
 from collections import namedtuple
 from typing import List
 
+from coqr.utils.encoder import JSONSerializer
+
 
 def read_json_file(filename):
     with open(filename) as file_:
@@ -20,7 +22,7 @@ def obj_dict(obj):
 
 def write_to_file(filename, content):
     with open(filename, 'w') as file_:
-        json.dump(content, file_, indent=2, default=obj_dict)
+        json.dump(content, file_, indent=2, cls=JSONSerializer)
 
 
 def read_file(filename: str) -> List[str]:

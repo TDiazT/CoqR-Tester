@@ -8,6 +8,9 @@ class InterpretationResult:
         self.output = output
         self.exec_time = exec_time
 
+    def to_json(self):
+        return self.__dict__
+
 
 class Report:
     def __init__(self, expression: str, filename: str, interpreter: str, line: int = -1,
@@ -23,6 +26,9 @@ class Report:
 
     def add_sub_report(self, sub_report: InterpretationResult) -> None:
         self.sub_reports.append(sub_report)
+
+    def to_json(self):
+        return self.__dict__
 
 
 def generate_sub_reports(results: List[Tuple[str, str, int]]) -> List[InterpretationResult]:
