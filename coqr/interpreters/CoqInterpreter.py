@@ -32,14 +32,11 @@ class CoqInterpreter(AbstractInterpreter):
         return p2.communicate()[0]
 
     def interpret_expressions(self, expressions: list) -> List[Tuple[str, str, int]]:
-        parenthesized_expressions = ["(%s)" % exp for exp in expressions]
-
         self.__remove_saved_data()
         results = []
-        for expression in parenthesized_expressions:
+        for expression in expressions:
             time_ = time.time()
-            output = self.interpret(expression)
-            # TODO: Strip parenthesis
+            output = self.interpret("(" + expression + ")")
             results.append((expression, output, time.time() - time_))
 
         self.__remove_saved_data()
