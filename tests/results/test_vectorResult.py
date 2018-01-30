@@ -1,3 +1,4 @@
+from math import nan
 from typing import List
 from unittest import TestCase
 
@@ -57,7 +58,7 @@ class TestVectorResult(TestCase):
         self.assert_vector_equals([True, True], [True, True])
         self.assert_vector_equals([False], [False])
         self.assert_vector_equals([False, True], [False, True])
-        self.assert_vector_equals(['NA', 'NaN'], ['NA', 'NaN'])
+        self.assert_vector_equals([None, nan], [None, nan])
 
     def test_failed_vector_comparison(self):
         self.assert_vector_not_equals([], ['1'])

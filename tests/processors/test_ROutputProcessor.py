@@ -1,3 +1,4 @@
+from math import inf, isnan
 from unittest import TestCase
 
 from coqr.processors.ROutputProcessor import ROutputProcessor
@@ -28,7 +29,9 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assertIsInstance(result, NullResult)
 
     def test_process_ignore_warning(self):
-        self.assert_vector("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced", ['NaN'])
+        output = self.processor.process_output("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced")
+        self.assertTrue(len(output.result) == 1)
+        self.assertTrue(isnan(output.result[0]))
 
     def test_booleans(self):
         self.assert_vector('[1] TRUE\n', [True])
@@ -38,46 +41,55 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector('[1] TRUE    ', [True])
 
     def test_simple_number(self):
-        self.assert_vector("[1] 1", ['1'])
+        self.assert_vector("[1] 1", [1.0])
 
     def test_vector_with_spaces(self):
         self.assert_vector('[1] TRUE\n', [True])
         self.assert_vector('[1]     FALSE    TRUE  \n', [False, True])
         self.assert_vector('[1]     "test"    "test2"  \n', ['"test"', '"test2"'])
-        self.assert_vector('[1]     1   2 3\n', ['1', '2', '3'])
-        self.assert_vector('    [1] 1      3', ['1', '3'])
+        self.assert_vector('[1]     1   2 3\n', [1.0, 2.0, 3.0])
+        self.assert_vector('    [1] 1      3', [1.0, 3.0])
 
     def test_vector_with_newlines(self):
-        self.assert_vector('[1] 1 2 3 4\n[4] 5 6 7 8', ['1', '2', '3', '4', '5', '6', '7', '8'])
+        self.assert_vector('[1] 1 2 3 4\n[4] 5 6 7 8', [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
         self.assert_vector('[1] TRUE\n[2] FALSE\n[3] TRUE\n[4] FALSE', [True, False, True, False])
 
     def test_process_string(self):
         self.assert_vector("[1] \" + input + \"\n[1] \" + input + \"\n> ", ["\" + input + \"", "\" + input + \""])
 
     def test_process_NA(self):
-        self.assert_vector("[1] NA", ['NA'])
+        self.assert_vector("[1] NA", [None])
 
     def test_process_NaN(self):
-        self.assert_vector("[1] NaN", ['NaN'])
+        output = self.processor.process_output("[1] NaN")
+        self.assertTrue(len(output.result) == 1)
+        self.assertTrue(isnan(output.result[0]))
 
     def test_process_Inf(self):
-        self.assert_vector("[1] Inf", ['Inf'])
-        self.assert_vector("[1] -Inf", ['-Inf'])
+        self.assert_vector("[1] Inf", [inf])
+        self.assert_vector("[1] -Inf", [-inf])
 
     def test_vector_output(self):
-        self.assert_vector("[1] 1 2 3\n[4] 5 6 7\n", ['1', '2', '3', '5', '6', '7'])
+        self.assert_vector("[1] 1 2 3\n[4] 5 6 7\n", [1.0, 2.0, 3.0, 5.0, 6.0, 7.0])
 
     def test_vector_with_decimals(self):
         self.assert_vector("[1] 2.4259 3.4293 3.9896 5.2832 5.3386 4.9822\n",
-                           ['2.4259', '3.4293', '3.9896', '5.2832', '5.3386', '4.9822'])
+                           [2.4259, 3.4293, 3.9896, 5.2832, 5.3386, 4.9822])
 
     def test_process_multiple_nan(self):
-        self.assert_vector("[1] NaN\n [1] NaN\n [4] NaN\n", ['NaN'] * 3)
-        self.assert_vector("[1] NaN NaN NaN\n[1] NaN\n [4] NaN\n", ['NaN'] * 5)
+        output = self.processor.process_output("[1] NaN\n [1] NaN\n [4] NaN\n")
+        self.assertTrue(len(output.result) == 3)
+        for out in output.result:
+            self.assertTrue(isnan(out))
+
+        output = self.processor.process_output("[1] NaN NaN NaN\n[1] NaN\n [4] NaN\n")
+        self.assertTrue(len(output.result) == 5)
+        for out in output.result:
+            self.assertTrue(isnan(out))
 
     def test_numeric_output(self):
-        self.assert_vector("[1] NA NaN 1 1.2 0.3 2e-12 -Inf\n[12] NA NA\n",
-                           ['NA', 'NaN', '1', '1.2', '0.3', '2e-12', '-Inf', 'NA', 'NA'])
+        self.assert_vector("[1] NA  1 1.2 0.3 2e-12 -Inf\n[12] NA NA\n",
+                           [None, 1.0, 1.2, 0.3, 2e-12, -inf, None, None])
 
     def test_string_function_not_mistaken_by_real_function(self):
         self.assert_vector('[1] "function"\n', ['"function"'])

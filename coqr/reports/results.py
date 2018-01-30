@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from coqr.constants.Status import Status
+from math import nan, isnan
 
 
 # noinspection PyMethodMayBeStatic
@@ -159,6 +160,36 @@ class VectorResult(ProcessedResult):
 
     def to_json(self):
         return str(self.result)
+
+
+class BooleanVector(VectorResult):
+    def __init__(self, vector: List) -> None:
+        super().__init__(vector)
+        self.processed_output = 'BOOLEAN_VECTOR'
+
+
+class StringVector(VectorResult):
+    def __init__(self, vector: List) -> None:
+        super().__init__(vector)
+        self.processed_output = 'STRING_VECTOR'
+
+
+class NumericVector(VectorResult):
+    def __init__(self, vector: List) -> None:
+        super().__init__(vector)
+        self.processed_output = 'NUMERIC_VECTOR'
+
+    def compare_to_vector(self, other):
+        if len(self.result) != len(self.result):
+            return Status.FAIL
+
+        for n1, n2 in zip(self.result, other.result):
+            if isnan(n1) and isnan(n2):
+                continue
+            elif n1 != n2:
+                return Status.FAIL
+
+        return Status.PASS
 
 
 class InvisibleResult(ProcessedResult):

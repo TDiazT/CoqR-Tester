@@ -3,7 +3,8 @@ from distutils.util import strtobool
 from typing import List, Tuple
 
 from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
-from coqr.reports.results import ErrorResult, FunctionResult, NullResult, VectorResult
+from coqr.reports.results import ErrorResult, FunctionResult, NullResult, VectorResult, BooleanVector, StringVector, \
+    NumericVector
 
 
 class ROutputProcessor(AbstractOutputProcessor):
@@ -25,9 +26,9 @@ class ROutputProcessor(AbstractOutputProcessor):
             (self.function_regex, lambda x: FunctionResult()),
             (self.primitive_regex, lambda x: FunctionResult()),
             (self.null_regex, lambda x: NullResult()),
-            (self.boolean_regex, lambda x: VectorResult(self.__result_to_boolean_vector(self.boolean_regex.findall(x)))),
-            (self.string_regex, lambda x: VectorResult(self.__result_to_string_vector(self.string_regex.findall(x)))),
-            (self.number_regex, lambda x: VectorResult(self.__result_to_vector(self.number_regex.findall(x)))),
+            (self.boolean_regex, lambda x: BooleanVector(self.__result_to_boolean_vector(self.boolean_regex.findall(x)))),
+            (self.string_regex, lambda x: StringVector(self.__result_to_string_vector(self.string_regex.findall(x)))),
+            (self.number_regex, lambda x: NumericVector(self.__result_to_numeric_vector(self.number_regex.findall(x)))),
         ]
 
     def __result_to_boolean_vector(self, result: List[str]) -> List[bool]:
@@ -40,13 +41,17 @@ class ROutputProcessor(AbstractOutputProcessor):
 
         return results
 
-    def __result_to_vector(self, result: List[str]) -> List[str]:
+    def __result_to_numeric_vector(self, result: List[str]) -> List[str]:
         spaceless = [list(filter(None, res.split(' '))) for res in result]
 
         results = []
         for lst in spaceless:
             lst.pop(0)
-            results.extend(lst)
+            for elem in lst:
+                try:
+                    results.append(float(elem))
+                except ValueError:
+                    results.append(None)
 
         return results
 
