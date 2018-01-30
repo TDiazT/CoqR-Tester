@@ -146,7 +146,7 @@ class UnknownResult(ProcessedResult):
 
 
 class VectorResult(ProcessedResult):
-    def __init__(self, vector: List[str]) -> None:
+    def __init__(self, vector: List) -> None:
         super().__init__()
         self.result = vector
         self.processed_output = 'VECTOR'

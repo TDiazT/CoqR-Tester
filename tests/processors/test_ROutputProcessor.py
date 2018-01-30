@@ -31,25 +31,25 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector("[1] NaN\nWarning message:\nIn sqrt(-16) : NaNs produced", ['NaN'])
 
     def test_booleans(self):
-        self.assert_vector('[1] TRUE\n', ['TRUE'])
-        self.assert_vector('[1] FALSE\n', ['FALSE'])
-        self.assert_vector('[1] TRUE\n[2] TRUE', ['TRUE', 'TRUE'])
-        self.assert_vector('[1] TRUE\n[1] FALSE', ['TRUE', 'FALSE'])
-        self.assert_vector('[1] TRUE    ', ['TRUE'])
+        self.assert_vector('[1] TRUE\n', [True])
+        self.assert_vector('[1] FALSE\n', [False])
+        self.assert_vector('[1] TRUE\n[2] TRUE', [True, True])
+        self.assert_vector('[1] TRUE\n[1] FALSE', [True, False])
+        self.assert_vector('[1] TRUE    ', [True])
 
     def test_simple_number(self):
         self.assert_vector("[1] 1", ['1'])
 
     def test_vector_with_spaces(self):
-        self.assert_vector('[1] TRUE\n', ['TRUE'])
-        self.assert_vector('[1]     FALSE    TRUE  \n', ['FALSE', 'TRUE'])
+        self.assert_vector('[1] TRUE\n', [True])
+        self.assert_vector('[1]     FALSE    TRUE  \n', [False, True])
         self.assert_vector('[1]     "test"    "test2"  \n', ['"test"', '"test2"'])
         self.assert_vector('[1]     1   2 3\n', ['1', '2', '3'])
         self.assert_vector('    [1] 1      3', ['1', '3'])
 
     def test_vector_with_newlines(self):
         self.assert_vector('[1] 1 2 3 4\n[4] 5 6 7 8', ['1', '2', '3', '4', '5', '6', '7', '8'])
-        self.assert_vector('[1] TRUE\n[2] FALSE\n[3] TRUE\n[4] FALSE', ['TRUE', 'FALSE', 'TRUE', 'FALSE'])
+        self.assert_vector('[1] TRUE\n[2] FALSE\n[3] TRUE\n[4] FALSE', [True, False, True, False])
 
     def test_process_string(self):
         self.assert_vector("[1] \" + input + \"\n[1] \" + input + \"\n> ", ["\" + input + \"", "\" + input + \""])

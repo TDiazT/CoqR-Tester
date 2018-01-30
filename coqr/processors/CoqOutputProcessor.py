@@ -1,4 +1,5 @@
 import re
+from distutils.util import strtobool
 from typing import List, Tuple
 
 from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
@@ -30,11 +31,21 @@ class CoqOutputProcessor(AbstractOutputProcessor):
             (self.null_regex, lambda x: NullResult()),
             (self.special_builtin_regex, lambda x: FunctionResult()),
             (self.function_regex, lambda x: FunctionResult()),
-            (self.boolean_regex, lambda x: VectorResult(self.__result_to_vector(self.boolean_regex.findall(x)))),
+            (self.boolean_regex, lambda x: VectorResult(self.__result_to_boolean_vector(self.boolean_regex.findall(x)))),
             (self.string_regex, lambda x: VectorResult(self.__result_to_string_vector(self.string_regex.findall(x)))),
             (self.number_regex, lambda x: VectorResult(self.__result_to_vector(self.number_regex.findall(x)))),
 
         ]
+
+    def __result_to_boolean_vector(self, result: List[str]) -> List[bool]:
+        spaceless = [list(filter(None, res.split(' '))) for res in result]
+
+        results = []
+        for lst in spaceless:
+            lst.pop(0)
+            results.extend(list(map(lambda x: bool(strtobool(x)), lst)))
+
+        return results
 
     def __result_to_vector(self, result: List[str]) -> List[str]:
         spaceless = [list(filter(None, res.split(' '))) for res in result]
