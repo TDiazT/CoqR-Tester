@@ -125,3 +125,6 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
 
     def test_primitive(self):
         self.assert_is_instance('.Primitive("return")\n', FunctionResult)
+
+    def test_error_zero_length_var(self):
+        self.assert_is_instance("Error: attempt to use zero-length variable name\nExecution halted\n", ErrorResult)

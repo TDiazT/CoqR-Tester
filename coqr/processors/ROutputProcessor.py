@@ -8,8 +8,8 @@ from coqr.reports.results import ErrorResult, FunctionResult, NullResult, Vector
 
 
 class ROutputProcessor(AbstractOutputProcessor):
-    error_regex = re.compile(r'^Error:?.*$')
-    function_regex = re.compile(r'^function.*$')
+    error_regex = re.compile(r'^Error:?.*$', re.MULTILINE)
+    function_regex = re.compile(r'^function.*$', re.MULTILINE)
     primitive_regex = re.compile(r'^\.Primitive.*$', re.MULTILINE)
     null_regex = re.compile(r'^ *NULL *$', re.MULTILINE)
     boolean_regex = re.compile(r'^ *\[\d+\] *(?: +TRUE| FALSE)+ *$', re.MULTILINE)
