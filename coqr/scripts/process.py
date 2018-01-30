@@ -8,7 +8,8 @@ from collections import namedtuple
 
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
-from coqr.utils.file import write_to_file
+from coqr.reports.processing import report_from_dict, reports_from_list
+from coqr.utils.file import write_to_file, read_json_to_processed_report
 
 parser = argparse.ArgumentParser(description='Processes output and returns a new standard one')
 
@@ -35,7 +36,7 @@ if __name__ == '__main__':
 
     print("Processing file %s" % options.input)
     current_time = time.time()
-    previous_reports = read_json_file(options.input)
+    previous_reports = read_json_to_processed_report(options.input)
     new_reports = processor.process_reports(previous_reports)
 
     print("Done in %f seconds" % (time.time() - current_time))

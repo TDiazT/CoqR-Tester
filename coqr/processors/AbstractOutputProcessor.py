@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from coqr.constants.Cases import Cases
 from coqr.reports import interpretation, processing
 from coqr.reports.results import InvisibleResult, UnknownResult
 

@@ -184,11 +184,15 @@ class NumericVector(VectorResult):
             return Status.FAIL
 
         for n1, n2 in zip(self.result, other.result):
-            if isnan(n1) and isnan(n2):
+            if n1 and n2:
+                if isnan(n1) and isnan(n2):
+                    continue
+                elif n1 != n2:
+                    return Status.FAIL
+            elif not n1 and not n2:
                 continue
-            elif n1 != n2:
+            else:
                 return Status.FAIL
-
         return Status.PASS
 
 

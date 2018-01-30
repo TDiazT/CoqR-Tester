@@ -2,6 +2,7 @@ import json
 from collections import namedtuple
 from typing import List
 
+from coqr.reports.processing import reports_from_list
 from coqr.utils.encoder import JSONSerializer
 
 
@@ -14,6 +15,12 @@ def read_json_to_report(filename):
     with open(filename) as file_:
         data = file_.read()
         return json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+
+
+def read_json_to_processed_report(filename):
+    with open(filename) as file_:
+        data = json.load(file_)
+        return reports_from_list(data)
 
 
 def obj_dict(obj):

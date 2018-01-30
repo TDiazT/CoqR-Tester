@@ -6,9 +6,8 @@ from coqr.constants.Cases import Cases
 from coqr.constants.Status import Status
 from coqr.reports import comparison
 from coqr.reports import processing
-from coqr.reports.results import ProcessedResult
-from coqr.utils.file import read_json_to_report
-
+from coqr.reports.results import ProcessedResult, NumericVector
+from coqr.utils.file import read_json_to_report, read_json_to_processed_report
 
 def comparison_failed(comparison):
     return comparison == Status.NOT_IMPLEMENTED or comparison == Status.FAIL or comparison == Status.IMPOSSIBLE
@@ -71,7 +70,7 @@ class Comparator:
         return results
 
     def compare_files(self, developed_language_file: str, target_language_file: str):
-        developed_language_results = read_json_to_report(developed_language_file)
-        target_language_results = read_json_to_report(target_language_file)
+        developed_language_results = read_json_to_processed_report(developed_language_file)
+        target_language_results = read_json_to_processed_report(target_language_file)
 
         return self.compare_results(developed_language_results, target_language_results)

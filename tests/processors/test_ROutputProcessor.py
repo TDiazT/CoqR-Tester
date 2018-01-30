@@ -128,3 +128,18 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
 
     def test_error_zero_length_var(self):
         self.assert_is_instance("Error: attempt to use zero-length variable name\nExecution halted\n", ErrorResult)
+
+    def test_error_no_function_to_return_from(self):
+        self.assert_is_instance("Error: no function to return from, jumping to top level\nExecution halted\n",
+                                ErrorResult)
+
+    def test_error_in_function(self):
+        self.assert_is_instance(
+            "Error in (function() break)() : \n  no loop for break/next, jumping to top level\nExecution halted\n",
+            ErrorResult)
+
+    def test_error_no_loop(self):
+        self.assert_is_instance("Error: no loop for break/next, jumping to top level\nExecution halted\n", ErrorResult)
+
+    def test_function_with_newlines(self):
+        self.assert_is_instance("function () \nbreak\n", FunctionResult)
