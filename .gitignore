@@ -2,3 +2,7 @@
 .idea/
 venv/
 */**/*.pyc
+**/cr_out/
+out/
+coqr/settings.sh
+coqr/settings.py
