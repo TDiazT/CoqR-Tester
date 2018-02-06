@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 
 import requests
 
@@ -12,10 +11,9 @@ parser = argparse.ArgumentParser(description='Sends data to server')
 parser.add_argument('file')
 
 
-def send_reports(reports):
-    headers = {'Authorization': 'Token %s' % os.environ.get('TOKEN')}
-    request = requests.post(os.environ.get('API_CREATE_REPORTS'), headers=headers,
-                            json=json.loads(json.dumps(reports, cls=JSONSerializer)))
+def send_reports(reports, url, token):
+    headers = {'Authorization': 'Token %s' % token}
+    request = requests.post(url, headers=headers, json=json.loads(json.dumps(reports, cls=JSONSerializer)))
     request.raise_for_status()
 
 
