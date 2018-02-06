@@ -1,27 +1,17 @@
 from typing import List, Tuple
 
-from coqr.comparators.Comparable import NotImplementedComparable, ErrorComparable, ImpossibleComparable, \
-    OtherComparable, UnknownComparable, PrimitiveComparable
-from coqr.constants.Cases import Cases
 from coqr.constants.Status import Status
 from coqr.reports import comparison
 from coqr.reports import processing
-from coqr.reports.results import ProcessedResult, NumericVector
-from coqr.utils.file import read_json_to_report, read_json_to_processed_report
+from coqr.reports.results import ProcessedResult
+from coqr.utils.file import read_json_to_processed_report
+
 
 def comparison_failed(comparison):
     return comparison == Status.NOT_IMPLEMENTED or comparison == Status.FAIL or comparison == Status.IMPOSSIBLE
 
 
 class Comparator:
-    output_cases = {
-        Cases.NOT_IMPLEMENTED: NotImplementedComparable(),
-        Cases.IMPOSSIBLE: ImpossibleComparable(),
-        Cases.UNKNOWN: UnknownComparable(),
-        Cases.ERROR: ErrorComparable(),
-        Cases.PRIMITIVE: PrimitiveComparable()
-    }
-
     def compare(self, out1: ProcessedResult, out2: ProcessedResult) -> Status:
         return out1.compare_to(out2)
 

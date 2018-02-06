@@ -30,13 +30,16 @@ or to execute different stages of the process separately.
 Executes the whole process with both interpreters and outputs general
 statistics of the process.
 
-It requires a `settings.py` file in `coqr` package, with the following content:
+It requires a `settings.py` file next to the run_all script, with the following content:
 ```python
 # Contents of settings.py file
 
 COQ_INTERP='path/to/coq-interpreter'
 RSCRIPT='path/to/rscript'  # Or just name if it's in global scope
 
+# If sending data to server
+URL='server-url'
+TOKEN='token-authentication'
 ```
 
 Doc of the script:
@@ -60,7 +63,7 @@ optional arguments:
 
 Usage of the script:
 ```bash
-$ python -m coqr.scripts.run_all r_dir/r_source_file output
+$ ./run_all src output
 
 ```
 

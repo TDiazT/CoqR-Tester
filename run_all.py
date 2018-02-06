@@ -1,10 +1,11 @@
+#!/usr/bin/env python
+
 import argparse
 import os
 import time
 
 from requests import HTTPError
 
-from coqr import settings
 from coqr.comparators.Comparator import Comparator
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
@@ -69,6 +70,13 @@ def print_general_stats():
 
 
 if __name__ == '__main__':
+    try:
+        import settings
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import settings. Are you sure it is defined?"
+        ) from exc
+    
     options = parser.parse_args()
 
     directory = os.path.dirname(options.output)
@@ -119,7 +127,7 @@ if __name__ == '__main__':
     if options.server:
         print('Sending results to server')
         try:
-            send_reports(final_report)
+            send_reports(final_report, settings.URL, settings.TOKEN)
             print('Sent successfully')
         except HTTPError:
             print('There was an error sending the report to server')

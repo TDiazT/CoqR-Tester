@@ -4,30 +4,16 @@ import os
 import sys
 import time
 
-from coqr.constants import ReportKeys
-from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
 from coqr.interpreters.FileInterpreter import FileInterpreter
 from coqr.interpreters.RInterpreter import RInterpreter
-from coqr.utils.file import write_to_file, read_file
+from coqr.utils.file import write_to_file
 
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
 parser.add_argument('input')
 parser.add_argument('-output')
 parser.add_argument('--line', action='store_true')
-
-
-def run(input_, interpreter: AbstractInterpreter, debug=False):
-    lines = read_file(input_)
-    reports = interpreter.interpret_expressions(lines)
-    for report in reports:
-        report[ReportKeys.FILENAME] = input_
-
-    if debug:
-        write_to_file(interpreter.name + '.json', reports)
-
-    return reports
 
 
 def get_interpreter():
