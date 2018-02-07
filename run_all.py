@@ -6,6 +6,7 @@ import time
 
 from requests import HTTPError
 
+import stats
 from coqr.comparators.Comparator import Comparator
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
@@ -15,7 +16,6 @@ from coqr.network.calls import send_reports
 from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
-from coqr.stats import stats
 from coqr.utils.file import write_to_file
 
 parser = argparse.ArgumentParser(
