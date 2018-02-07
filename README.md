@@ -110,8 +110,8 @@ or ask for information on a particular case.
 
 ```bash
 # General stats
-$ python -m coqr.stats.stats -g out/result.json
+$ ./stats.py -g out/result.json
 
 # Case info
-$ python -m coqr.stats.stats -status Pass out/result.json
+$ ./stats.py -status Pass out/result.json
 ```
