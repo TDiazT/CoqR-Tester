@@ -29,7 +29,7 @@ class ProcessedResult(ABC):
         return Status.FAIL
 
     def compare_to_unknown(self, other) -> Status:
-        return Status.FAIL
+        return Status.UNKNOWN
 
     def compare_to_vector(self, other) -> Status:
         return Status.FAIL
@@ -142,7 +142,19 @@ class UnknownResult(ProcessedResult):
     def compare_to(self, other: ProcessedResult):
         return other.compare_to_unknown(self)
 
-    def compare_to_unknown(self, other):
+    def compare_to_invisible(self, other) -> Status:
+        return Status.UNKNOWN
+
+    def compare_to_function(self, other) -> Status:
+        return Status.UNKNOWN
+
+    def compare_to_vector(self, other) -> Status:
+        return Status.UNKNOWN
+
+    def compare_to_error(self, other) -> Status:
+        return Status.UNKNOWN
+
+    def compare_to_null(self, other) -> Status:
         return Status.UNKNOWN
 
 
