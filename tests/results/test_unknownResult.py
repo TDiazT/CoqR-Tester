@@ -11,11 +11,11 @@ class TestUnknownResult(TestCase):
 
     def test_compare_to_null(self):
         result = self.result.compare_to(NullResult())
-        self.assertEqual(result, Status.FAIL)
+        self.assertEqual(result, Status.UNKNOWN)
 
     def test_compare_to_error(self):
         result = self.result.compare_to(ErrorResult())
-        self.assertEqual(result, Status.FAIL)
+        self.assertEqual(result, Status.UNKNOWN)
 
     def test_compare_to_not_implemented(self):
         result = self.result.compare_to(NotImplementedResult())
@@ -31,12 +31,12 @@ class TestUnknownResult(TestCase):
 
     def test_compare_to_function(self):
         result = self.result.compare_to(FunctionResult())
-        self.assertEqual(result, Status.FAIL)
+        self.assertEqual(result, Status.UNKNOWN)
 
     def test_compare_to_vector(self):
         result = self.result.compare_to(VectorResult([]))
-        self.assertEqual(result, Status.FAIL)
+        self.assertEqual(result, Status.UNKNOWN)
 
     def test_compare_to_invisible(self):
         result = self.result.compare_to(InvisibleResult())
-        self.assertEqual(result, Status.FAIL)
+        self.assertEqual(result, Status.UNKNOWN)

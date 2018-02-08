@@ -27,7 +27,7 @@ class TestErrorResult(TestCase):
 
     def test_compare_to_unknown(self):
         result = self.result.compare_to(UnknownResult())
-        self.assertEqual(result, Status.FAIL)
+        self.assertEqual(result, Status.UNKNOWN)
 
     def test_compare_to_function(self):
         result = self.result.compare_to(FunctionResult())
