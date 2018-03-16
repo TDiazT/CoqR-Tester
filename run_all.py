@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('src')
 parser.add_argument('output')
 parser.add_argument('--debug', action='store_true')
-parser.add_argument('--server', action='store_true')
+parser.add_argument('-s', '--server', action='store_true')
 parser.add_argument('-r', '--recursive', action='store_true')
 
 
