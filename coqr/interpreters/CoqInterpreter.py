@@ -12,7 +12,7 @@ class CoqInterpreter(AbstractInterpreter):
     def __init__(self, interp) -> None:
         super().__init__(interp)
         self.name = 'Coq'
-        self.exec_path = os.path.join(self.interpreter, 'low', 'runR.native')
+        self.exec_path = os.path.join(self.interpreter, 'src', 'runR.native')
 
     def interpret(self, expression):
         p1 = subprocess.Popen(['echo', expression], stdout=subprocess.PIPE)
@@ -20,7 +20,7 @@ class CoqInterpreter(AbstractInterpreter):
         if os.path.exists(self.final_state):
             initial_state = self.final_state
         else:
-            initial_state = os.path.join(self.interpreter, 'low', 'initial.state')
+            initial_state = os.path.join(self.interpreter, 'src', 'initial.state')
 
         p2 = subprocess.Popen(
             [self.exec_path, '-initial-state', initial_state, '-final-state', self.final_state, '-hide-prompt'],
