@@ -12,7 +12,7 @@ parser.add_argument('file')
 
 
 def send_reports(reports, url, token):
-    headers = {'Authorization': 'Token %s' % token}
+    headers={"Authorization": "Token {0:s}".format(token)}
     request = requests.post(url, headers=headers, json=json.loads(json.dumps(reports, cls=JSONSerializer)))
     request.raise_for_status()
 
