@@ -18,6 +18,10 @@ from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.utils.file import write_to_file
 
+COQ_DEFAULT_FILE = 'coq.json'
+
+R_DEFAULT_FILE = 'r.json'
+
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
 
@@ -77,7 +81,7 @@ if __name__ == '__main__':
         raise ImportError(
             "Couldn't import settings. Are you sure it is defined?"
         ) from exc
-    
+
     options = parser.parse_args()
 
     directory = os.path.dirname(options.output)
@@ -88,20 +92,20 @@ if __name__ == '__main__':
     print("Running R interpreter...")
     if os.path.isfile(options.src):
         r_results = interpret_file(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=options.debug,
-                                   out=os.path.join(directory, 'r.json'))
+                                   out=os.path.join(directory, R_DEFAULT_FILE))
     else:
         r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
-                                        out=os.path.join(directory, 'r.json'), recursive=options.recursive)
+                                        out=os.path.join(directory, R_DEFAULT_FILE), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
     if os.path.isfile(options.src):
         coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
-                                     debug=options.debug, out=os.path.join(directory, 'coq.json'))
+                                     debug=options.debug, out=os.path.join(directory, COQ_DEFAULT_FILE))
     else:
         coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
                                           debug=debug,
-                                          out=os.path.join(directory, 'coq.json'), recursive=options.recursive)
+                                          out=os.path.join(directory, COQ_DEFAULT_FILE), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")
