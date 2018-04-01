@@ -7,6 +7,8 @@ import time
 from requests import HTTPError
 
 import stats
+import settings
+
 from coqr.comparators.Comparator import Comparator
 from coqr.constants.Status import Status
 from coqr.interpreters.CoqInterpreter import CoqInterpreter
@@ -75,13 +77,6 @@ def print_general_stats():
 
 
 if __name__ == '__main__':
-    try:
-        import settings
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import settings. Are you sure it is defined?"
-        ) from exc
-
     options = parser.parse_args()
 
     directory = os.path.dirname(options.output)
@@ -91,19 +86,19 @@ if __name__ == '__main__':
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
     if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=options.debug,
+        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))), debug=options.debug,
                                    out=os.path.join(directory, R_DEFAULT_FILE))
     else:
-        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(settings.RSCRIPT)), debug=debug,
+        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))), debug=debug,
                                         out=os.path.join(directory, R_DEFAULT_FILE), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
     if os.path.isfile(options.src):
-        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
+        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
                                      debug=options.debug, out=os.path.join(directory, COQ_DEFAULT_FILE))
     else:
-        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(settings.COQ_INTERP)),
+        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
                                           debug=debug,
                                           out=os.path.join(directory, COQ_DEFAULT_FILE), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
@@ -133,7 +128,7 @@ if __name__ == '__main__':
     if options.server:
         print('Sending results to server')
         try:
-            send_reports(final_report, settings.URL, settings.TOKEN)
+            send_reports(final_report, os.environ.get("URL"), os.environ.get("TOKEN"))
             print('Sent successfully')
         except HTTPError:
             print('There was an error sending the report to server')
