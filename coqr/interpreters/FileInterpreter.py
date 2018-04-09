@@ -86,7 +86,7 @@ class FileInterpreter:
 
         for (expression, output, exec_time), line in zip(outputs, lines):
             sub_report = InterpretationResult(expression, output, exec_time)
-            results.append(Report(expression, filename, self.interpreter.name, line=line, sub_reports=[sub_report]))
+            results.append(Report(expression, os.path.basename(filename), self.interpreter.name, line=line, sub_reports=[sub_report]))
 
         return results
 
@@ -100,6 +100,6 @@ class FileInterpreter:
             outputs = self.interpreter.interpret_expressions(expressions)
 
             sub_reports = generate_sub_reports(outputs)
-            results.append(Report(line, filename, self.interpreter.name, line=i + 1, sub_reports=sub_reports))
+            results.append(Report(line, os.path.basename(filename), self.interpreter.name, line=i + 1, sub_reports=sub_reports))
 
         return results
