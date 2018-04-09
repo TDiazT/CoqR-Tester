@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
 
 parser.add_argument('src')
-parser.add_argument('output')
+parser.add_argument('-o', '--output')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('-s', '--server', action='store_true')
 parser.add_argument('-r', '--recursive', action='store_true')
@@ -86,10 +86,12 @@ if __name__ == '__main__':
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
     if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))), debug=options.debug,
+        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
+                                   debug=options.debug,
                                    out=os.path.join(directory, R_DEFAULT_FILE))
     else:
-        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))), debug=debug,
+        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
+                                        debug=debug,
                                         out=os.path.join(directory, R_DEFAULT_FILE), recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
@@ -123,7 +125,8 @@ if __name__ == '__main__':
         "expression_reports": comparison
     }
 
-    write_to_file(options.output, final_report)
+    if options.output:
+        write_to_file(options.output, final_report)
 
     if options.server:
         print('Sending results to server')

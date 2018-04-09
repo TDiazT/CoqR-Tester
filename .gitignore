@@ -6,4 +6,4 @@ venv/
 out/
 coqr/settings.sh
 coqr/settings.py
-.env.py
+.env
