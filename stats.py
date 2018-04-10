@@ -26,11 +26,20 @@ def __read_file(filename):
         return json.load(file_)
 
 
-def get_general_stats(filename):
+def get_file_general_stats(filename):
     file_data = read_json_to_report(filename)
 
     reports = file_data.expression_reports
 
+    counter = Counter()
+    for report in reports:
+        code = report.status_code
+        counter[code] += 1
+
+    return counter
+
+
+def get_general_stats(reports):
     counter = Counter()
     for report in reports:
         code = report.status_code
@@ -44,7 +53,6 @@ def get_expressions(reports, status):
 
     filtered_reports = filter(lambda r: r.status_code == status, reports)
     for report in filtered_reports:
-
         result = {EXPRESSION: report.expression, FILENAME: report.filename, LINE: report.line, COQ: report.dev_output,
                   R: report.target_output}
 
@@ -57,7 +65,7 @@ if __name__ == '__main__':
     options = parser.parse_args()
 
     if options.g:
-        stats = get_general_stats(options.input)
+        stats = get_file_general_stats(options.input)
         for k, v in stats.most_common():
             print("%s : %d" % (str(Status(k)), v))
 

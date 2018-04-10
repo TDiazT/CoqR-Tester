@@ -68,10 +68,10 @@ def compare_processed_outputs(processed_r, processed_coq):
     return comparator.compare_results(processed_coq, processed_r)
 
 
-def print_general_stats():
+def print_general_stats(reports):
     print("")
     print("---------- GENERAL STATS ----------")
-    stats_ = stats.get_general_stats(options.output)
+    stats_ = stats.get_general_stats(reports)
     for k, v in stats_.most_common():
         print("%s : %d" % (str(Status(k)), v))
 
@@ -79,37 +79,45 @@ def print_general_stats():
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    directory = os.path.dirname(options.output)
-    debug = options.debug
-
     delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
     if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
-                                   debug=options.debug,
-                                   out=os.path.join(directory, R_DEFAULT_FILE))
+        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))))
     else:
         r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
-                                        debug=debug,
-                                        out=os.path.join(directory, R_DEFAULT_FILE), recursive=options.recursive)
+                                        recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
     if os.path.isfile(options.src):
-        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
-                                     debug=options.debug, out=os.path.join(directory, COQ_DEFAULT_FILE))
+        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))))
     else:
         coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
-                                          debug=debug,
-                                          out=os.path.join(directory, COQ_DEFAULT_FILE), recursive=options.recursive)
+                                          recursive=options.recursive)
+
+    if options.debug:
+        if options.output:
+            directory = os.path.dirname(options.output)
+            write_to_file(os.path.join(directory, R_DEFAULT_FILE), r_results)
+            write_to_file(os.path.join(directory, COQ_DEFAULT_FILE), coq_results)
+        else:
+            print("Debug set but no output directory specified")
+
     print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")
-    r_process = process_outputs(r_results, ROutputProcessor(), debug, os.path.join(directory, 'processed-r.json'))
+    r_process = process_outputs(r_results, ROutputProcessor())
     print("Processing Coq output")
-    coq_process = process_outputs(coq_results, CoqOutputProcessor(), debug,
-                                  os.path.join(directory, 'processed-coq.json'))
+    coq_process = process_outputs(coq_results, CoqOutputProcessor())
+
+    if options.debug:
+        if options.output:
+            directory = os.path.dirname(options.output)
+            write_to_file(os.path.join(directory, 'processed-r.json'), r_process)
+            write_to_file(os.path.join(directory, 'processed-coq.json'), coq_process)
+        else:
+            print("Debug set but no output directory specified")
 
     comparison = compare_processed_outputs(r_process, coq_process)
     (sysname, nodename, release, version, machine) = os.uname()
@@ -136,6 +144,9 @@ if __name__ == '__main__':
         except HTTPError:
             print('There was an error sending the report to server')
 
-    print("Done, you may find the results in %s" % options.output)
+    if options.output:
+        print("Done, you may find the results in %s" % options.output)
+    else:
+        print("Done!")
 
-    print_general_stats()
+    print_general_stats(comparison)
