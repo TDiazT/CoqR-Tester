@@ -2,6 +2,9 @@
 
 import argparse
 import os
+import re
+import subprocess
+
 import time
 
 from requests import HTTPError
@@ -76,6 +79,14 @@ def print_general_stats(reports):
         print("%s : %d" % (str(Status(k)), v))
 
 
+def get_coqr_version():
+    git_process = subprocess.Popen(["git", "--git-dir", os.path.join(os.environ.get("COQ_INTERP"), '.git'),
+                                    "rev-parse", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   universal_newlines=True)
+    (res, err) = git_process.communicate()
+    return re.sub(r'\n', '', res)
+
+
 if __name__ == '__main__':
     options = parser.parse_args()
 
@@ -123,7 +134,7 @@ if __name__ == '__main__':
     (sysname, nodename, release, version, machine) = os.uname()
     final_report = {
         "r_interpreter_version": "3.4.2",
-        "coq_interpreter_version": '0.1',
+        "coq_interpreter_version": get_coqr_version(),
         "system": sysname,
         "os_node_name": nodename,
         "os_release": release,
