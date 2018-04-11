@@ -45,7 +45,7 @@ TOKEN=token-authentication
 
 Doc of the script:
 ```bash
-usage: run_all.py [-h] [-o OUTPUT] [--debug] [-s] [-r] [-t TITLE] src
+usage: run_all.py [-h] [-o OUTPUT] [-d] [-s] [-r] [-t TITLE] [-m MESSAGE] src
 
 Run given file with R and Coq interpreters, processes outputs and compares
 
@@ -55,10 +55,11 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT, --output OUTPUT
-  --debug
+  -d, --debug
   -s, --server
   -r, --recursive
   -t TITLE, --title TITLE
+  -m MESSAGE, --message MESSAGE
 
 ```
 
