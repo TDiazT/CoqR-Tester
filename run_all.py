@@ -35,7 +35,7 @@ parser.add_argument('-o', '--output')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('-s', '--server', action='store_true')
 parser.add_argument('-r', '--recursive', action='store_true')
-parser.add_argument('-a', '--alias', default='')
+parser.add_argument('-t', '--title', default='')
 
 
 def interpret_file(src, interpreter, debug=False, out=None):
@@ -140,7 +140,7 @@ if __name__ == '__main__':
         "os_release": release,
         "os_version": version,
         "hardware": machine,
-        "alias": options.alias,
+        "title": options.title,
         "expression_reports": comparison
     }
 
