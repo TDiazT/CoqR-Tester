@@ -30,40 +30,41 @@ or to execute different stages of the process separately.
 Executes the whole process with both interpreters and outputs general
 statistics of the process.
 
-It requires a `settings.py` file next to the run_all script, with the following content:
-```python
-# Contents of settings.py file
+It requires a `.env` file next to the run_all script, with the following content:
+```
+# Contents of .env file
+# Without ''
 
-COQ_INTERP='path/to/coq-interpreter'
-RSCRIPT='path/to/rscript'  # Or just name if it's in global scope
+COQ_INTERP=path/to/coq-interpreter
+RSCRIPT=path/to/rscript  # Or just name if it's in global scope
 
 # If sending data to server
-URL='server-url'
-TOKEN='token-authentication'
+URL=https://...
+TOKEN=token-authentication
 ```
 
 Doc of the script:
 ```bash
-usage: run_all.py [-h] [--debug] [--server] [-r] src output
+usage: run_all.py [-h] [-o OUTPUT] [--debug] [-s] [-r] [-a ALIAS] src
 
 Run given file with R and Coq interpreters, processes outputs and compares
 
 positional arguments:
   src
-  output
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --debug          generates output files for each subprocess
-  --server         sends results to server
-  -r, --recursive  traverses directory recursively
-
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+  --debug
+  -s, --server
+  -r, --recursive
+  -a ALIAS, --alias ALIAS
 
 ```
 
 Usage of the script:
 ```bash
-$ ./run_all src output
+$ ./run_all src -o output
 
 ```
 
