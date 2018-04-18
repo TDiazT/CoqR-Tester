@@ -53,7 +53,7 @@ elem:   op eat?
     |   'for' eat? '(' (elem|eat)* ')' eat?
     |   'while' eat? '(' (elem|eat)* ')' eat?
     |   'if' eat? '(' (elem|eat)* ')' eat?
-    |   'else'
+    |   'else' eat?
         {
 tok = self._input.LT(-2)
 if self.curlies > 0 and tok.type == self.NL:
