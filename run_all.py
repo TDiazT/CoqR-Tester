@@ -81,11 +81,15 @@ def print_general_stats(reports):
 
 
 def get_coqr_version():
-    git_process = subprocess.Popen(["git", "--git-dir", os.path.join(os.environ.get("COQ_INTERP"), '.git'),
-                                    "rev-parse", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   universal_newlines=True)
-    (res, err) = git_process.communicate()
-    return re.sub(r'\n', '', res)
+    COQ_INTERP = os.environ.get("COQ_INTERP")
+    if COQ_INTERP:
+        git_process = subprocess.Popen(["git", "--git-dir", os.path.join(COQ_INTERP, '.git'),
+                                        "rev-parse", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                       universal_newlines=True)
+        (res, err) = git_process.communicate()
+        return re.sub(r'\n', '', res)
+    else:
+        sys.exit("Please define the 'COQ_INTERP' variable.")
 
 
 if __name__ == '__main__':
@@ -94,19 +98,27 @@ if __name__ == '__main__':
     delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
-    if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))))
+    RSCRIPT = os.environ.get("RSCRIPT")
+    if RSCRIPT:
+        if os.path.isfile(options.src):
+            r_results = interpret_file(options.src, FileInterpreter(RInterpreter(RSCRIPT)))
+        else:
+            r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(RSCRIPT)),
+                                            recursive=options.recursive)
     else:
-        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
-                                        recursive=options.recursive)
+        sys.exit("Please define the 'RSCRIPT' variable.")
     print("Finished in %f seconds" % (time.time() - delta))
     delta = time.time()
     print("Running Coq interpreter...")
-    if os.path.isfile(options.src):
-        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))))
+    COQ_INTERP = os.environ.get("COQ_INTERP")
+    if COQ_INTERP:
+        if os.path.isfile(options.src):
+            coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(COQ_INTERP)))
+        else:
+            coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(COQ_INTERP)),
+                                              recursive=options.recursive)
     else:
-        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
-                                          recursive=options.recursive)
+        sys.exit("Please define the 'COQ_INTERP' variable.")
 
     if options.debug:
         if options.output:
@@ -151,11 +163,16 @@ if __name__ == '__main__':
 
     if options.server:
         print('Sending results to server')
-        try:
-            send_reports(final_report, os.environ.get("URL"), os.environ.get("TOKEN"))
-            print('Sent successfully')
-        except HTTPError:
-            print('There was an error sending the report to server')
+        URL = os.environ.get("URL")
+        TOKEN = os.environ.get("TOKEN")
+        if URL and TOKEN:
+            try:
+                send_reports(final_report, URL, TOKEN)
+                print('Sent successfully')
+            except HTTPError:
+                print('There was an error sending the report to server')
+        else:
+            sys.exit("Please define the 'URL' and 'TOKEN' variables.")
 
     if options.output:
         print("Done, you may find the results in %s" % options.output)

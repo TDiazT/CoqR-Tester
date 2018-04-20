@@ -17,10 +17,12 @@ parser.add_argument('--line', action='store_true')
 
 
 def get_interpreter():
-    if os.environ.get('RSCRIPT'):
-        return RInterpreter(os.environ.get('RSCRIPT'))
-    elif os.environ.get('COQ_INTERP'):
-        return CoqInterpreter(os.environ.get('COQ_INTERP'))
+    RSCRIPT = os.environ.get('RSCRIPT')
+    COQ_INTERP = os.environ.get('COQ_INTERP')
+    if RSCRIPT:
+        return RInterpreter(RSCRIPT)
+    elif COQ_INTERP:
+        return CoqInterpreter(COQ_INTERP)
     else:
         sys.exit("No valid interpreter set in environment. Define either 'RSCRIPT' or 'COQ_INTERP' variables.")
 
