@@ -20,7 +20,7 @@ class CoqInterpreter(AbstractInterpreter):
         if os.path.exists(self.final_state):
             initial_state = self.final_state
         else:
-            initial_state = os.path.join(self.interpreter, 'src', 'initial.state')
+            initial_state = os.path.join(self.interpreter, 'Rlib', 'bootstrapping.state')
 
         p2 = subprocess.Popen(
             [self.exec_path, '-initial-state', initial_state, '-final-state', self.final_state, '-hide-prompt'],
