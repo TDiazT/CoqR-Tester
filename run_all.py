@@ -91,22 +91,27 @@ def get_coqr_version():
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
+    delta = time.time()
+    r_interpreter = RInterpreter(os.environ.get("RSCRIPT"))
     if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))))
+        r_results = interpret_file(options.src, FileInterpreter(r_interpreter))
     else:
-        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
+        r_results = interpret_directory(options.src, FileInterpreter(r_interpreter),
                                         recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
-    delta = time.time()
+
     print("Running Coq interpreter...")
+    delta = time.time()
+    coqr = CoqInterpreter(os.environ.get("COQ_INTERP"))
     if os.path.isfile(options.src):
-        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))))
+        coq_results = interpret_file(options.src, FileInterpreter(coqr))
     else:
-        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
+        coq_results = interpret_directory(options.src, FileInterpreter(coqr),
                                           recursive=options.recursive)
+
+    print("Finished in %f seconds" % (time.time() - delta))
 
     if options.debug:
         if options.output:
@@ -115,8 +120,6 @@ if __name__ == '__main__':
             write_to_file(os.path.join(directory, COQ_DEFAULT_FILE), coq_results)
         else:
             print("Debug set but no output directory specified")
-
-    print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")
     r_process = process_outputs(r_results, ROutputProcessor())
