@@ -82,20 +82,31 @@ def print_general_stats(reports):
 
 
 def get_coqr_version():
-    git_process = subprocess.Popen(["git", "--git-dir", os.path.join(os.environ.get("COQ_INTERP"), '.git'),
-                                    "rev-parse", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   universal_newlines=True)
-    (res, err) = git_process.communicate()
-    return re.sub(r'\n', '', res)
+    COQ_INTERP = os.environ.get("COQ_INTERP")
+    if COQ_INTERP:
+        git_process = subprocess.Popen(["git", "--git-dir", os.path.join(COQ_INTERP, '.git'),
+                                        "rev-parse", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                       universal_newlines=True)
+        (res, err) = git_process.communicate()
+        return re.sub(r'\n', '', res)
+    else:
+        sys.exit("Please define the 'COQ_INTERP' variable.")
 
 
 if __name__ == '__main__':
     options = parser.parse_args()
 
     print("Interpreting tests in %s" % options.src)
+
     print("Running R interpreter...")
+
+    RSCRIPT = os.environ.get("RSCRIPT")
+    if RSCRIPT:
+        r_interpreter = RInterpreter(RSCRIPT)
+    else:
+        sys.exit("Please define the 'RSCRIPT' variable.")
+
     delta = time.time()
-    r_interpreter = RInterpreter(os.environ.get("RSCRIPT"))
     if os.path.isfile(options.src):
         r_results = interpret_file(options.src, FileInterpreter(r_interpreter))
     else:
@@ -104,8 +115,13 @@ if __name__ == '__main__':
     print("Finished in %f seconds" % (time.time() - delta))
 
     print("Running Coq interpreter...")
+    COQ_INTERP = os.environ.get("COQ_INTERP")
+    if COQ_INTERP:
+        coqr = CoqInterpreter(COQ_INTERP)
+    else:
+        sys.exit("Please define the 'COQ_INTERP' variable.")
+
     delta = time.time()
-    coqr = CoqInterpreter(os.environ.get("COQ_INTERP"))
     if os.path.isfile(options.src):
         coq_results = interpret_file(options.src, FileInterpreter(coqr))
     else:
