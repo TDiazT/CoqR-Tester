@@ -73,5 +73,9 @@ if __name__ == '__main__':
         file_data = read_json_to_report(options.input)
 
         reports = file_data.expression_reports
-        results = get_expressions(reports, Status(options.status))
+        try:
+            results = get_expressions(reports, Status(options.status))
+        except ValueError:
+            exit("That is not a valid Status")
+
         print(json.dumps(results, indent=2))
