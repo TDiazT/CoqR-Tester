@@ -7,6 +7,7 @@ import subprocess
 
 import time
 
+import sys
 from requests import HTTPError
 
 import stats
@@ -153,12 +154,17 @@ if __name__ == '__main__':
         write_to_file(options.output, final_report)
 
     if options.server:
-        print('Sending results to server')
-        try:
-            send_reports(final_report, os.environ.get("URL"), os.environ.get("TOKEN"))
-            print('Sent successfully')
-        except HTTPError:
-            print('There was an error sending the report to server')
+        URL = os.environ.get("URL")
+        TOKEN = os.environ.get("TOKEN")
+        if URL:
+            print('Sending results to server')
+            try:
+                send_reports(final_report, URL, TOKEN)
+                print('Sent successfully')
+            except HTTPError:
+                print('There was an error sending the report to server')
+        else:
+            sys.exit("Please define the 'URL' environmental variable")
 
     if options.output:
         print("Done, you may find the results in %s" % options.output)
