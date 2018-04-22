@@ -7,6 +7,7 @@ import subprocess
 
 import time
 
+import sys
 from requests import HTTPError
 
 import stats
@@ -91,22 +92,27 @@ def get_coqr_version():
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    delta = time.time()
     print("Interpreting tests in %s" % options.src)
     print("Running R interpreter...")
+    delta = time.time()
+    r_interpreter = RInterpreter(os.environ.get("RSCRIPT"))
     if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))))
+        r_results = interpret_file(options.src, FileInterpreter(r_interpreter))
     else:
-        r_results = interpret_directory(options.src, FileInterpreter(RInterpreter(os.environ.get("RSCRIPT"))),
+        r_results = interpret_directory(options.src, FileInterpreter(r_interpreter),
                                         recursive=options.recursive)
     print("Finished in %f seconds" % (time.time() - delta))
-    delta = time.time()
+
     print("Running Coq interpreter...")
+    delta = time.time()
+    coqr = CoqInterpreter(os.environ.get("COQ_INTERP"))
     if os.path.isfile(options.src):
-        coq_results = interpret_file(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))))
+        coq_results = interpret_file(options.src, FileInterpreter(coqr))
     else:
-        coq_results = interpret_directory(options.src, FileInterpreter(CoqInterpreter(os.environ.get("COQ_INTERP"))),
+        coq_results = interpret_directory(options.src, FileInterpreter(coqr),
                                           recursive=options.recursive)
+
+    print("Finished in %f seconds" % (time.time() - delta))
 
     if options.debug:
         if options.output:
@@ -115,8 +121,6 @@ if __name__ == '__main__':
             write_to_file(os.path.join(directory, COQ_DEFAULT_FILE), coq_results)
         else:
             print("Debug set but no output directory specified")
-
-    print("Finished in %f seconds" % (time.time() - delta))
 
     print("Processing R output")
     r_process = process_outputs(r_results, ROutputProcessor())
@@ -150,12 +154,17 @@ if __name__ == '__main__':
         write_to_file(options.output, final_report)
 
     if options.server:
-        print('Sending results to server')
-        try:
-            send_reports(final_report, os.environ.get("URL"), os.environ.get("TOKEN"))
-            print('Sent successfully')
-        except HTTPError:
-            print('There was an error sending the report to server')
+        URL = os.environ.get("URL")
+        TOKEN = os.environ.get("TOKEN")
+        if URL:
+            print('Sending results to server')
+            try:
+                send_reports(final_report, URL, TOKEN)
+                print('Sent successfully')
+            except HTTPError:
+                print('There was an error sending the report to server')
+        else:
+            sys.exit("Please define the 'URL' environmental variable")
 
     if options.output:
         print("Done, you may find the results in %s" % options.output)
