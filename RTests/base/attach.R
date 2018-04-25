@@ -225,6 +225,5 @@ ls <- objects <-
             }
         }
         grep(pattern, all.names, value = TRUE)
-    }
-    else all.names
+    } else all.names
 }
