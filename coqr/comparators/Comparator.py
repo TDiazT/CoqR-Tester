@@ -13,19 +13,35 @@ def comparison_failed(comparison):
 
 class Comparator:
     def compare(self, out1: ProcessedResult, out2: ProcessedResult) -> Status:
+        """
+        Compares two processed outputs and returns a Status Code indicating the result of the comparison
+        :param out1: First processed output
+        :param out2: Second processed output
+        :return: Status code indicating the result of the comparison
+        """
         return out1.compare_to(out2)
 
     def compare_sub_reports(self, coq_sub_reports: List[processing.SubReport],
                             r_sub_reports: List[processing.SubReport]) -> List[
         Tuple[processing.SubReport, processing.SubReport, Status]]:
+        """
+        Compares the processed outputs from sub reports and returns a list with the result of comparing each.
+        If there is a mismatch in length between the amount of sub reports given,
+        then the comparison stops when reaching the length of the shortest list of sub reports.
 
-        i = j = 0
+        :param coq_sub_reports: List of SubReports
+        :param r_sub_reports: List of SubReports
+        :return: List of tuples of the form (SubReport, SubReport, Status) indicating the result of comparing the
+        processed output between two sub reports
+        """
+
+        i = 0
         results = []
         fail_occurred = False
-        while i < len(coq_sub_reports) and j < len(r_sub_reports):
+        while i < len(coq_sub_reports) and i < len(r_sub_reports):
 
             coq_sub_report = coq_sub_reports[i]
-            r_sub_report = r_sub_reports[j]
+            r_sub_report = r_sub_reports[i]
             comparison = self.compare(coq_sub_report.processed_output, r_sub_report.processed_output)
             if fail_occurred:
                 comparison = Status.untrusted(comparison)
@@ -35,7 +51,6 @@ class Comparator:
 
             results.append((coq_sub_report, r_sub_report, comparison))
             i += 1
-            j += 1
 
         return results
 
