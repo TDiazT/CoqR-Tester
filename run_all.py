@@ -93,6 +93,12 @@ def get_coqr_version():
         sys.exit("Please define the 'COQ_INTERP' variable.")
 
 
+def get_cmd_used():
+    cmd = sys.argv
+    cmd[0] = "./{0:s}".format(os.path.basename(cmd[0]))
+    return " ".join(cmd)
+
+
 if __name__ == '__main__':
     options = parser.parse_args()
 
@@ -153,6 +159,9 @@ if __name__ == '__main__':
 
     comparison = compare_processed_outputs(r_process, coq_process)
     (sysname, nodename, release, version, machine) = os.uname()
+    cmd = get_cmd_used()
+    description = "".join([cmd, '\n\n', options.message])
+
     final_report = {
         "r_interpreter_version": "3.4.2",
         "coq_interpreter_version": get_coqr_version(),
@@ -162,7 +171,7 @@ if __name__ == '__main__':
         "os_version": version,
         "hardware": machine,
         "title": options.title,
-        "description": options.message,
+        "description": description,
         "expression_reports": comparison
     }
 

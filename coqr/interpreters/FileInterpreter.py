@@ -76,6 +76,7 @@ class FileInterpreter:
 
     def interpret_multiline(self, filename) -> List[Report]:
         parsed = parse.parse_file(filename)
+        # https://stackoverflow.com/a/12974504/3802589
         split_ = list(zip(*parsed))
         lines = split_[0]
         expressions = split_[1]
