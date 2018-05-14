@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from typing import Dict, List
@@ -11,7 +12,7 @@ from coqr.utils.file import read_file
 class FileInterpreter:
     settings_regex = re.compile(r'\@(\w+)')
 
-    def __init__(self, interpreter: AbstractInterpreter) -> None:
+    def __init__(self, interpreter: AbstractInterpreter, debug=False) -> None:
         super().__init__()
         self.interpreter = interpreter
         self.strategy = self.interpret_multiline
@@ -19,6 +20,12 @@ class FileInterpreter:
             'line': self.interpret_line_by_line,
             'multi': self.interpret_multiline
         }
+        self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(logging.StreamHandler())
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
+        else:
+            self.logger.setLevel(logging.INFO)
 
     def interpret_file(self, filename):
         results = []
@@ -39,7 +46,7 @@ class FileInterpreter:
         self.__set_dir_strategy(directory)
 
         for f in files:
-            print("Interpreting file %s" % f)
+            self.logger.debug("Interpreting file %s" % f)
             file_ = os.path.join(directory, f)
             if os.path.isdir(file_):
                 if recursive:
@@ -96,7 +103,7 @@ class FileInterpreter:
         results = []
         # None filters blank lines
         for i, line in enumerate(filter(None, lines)):
-            print("Interpreting line %i" % i)
+            self.logger.debug("Interpreting line %i" % i)
             expressions = parse.parse_expression(line)
             outputs = self.interpreter.interpret_expressions(expressions)
 
