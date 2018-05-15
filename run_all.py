@@ -12,6 +12,7 @@ from requests import HTTPError
 
 import stats
 import settings
+import logging
 
 from coqr.comparators.Comparator import Comparator
 from coqr.constants.Status import Status
@@ -23,6 +24,7 @@ from coqr.processors.AbstractOutputProcessor import AbstractOutputProcessor
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.utils.file import write_to_file
+from messages import *
 
 COQ_DEFAULT_FILE = 'coq.json'
 
@@ -31,13 +33,21 @@ R_DEFAULT_FILE = 'r.json'
 parser = argparse.ArgumentParser(
     description='Run given file with R and Coq interpreters, processes outputs and compares')
 
-parser.add_argument('src')
-parser.add_argument('-o', '--output')
-parser.add_argument('-d', '--debug', action='store_true')
-parser.add_argument('-s', '--server', action='store_true')
-parser.add_argument('-r', '--recursive', action='store_true')
-parser.add_argument('-t', '--title', default='')
-parser.add_argument('-m', '--message', default='')
+parser.add_argument('src', help="File to be interpreted")
+parser.add_argument('-o', '--output', help="Creates a JSON file with the results in the given path.")
+parser.add_argument('-d', '--debug', action='store_true',
+                    help="Allows printing debug information in the console output. If the -o option is used, it "
+                         "will attempt to create debug files in the same directory given.")
+parser.add_argument('-s', '--server', action='store_true', help="Send results to a server. It requires URL and TOKEN "
+                                                                "env variables to be defined.")
+parser.add_argument('-r', '--recursive', action='store_true',
+                    help="Allows interpretation of a directory to be recursive.")
+parser.add_argument('-t', '--title', default='', help="Adds a title to the test.")
+parser.add_argument('-m', '--message', default='', help="Adds a custom message (description) to the test.")
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.INFO)
 
 
 def interpret_file(src, interpreter, debug=False, out=None):
@@ -68,17 +78,17 @@ def process_outputs(output, processor: AbstractOutputProcessor, debug=False, out
 
 
 def compare_processed_outputs(processed_r, processed_coq):
-    print("Comparing")
+    logger.info(COMPARING_MSG)
     comparator = Comparator()
     return comparator.compare_results(processed_coq, processed_r)
 
 
 def print_general_stats(reports):
-    print("")
-    print("---------- GENERAL STATS ----------")
+    logger.info("")
+    logger.info(GENERAL_STATS_HEADER)
     stats_ = stats.get_general_stats(reports)
     for k, v in stats_.most_common():
-        print("%s : %d" % (str(Status(k)), v))
+        logger.info("%s : %d" % (str(Status(k)), v))
 
 
 def get_coqr_version():
@@ -102,39 +112,35 @@ def get_cmd_used():
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    print("Interpreting tests in %s" % options.src)
-
-    print("Running R interpreter...")
-
+    logger.info(interpreting( options.src))
+    logger.info(RUNNING_R_INTERPRETER_MSG)
     RSCRIPT = os.environ.get("RSCRIPT")
     if RSCRIPT:
         r_interpreter = RInterpreter(RSCRIPT)
     else:
         sys.exit("Please define the 'RSCRIPT' variable.")
-
     delta = time.time()
     if os.path.isfile(options.src):
-        r_results = interpret_file(options.src, FileInterpreter(r_interpreter))
+        r_results = interpret_file(options.src, FileInterpreter(r_interpreter, debug=options.debug))
     else:
-        r_results = interpret_directory(options.src, FileInterpreter(r_interpreter),
+        r_results = interpret_directory(options.src, FileInterpreter(r_interpreter, debug=options.debug),
                                         recursive=options.recursive)
-    print("Finished in %f seconds" % (time.time() - delta))
+    logger.info(finished_in(time.time() - delta))
 
-    print("Running Coq interpreter...")
+    logger.info(RUNNING_COQ_INTERPRETER_MSG)
     COQ_INTERP = os.environ.get("COQ_INTERP")
     if COQ_INTERP:
         coqr = CoqInterpreter(COQ_INTERP)
     else:
         sys.exit("Please define the 'COQ_INTERP' variable.")
-
     delta = time.time()
     if os.path.isfile(options.src):
-        coq_results = interpret_file(options.src, FileInterpreter(coqr))
+        coq_results = interpret_file(options.src, FileInterpreter(coqr, debug=options.debug))
     else:
-        coq_results = interpret_directory(options.src, FileInterpreter(coqr),
+        coq_results = interpret_directory(options.src, FileInterpreter(coqr, debug=options.debug),
                                           recursive=options.recursive)
 
-    print("Finished in %f seconds" % (time.time() - delta))
+    logger.info(finished_in(time.time() - delta))
 
     if options.debug:
         if options.output:
@@ -142,11 +148,11 @@ if __name__ == '__main__':
             write_to_file(os.path.join(directory, R_DEFAULT_FILE), r_results)
             write_to_file(os.path.join(directory, COQ_DEFAULT_FILE), coq_results)
         else:
-            print("Debug set but no output directory specified")
+            logger.info("Debug set but no output directory specified")
 
-    print("Processing R output")
+    logger.info(processing_output("R"))
     r_process = process_outputs(r_results, ROutputProcessor())
-    print("Processing Coq output")
+    logger.info(processing_output("Coq"))
     coq_process = process_outputs(coq_results, CoqOutputProcessor())
 
     if options.debug:
@@ -155,7 +161,7 @@ if __name__ == '__main__':
             write_to_file(os.path.join(directory, 'processed-r.json'), r_process)
             write_to_file(os.path.join(directory, 'processed-coq.json'), coq_process)
         else:
-            print("Debug set but no output directory specified")
+            logger.info("Debug set but no output directory specified")
 
     comparison = compare_processed_outputs(r_process, coq_process)
     (sysname, nodename, release, version, machine) = os.uname()
@@ -182,18 +188,18 @@ if __name__ == '__main__':
         URL = os.environ.get("URL")
         TOKEN = os.environ.get("TOKEN")
         if URL:
-            print('Sending results to server')
+            logger.info(SENDING_RESULTS)
             try:
                 send_reports(final_report, URL, TOKEN)
-                print('Sent successfully')
+                logger.info(SENT_SUCCESSFULLY)
             except HTTPError:
-                print('There was an error sending the report to server')
+                logger.error(ERROR_SENDING)
         else:
             sys.exit("Please define the 'URL' environmental variable")
 
     if options.output:
-        print("Done, you may find the results in %s" % options.output)
+        logger.info(processed_finished_with_output(options.output))
     else:
-        print("Done!")
+        logger.info(PROCESS_FINISHED_MSG)
 
     print_general_stats(comparison)
