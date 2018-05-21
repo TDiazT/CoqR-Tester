@@ -112,13 +112,23 @@ def get_cmd_used():
 if __name__ == '__main__':
     options = parser.parse_args()
 
-    logger.info(interpreting( options.src))
+    logger.info(interpreting(options.src))
     logger.info(RUNNING_R_INTERPRETER_MSG)
     RSCRIPT = os.environ.get("RSCRIPT")
     if RSCRIPT:
         r_interpreter = RInterpreter(RSCRIPT)
     else:
         sys.exit("Please define the 'RSCRIPT' variable.")
+    COQ_INTERP = os.environ.get("COQ_INTERP")
+    if COQ_INTERP:
+        COQR_INITIAL_STATE = os.environ.get("COQR_INITIAL_STATE")
+        if COQR_INITIAL_STATE:
+            coqr = CoqInterpreter(COQ_INTERP, COQR_INITIAL_STATE)
+        else:
+            sys.exit("Please define the 'COQR_INITIAL_STATE' env variable.")
+    else:
+        sys.exit("Please define the 'COQ_INTERP' variable.")
+
     delta = time.time()
     if os.path.isfile(options.src):
         r_results = interpret_file(options.src, FileInterpreter(r_interpreter, debug=options.debug))
@@ -128,11 +138,7 @@ if __name__ == '__main__':
     logger.info(finished_in(time.time() - delta))
 
     logger.info(RUNNING_COQ_INTERPRETER_MSG)
-    COQ_INTERP = os.environ.get("COQ_INTERP")
-    if COQ_INTERP:
-        coqr = CoqInterpreter(COQ_INTERP)
-    else:
-        sys.exit("Please define the 'COQ_INTERP' variable.")
+
     delta = time.time()
     if os.path.isfile(options.src):
         coq_results = interpret_file(options.src, FileInterpreter(coqr, debug=options.debug))

@@ -9,10 +9,10 @@ from coqr.interpreters.AbstractInterpreter import AbstractInterpreter
 class CoqInterpreter(AbstractInterpreter):
     final_state = '.CoqData'
 
-    def __init__(self, interp) -> None:
+    def __init__(self, interp, initial_state) -> None:
         super().__init__(interp)
         self.name = 'Coq'
-        self.exec_path = os.path.join(self.interpreter, 'src', 'runR.native')
+        self.initial_state = initial_state
 
     def interpret(self, expression):
         p1 = subprocess.Popen(['echo', expression], stdout=subprocess.PIPE)
@@ -20,10 +20,10 @@ class CoqInterpreter(AbstractInterpreter):
         if os.path.exists(self.final_state):
             initial_state = self.final_state
         else:
-            initial_state = os.path.join(self.interpreter, 'Rlib', 'bootstrapping.state')
+            initial_state = self.initial_state
 
         p2 = subprocess.Popen(
-            [self.exec_path, '-initial-state', initial_state, '-final-state', self.final_state, '-hide-prompt'],
+            [self.interpreter, '-initial-state', initial_state, '-final-state', self.final_state, '-hide-prompt'],
             stdin=p1.stdout, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True)

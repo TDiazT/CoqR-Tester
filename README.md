@@ -8,7 +8,7 @@ compare their outputs.
 Requirements:
 - Python 3.5
 - R binary (tested on v3.4.2)
-- proveR
+- coqR
 
 First of all, Python libraries should be installed. You can do it with the
 following command:
@@ -30,12 +30,13 @@ or to execute different stages of the process separately.
 Executes the whole process with both interpreters and outputs general
 statistics of the process.
 
-It requires a `.env` file next to the run_all script, with the following content:
+It requires a `.env` file in the directory where it's run, with the following content:
 ```
 # Contents of .env file
 # Without ''
 
-COQ_INTERP=path/to/coq-interpreter
+COQ_INTERP=path/to/coq-interpreter-executable
+COQR_INITIAL_STATE=path/to/initial-state
 RSCRIPT=path/to/rscript  # Or just name if it's in global scope
 
 # If sending data to server
@@ -50,22 +51,29 @@ usage: run_all.py [-h] [-o OUTPUT] [-d] [-s] [-r] [-t TITLE] [-m MESSAGE] src
 Run given file with R and Coq interpreters, processes outputs and compares
 
 positional arguments:
-  src
+  src                   File to be interpreted
 
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT, --output OUTPUT
-  -d, --debug
-  -s, --server
-  -r, --recursive
+                        Creates a JSON file with the results in the given
+                        path.
+  -d, --debug           Allows printing debug information in the console
+                        output. If the -o option is used, it will attempt to
+                        create debug files in the same directory given.
+  -s, --server          Send results to a server. It requires URL and TOKEN
+                        env variables to be defined.
+  -r, --recursive       Allows interpretation of a directory to be recursive.
   -t TITLE, --title TITLE
+                        Adds a title to the test.
   -m MESSAGE, --message MESSAGE
+                        Adds a custom message (description) to the test.
 
 ```
 
 Usage of the script:
 ```bash
-$ ./run_all src -o output
+$ ./run_all src
 
 ```
 
