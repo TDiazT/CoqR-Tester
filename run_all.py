@@ -94,7 +94,14 @@ def print_general_stats(reports):
 def get_coqr_version():
     COQ_INTERP = os.environ.get("COQ_INTERP")
     if COQ_INTERP:
-        git_process = subprocess.Popen(["git", "--git-dir", os.path.join(COQ_INTERP, '.git'),
+        _dir = COQ_INTERP
+        for i in range(0, 3):
+            if os.path.exists(os.path.join(_dir, '.git')):
+                break
+            else:
+                _dir = os.path.dirname(_dir)
+
+        git_process = subprocess.Popen(["git", "--git-dir", os.path.join(_dir, '.git'),
                                         "rev-parse", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        universal_newlines=True)
         (res, err) = git_process.communicate()
