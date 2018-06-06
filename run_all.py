@@ -130,7 +130,7 @@ if __name__ == '__main__':
     if COQ_INTERP:
         COQR_INITIAL_STATE = os.environ.get("COQR_INITIAL_STATE")
         if COQR_INITIAL_STATE:
-            coqr = CoqInterpreter(COQ_INTERP, COQR_INITIAL_STATE)
+            coqr = CoqInterpreter(COQ_INTERP, COQR_INITIAL_STATE, debug=options.debug)
         else:
             sys.exit("Please define the 'COQR_INITIAL_STATE' env variable.")
     else:
