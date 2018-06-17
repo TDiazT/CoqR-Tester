@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import json
 import os
@@ -12,7 +14,7 @@ from coqr.utils.file import write_to_file
 parser = argparse.ArgumentParser(description='Run every expression in a file with named interpreter')
 
 parser.add_argument('input')
-parser.add_argument('-output')
+parser.add_argument('-o', '--output', help="Creates a JSON file with the results in the given path.")
 parser.add_argument('--line', action='store_true')
 
 
@@ -22,7 +24,7 @@ def get_interpreter():
     if RSCRIPT:
         return RInterpreter(RSCRIPT)
     elif COQ_INTERP:
-        return CoqInterpreter(COQ_INTERP)
+        return CoqInterpreter(COQ_INTERP, os.environ.get('COQR_INITIAL_STATE'))
     else:
         sys.exit("No valid interpreter set in environment. Define either 'RSCRIPT' or 'COQ_INTERP' variables.")
 

@@ -56,6 +56,9 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector('[1] TRUE\n[1] FALSE', [True, False])
         self.assert_vector('[1] TRUE    ', [True])
 
+    def test_boolean_with_NA(self):
+        self.assert_vector("[1] NA    TRUE  NA    FALSE\n", [None, True, None, False])
+
     def test_simple_number(self):
         self.assert_vector("[1] 1", [1.0])
 
@@ -66,6 +69,8 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector('[1]     "test"    "test2"  \n', ['"test"', '"test2"'])
         self.assert_vector('[1]     1   2 3\n', [1.0, 2.0, 3.0])
         self.assert_vector('    [1] 1      3', [1.0, 3.0])
+        self.assert_vector("[1] TRUE  FALSE FALSE FALSE\n", [True, False, False, False])
+        self.assert_vector("[1] TRUE  TRUE  TRUE  FALSE\n", [True, True, True, False])
 
     def test_vector_with_newlines(self):
         self.assert_vector('[1] 1 2 3 4\n[4] 5 6 7 8', [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
