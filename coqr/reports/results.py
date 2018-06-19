@@ -37,6 +37,9 @@ class ProcessedResult(ABC):
     def compare_to_invisible(self, other) -> Status:
         return Status.FAIL
 
+    def compare_to_list(self, other) -> Status:
+        return Status.FAIL
+
     def to_json(self):
         return self.processed_output
 
@@ -82,6 +85,9 @@ class ImpossibleResult(ProcessedResult):
     def compare_to_invisible(self, other):
         return Status.IMPOSSIBLE
 
+    def compare_to_list(self, other) -> Status:
+        return Status.IMPOSSIBLE
+
 
 class NotImplementedResult(ProcessedResult):
     def __init__(self) -> None:
@@ -107,6 +113,9 @@ class NotImplementedResult(ProcessedResult):
         return Status.NOT_IMPLEMENTED
 
     def compare_to_invisible(self, other):
+        return Status.NOT_IMPLEMENTED
+
+    def compare_to_list(self, other) -> Status:
         return Status.NOT_IMPLEMENTED
 
 
@@ -218,3 +227,18 @@ class InvisibleResult(ProcessedResult):
 
     def compare_to_invisible(self, other):
         return Status.PASS
+
+
+class ListResult(ProcessedResult):
+    def __init__(self, list_result: List) -> None:
+        super().__init__()
+        self.processed_output = 'LIST'
+        self.result = list_result
+
+    def compare_to(self, other) -> Status:
+        return other.compare_to_list(self)
+
+    def compare_to_list(self, other):
+        if self.result == other.result:
+            return Status.PASS
+        return Status.FAIL

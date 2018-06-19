@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from coqr.processors.CoqOutputProcessor import CoqOutputProcessor
 from coqr.reports.results import VectorResult, NullResult, FunctionResult, ErrorResult, InvisibleResult, UnknownResult, \
-    NotImplementedResult
+    NotImplementedResult, ListResult
 from tests.processors.test_processor import TestCommonProcessor
 
 
@@ -19,6 +19,11 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
     def assert_is_instance(self, output, instance):
         result = self.processor.process_output(output)
         self.assertIsInstance(result, instance)
+
+    def assert_list(self, output, expected):
+        result = self.processor.process_output(output)
+        self.assertIsInstance(result, ListResult)
+        self.assertEqual(result.result, expected)
 
     def test_process_error_object(self):
         self.assert_is_instance("Error: [eval] Object not found.\nAn error lead to an undefined result.\n", ErrorResult)
@@ -134,3 +139,26 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
 
     def test_cbind_output(self):
         self.assert_is_instance("     [,1] [,2]\n[1,]    1    2\n[2,]    2    2\n[3,]    3    2\n", UnknownResult)
+
+    def test_simple_list(self):
+        self.assert_list("[[1]]\n[1] 1", [1])
+        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] 2\n", [1, 2])
+        self.assert_list("[[1]]\n[1] NA\n[[2]]\n[1] Inf\n", [None, inf])
+        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] -Inf\n[[3]]\n[1] 2.4", [1, -inf, 2.4])
+
+    # def test_list_with_diff_values(self):
+    #     self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] TRUE\n", [1, True])
+    #     self.assert_list("[[1]]\n[1] FALSE\n[[2]]\n[1] TRUE\n", [False, True])
+    #     self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] TRUE\n[[3]]\n[1] \"hola\"\n", [1, True, "hola"])
+
+    def test_nested_lists(self):
+        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[[2]][[1]]\n[1] 2\n", [1, [2]])
+        self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1", [[1]])
+        self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1\n[[2]]\n[1] 2\n", [[1], 2])
+        self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1\n[[1]][[2]]\n[1] 2\n", [[1, 2]])
+        self.assert_list(
+            "[[1]]\n[[1]][[1]]\n[[1]][[1]][[1]]\n[[1]][[1]][[1]][[1]]\n[1] 4\n[[1]][[1]][[1]][[2]]\n[1] 5\n[[2]]\n[1] 4",
+            [[[[4,5]]], 4])
+
+    def test_fastr_lists(self):
+        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] 2\n[[3]]\n[[3]][[1]]\n[1] 100", [1, 2, [100]])
