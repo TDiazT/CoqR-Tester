@@ -3,7 +3,7 @@ import os
 import re
 import sys
 
-reg = re.compile(r'" *{ *(.*) *} *"')
+reg = re.compile(r'"(.*)"')
 
 
 cwd = os.getcwd()

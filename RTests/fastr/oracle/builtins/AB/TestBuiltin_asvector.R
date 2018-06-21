@@ -112,5 +112,3 @@ names(as.pairlist(structure(list(3, 4), .Names = c('', ''))))
 { as.symbol(as.symbol(123)) }
 { as.symbol(as.raw(16)) }
 { as.symbol(3+2i) }
-{ x <- %0; names(x) <- c('a','b','c'); attr(x,'myattr') <- 42; as.vector(x, mode='%1'); }
-{ x <- %0; attr(x,'myattr') <- 42; as.vector(x, mode='%1'); }
