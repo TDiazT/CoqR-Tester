@@ -74,10 +74,13 @@ class AbstractOutputProcessor(ABC):
         return results
 
     def _result_to_string_vector(self, param: List[str]) -> List[str]:
+        PATTERN = re.compile(r'''((?:[^\[\] "']|"[^"]*"|'[^']*')+)''')
         results = []
-        for res in param:
-            extracted = self._extract_strings(res)
-            results.extend(extracted)
+
+        for lst in param:
+            split_ = PATTERN.split(lst)[1::2]
+            split_.pop(0)
+            results.extend(split_)
 
         return results
 
