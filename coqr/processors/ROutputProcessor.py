@@ -15,7 +15,7 @@ class ROutputProcessor(AbstractOutputProcessor):
     number_regex = re.compile(r'^ *\[\d+\](?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
                               re.MULTILINE)
     list_regex = re.compile(
-        r'^(\[\[\d+\]\](?:\[\[\d+\]\])*|\[\d+\] *(?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *)$',
+        r'^(\[\[\d+\]\]|\$\w+).*$',
         re.MULTILINE)
 
     def __init__(self):
@@ -32,5 +32,19 @@ class ROutputProcessor(AbstractOutputProcessor):
                 lambda x: BooleanVector(self._result_to_boolean_vector(self.boolean_regex.findall(x)))),
             (self.string_regex, lambda x: StringVector(self._result_to_string_vector(self.string_regex.findall(x)))),
             (self.number_regex, lambda x: NumericVector(self._result_to_numeric_vector(self.number_regex.findall(x)))),
-            (self.list_regex, lambda x: ListResult(self._result_to_list(self.list_regex.findall(x))))
+            (self.list_regex, lambda x: ListResult(self._result_to_list(x)))
         ]
+
+    def _result_to_list(self, result : str) -> dict:
+        lines_aux = result.split("\n")
+        lines = list(filter(None, lines_aux))
+        aux = {}
+        last = None
+        for line in lines:
+            if self.list_regex.match(line):
+                last = line
+                aux[last] = None
+            elif self.number_regex.match(line):
+                aux[last] = NumericVector(self._result_to_numeric_vector(self.number_regex.findall(line)))
+
+        return aux

@@ -1,9 +1,10 @@
 from math import inf, isnan, nan
 from unittest import TestCase
 
+from coqr.constants.Status import Status
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.reports.results import NullResult, VectorResult, FunctionResult, ErrorResult, \
-    InvisibleResult, UnknownResult, ListResult
+    InvisibleResult, UnknownResult, ListResult, NumericVector
 from tests.processors.test_processor import TestCommonProcessor
 
 
@@ -159,19 +160,52 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assert_is_instance("function () \nbreak\n", FunctionResult)
 
     def test_simple_list(self):
-        self.assert_list("[[1]]\n[1] 1", [1])
-        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] 2\n", [1, 2])
-        self.assert_list("[[1]]\n[1] NA\n[[2]]\n[1] Inf\n", [None, inf])
-        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] -Inf\n[[3]]\n[1] 2.4", [1, -inf, 2.4])
+        output = self.processor.process_output("[[1]]\n[1] 1")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertIsInstance(output.result['[[1]]'], NumericVector)
+        self.assertTrue(output.result['[[1]]'].result[0] == 1)
 
-    def test_nested_lists(self):
-        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[[2]][[1]]\n[1] 2\n", [1, [2]])
-        self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1", [[1]])
-        self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1\n[[2]]\n[1] 2\n", [[1], 2])
-        self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1\n[[1]][[2]]\n[1] 2\n", [[1, 2]])
-        self.assert_list(
-            "[[1]]\n[[1]][[1]]\n[[1]][[1]][[1]]\n[[1]][[1]][[1]][[1]]\n[1] 4\n[[1]][[1]][[1]][[2]]\n[1] 5\n[[2]]\n[1] 4",
-            [[[[4,5]]], 4])
+        output = self.processor.process_output("[[1]]\n[1] 1\n[[2]]\n[1] 2\n")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertIsInstance(output.result['[[1]]'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], NumericVector)
+        self.assertTrue(output.result['[[1]]'].result[0] == 1)
+        self.assertTrue(output.result['[[2]]'].result[0] == 2)
 
-    def test_fastr_lists(self):
-        self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] 2\n[[3]]\n[[3]][[1]]\n[1] 100", [1, 2, [100]])
+        output = self.processor.process_output("[[1]]\n[1] NA\n[[2]]\n[1] Inf\n")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertIsInstance(output.result['[[1]]'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], NumericVector)
+        self.assertIsNone(output.result['[[1]]'].result[0])
+        self.assertTrue(output.result['[[2]]'].result[0] == inf)
+
+        output = self.processor.process_output("""[[1]]
+ [1]  1  2  3  4  5  6  7  8  9 10
+
+[[2]]
+ [1] 10 11 12 13 14 15 16 17 18 19 20""")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertIsInstance(output.result['[[1]]'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], NumericVector)
+        self.assertEqual(output.result['[[1]]'].result, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        self.assertEqual(output.result['[[2]]'].result, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+
+        # self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] 2\n", [1, 2])
+        # self.assert_list("[[1]]\n[1] NA\n[[2]]\n[1] Inf\n", [None, inf])
+        # self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] -Inf\n[[3]]\n[1] 2.4", [1, -inf, 2.4])
+
+        # def test_nested_lists(self):
+        #     self.assert_list("[[1]]\n[1] 1\n[[2]]\n[[2]][[1]]\n[1] 2\n", [1, [2]])
+        #     self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1", [[1]])
+        #     self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1\n[[2]]\n[1] 2\n", [[1], 2])
+        #     self.assert_list("[[1]]\n[[1]][[1]]\n[1] 1\n[[1]][[2]]\n[1] 2\n", [[1, 2]])
+        #     self.assert_list(
+        #         "[[1]]\n[[1]][[1]]\n[[1]][[1]][[1]]\n[[1]][[1]][[1]][[1]]\n[1] 4\n[[1]][[1]][[1]][[2]]\n[1] 5\n[[2]]\n[1] 4",
+        #         [[[[4,5]]], 4])
+        #
+        # def test_fastr_lists(self):
+        #     self.assert_list("[[1]]\n[1] 1\n[[2]]\n[1] 2\n[[3]]\n[[3]][[1]]\n[1] 100", [1, 2, [100]])

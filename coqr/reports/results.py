@@ -230,7 +230,7 @@ class InvisibleResult(ProcessedResult):
 
 
 class ListResult(ProcessedResult):
-    def __init__(self, list_result: List) -> None:
+    def __init__(self, list_result: dict) -> None:
         super().__init__()
         self.processed_output = 'LIST'
         self.result = list_result
@@ -242,3 +242,6 @@ class ListResult(ProcessedResult):
         if self.result == other.result:
             return Status.PASS
         return Status.FAIL
+
+    def to_json(self):
+        return str(self.result)
