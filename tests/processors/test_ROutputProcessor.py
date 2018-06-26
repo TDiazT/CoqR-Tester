@@ -4,7 +4,7 @@ from unittest import TestCase
 from coqr.constants.Status import Status
 from coqr.processors.ROutputProcessor import ROutputProcessor
 from coqr.reports.results import NullResult, VectorResult, FunctionResult, ErrorResult, \
-    InvisibleResult, UnknownResult, ListResult, NumericVector
+    InvisibleResult, UnknownResult, ListResult, NumericVector, BooleanVector, StringVector
 from tests.processors.test_processor import TestCommonProcessor
 
 
@@ -177,7 +177,7 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         output = self.processor.process_output("[[1]]\n[1] NA\n[[2]]\n[1] Inf\n")
         self.assertIsInstance(output, ListResult)
         self.assertIsInstance(output.result, dict)
-        self.assertIsInstance(output.result[0], NumericVector)
+        self.assertIsInstance(output.result[0], BooleanVector)
         self.assertIsInstance(output.result[1], NumericVector)
         self.assertIsNone(output.result[0].result[0])
         self.assertTrue(output.result[1].result[0] == inf)
@@ -242,8 +242,7 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         [[1]][[1]][[1]][[2]]
         [1] 5
         [[2]]
-        [1] 4
-        """)
+        [1] 4\n""")
         self.assertIsInstance(output, ListResult)
         self.assertIsInstance(output.result, dict)
         self.assertEqual(len(output.result), 2)
@@ -260,3 +259,60 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assertEqual(output.result[0][0][0][1].result, [5])
         self.assertEqual(output.result[1].result, [4])
 
+    def test_simple_mixed_list(self):
+        output = self.processor.process_output("[[1]]\n[1] 1\n[[2]]\n[1] TRUE\n")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 2)
+        self.assertIsInstance(output.result[0], NumericVector)
+        self.assertIsInstance(output.result[1], BooleanVector)
+        self.assertEqual(output.result[0].result, [1])
+        self.assertEqual(output.result[1].result, [True])
+
+        output = self.processor.process_output('[[1]]\nfunction () x\n[[2]]\n[1] "hey" "you"\n')
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 2)
+        self.assertIsInstance(output.result[0], FunctionResult)
+        self.assertIsInstance(output.result[1], StringVector)
+        self.assertEqual(output.result[1].result, ['"hey"', '"you"'])
+
+
+    def test_fastr_cases(self):
+        output = self.processor.process_output("""[[1]]
+[1] "‘"
+
+[[2]]
+[1] "Matrix"
+
+[[3]]
+[1] "’" """)
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 3)
+        self.assertIsInstance(output.result[0], StringVector)
+        self.assertIsInstance(output.result[1], StringVector)
+        self.assertIsInstance(output.result[2], StringVector)
+        self.assertEqual(output.result[0].result, ['"‘"'])
+        self.assertEqual(output.result[1].result, ['"Matrix"'])
+        self.assertEqual(output.result[2].result, ['"’"'])
+#
+#         output = self.processor.process_output("[[1]]\n[1] NA\n[[2]]\n[1] Inf\n")
+#         self.assertIsInstance(output, ListResult)
+#         self.assertIsInstance(output.result, dict)
+#         self.assertIsInstance(output.result[0], NumericVector)
+#         self.assertIsInstance(output.result[1], NumericVector)
+#         self.assertIsNone(output.result[0].result[0])
+#         self.assertTrue(output.result[1].result[0] == inf)
+#
+#         output = self.processor.process_output("""[[1]]
+#  [1]  1  2  3  4  5  6  7  8  9 10
+#
+# [[2]]
+#  [1] 10 11 12 13 14 15 16 17 18 19 20""")
+#         self.assertIsInstance(output, ListResult)
+#         self.assertIsInstance(output.result, dict)
+#         self.assertIsInstance(output.result[0], NumericVector)
+#         self.assertIsInstance(output.result[1], NumericVector)
+#         self.assertEqual(output.result[0].result, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+#         self.assertEqual(output.result[1].result, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])

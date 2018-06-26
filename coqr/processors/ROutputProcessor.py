@@ -60,7 +60,7 @@ class ROutputProcessor(AbstractOutputProcessor):
                         aux = aux[len(aux) - 1]
                 else:
                     continue
-            elif self.number_regex.match(line):
-                aux[len(aux)] = NumericVector(self._result_to_numeric_vector(self.number_regex.findall(line)))
+            else:
+                aux[len(aux)] = self.process_output(line)
 
         return res
