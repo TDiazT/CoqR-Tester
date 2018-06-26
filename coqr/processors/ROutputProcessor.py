@@ -36,7 +36,7 @@ class ROutputProcessor(AbstractOutputProcessor):
         ]
 
     def _result_to_list(self, result : str) -> dict:
-        bracket_regex = re.compile(r'\[\[\d+\]\]')
+        bracket_regex = re.compile(r'(\[\[\d+\]\]|\$\w+)')
 
         lines_aux = result.split("\n")
         lines = list(filter(None, lines_aux))
@@ -44,23 +44,25 @@ class ROutputProcessor(AbstractOutputProcessor):
         res = {}
         aux = res
         index = 1
+        last = ""
         for line in lines:
             if self.list_regex.match(line):
                 match = bracket_regex.findall(line)
                 size = len(match)
+                last = match[-1]
 
                 if size > index:
-                    last = len(aux)
-                    aux[last] = {}
-                    aux = aux[last]
+                    last_ = match[index - 1]
+                    aux[last_] = {}
+                    aux = aux[last_]
                     index = size
                 elif size < index:
                     aux = res
                     for i in range(0, size - 1):
-                        aux = aux[len(aux) - 1]
+                        aux = aux[match[i]]
                 else:
                     continue
             else:
-                aux[len(aux)] = self.process_output(line)
+                aux[last] = self.process_output(line)
 
         return res
