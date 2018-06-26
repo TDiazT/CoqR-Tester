@@ -277,7 +277,6 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assertIsInstance(output.result['[[2]]'], StringVector)
         self.assertEqual(output.result['[[2]]'].result, ['"hey"', '"you"'])
 
-
     def test_fastr_cases(self):
         output = self.processor.process_output("""[[1]]
 [1] "‘"
@@ -296,7 +295,6 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assertEqual(output.result['[[1]]'].result, ['"‘"'])
         self.assertEqual(output.result['[[2]]'].result, ['"Matrix"'])
         self.assertEqual(output.result['[[3]]'].result, ['"’"'])
-
 
         output = self.processor.process_output("""[[1]]
 function (...)  .Primitive("c")
@@ -326,6 +324,75 @@ NULL""")
         self.assertIsInstance(output.result['[[2]]']['[[2]]'], UnknownResult)
         self.assertIsInstance(output.result['[[2]]']['[[3]]'], UnknownResult)
 
+        output = self.processor.process_output("""[[1]]
+Time Series:
+Start = 1 
+End = 1 
+Frequency = 1 
+[1] FALSE
+
+[[2]]
+Time Series:
+Start = 1 
+End = 1 
+Frequency = 1 
+[1] FALSE""")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 2)
+        self.assertIsInstance(output.result['[[1]]'], UnknownResult)
+        self.assertIsInstance(output.result['[[2]]'], UnknownResult)
+
+        output = self.processor.process_output("[[1]]\nlogical(0)\n")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 1)
+        self.assertIsInstance(output.result['[[1]]'], UnknownResult)
+
+        output = self.processor.process_output("""[[1]]
+       
+ p L s  [,1]
+  . . . TRUE
+  | . . TRUE
+  . | . TRUE
+  | | . TRUE
+  . . | TRUE
+  | . | TRUE
+  . | | TRUE
+  | | | TRUE
+  . . ? TRUE
+  | . ? TRUE
+  . | ? TRUE
+  | | ? TRUE
+
+""")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 1)
+        self.assertIsInstance(output.result['[[1]]'], UnknownResult)
+
+        output = self.processor.process_output("""[[1]]
+[1]  1  2  3  4  8 12
+
+[[2]]
+[1]  1  2  3  4  8 12
+
+[[3]]
+[1] NA
+
+[[4]]
+NULL""")
+
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 4)
+        self.assertIsInstance(output.result['[[1]]'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], NumericVector)
+        self.assertIsInstance(output.result['[[3]]'], BooleanVector)
+        self.assertIsInstance(output.result['[[4]]'], NullResult)
+        self.assertEqual(output.result['[[1]]'].result, [1, 2, 3, 4, 8, 12])
+        self.assertEqual(output.result['[[2]]'].result, [1, 2, 3, 4, 8, 12])
+
     def test_simple_list_with_names(self):
         output = self.processor.process_output("$a\n[1] 1")
         self.assertIsInstance(output, ListResult)
@@ -354,7 +421,6 @@ NULL""")
         self.assertEqual(output.result['$b']['$c'].result, [3])
         self.assertEqual(output.result['$b']['$d'].result, [4])
 
-
     def test_mixed_named_numeric_list(self):
         output = self.processor.process_output("$a\n[1] 2\n[[2]]\n[[2]]$b\n[1] 3\n[[2]]$c\n[1] 4\n")
         self.assertIsInstance(output, ListResult)
@@ -368,3 +434,15 @@ NULL""")
         self.assertEqual(output.result['$a'].result, [2])
         self.assertEqual(output.result['[[2]]']['$b'].result, [3])
         self.assertEqual(output.result['[[2]]']['$c'].result, [4])
+
+    def test_multilined_list_elements(self):
+        output = self.processor.process_output("""[[1]]
+  [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18
+ [19]  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36
+ [37]  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54
+ [55]  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72
+ [73]  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90
+ [91]  91  92  93  94  95  96  97  98  99 100""")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(output.result['[[1]]'].result, list(range(1, 101)))
