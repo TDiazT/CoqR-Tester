@@ -15,7 +15,7 @@ class ROutputProcessor(AbstractOutputProcessor):
     number_regex = re.compile(r'^ *\[\d+\](?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
                               re.MULTILINE)
     list_regex = re.compile(
-        r'^(\[\[\d+\]\]|\$\w+).*$',
+        r'^ *(\[\[\d+\]\]|\$\w+).*$',
         re.MULTILINE)
 
     def __init__(self):
@@ -36,15 +36,31 @@ class ROutputProcessor(AbstractOutputProcessor):
         ]
 
     def _result_to_list(self, result : str) -> dict:
+        bracket_regex = re.compile(r'\[\[\d+\]\]')
+
         lines_aux = result.split("\n")
         lines = list(filter(None, lines_aux))
-        aux = {}
-        last = None
+
+        res = {}
+        aux = res
+        index = 1
         for line in lines:
             if self.list_regex.match(line):
-                last = line
-                aux[last] = None
-            elif self.number_regex.match(line):
-                aux[last] = NumericVector(self._result_to_numeric_vector(self.number_regex.findall(line)))
+                match = bracket_regex.findall(line)
+                size = len(match)
 
-        return aux
+                if size > index:
+                    last = len(aux)
+                    aux[last] = {}
+                    aux = aux[last]
+                    index = size
+                elif size < index:
+                    aux = res
+                    for i in range(0, size - 1):
+                        aux = aux[len(aux) - 1]
+                else:
+                    continue
+            elif self.number_regex.match(line):
+                aux[len(aux)] = NumericVector(self._result_to_numeric_vector(self.number_regex.findall(line)))
+
+        return res
