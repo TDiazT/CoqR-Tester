@@ -65,6 +65,7 @@ class ROutputProcessor(AbstractOutputProcessor):
                     for i in range(0, size - 1):
                         aux = aux[match[i]]
 
+                    index = size
                     current_result_str = ""
                 else:
                     if current_result_str:

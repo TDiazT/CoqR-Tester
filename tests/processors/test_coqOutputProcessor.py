@@ -447,58 +447,75 @@ attr(,"names")
         self.assertEqual(output.result['$a'].result, [1])
         self.assertEqual(output.result['$bc'].result, [2])
 
-#         output = self.processor.process_output("""[[1]]
-# [1] 2
-#
-# [[2]]
-# [[2]][[1]]
-# [1] 3
-#
-# [[2]][[2]]
-# [1] 4
-#
-# attr(,"names")
-# [1] "c" "d"
-#
-# attr(,"names")
-# [1] "a" "b" """)
-#         self.assertIsInstance(output, ListResult)
-#         self.assertIsInstance(output.result, dict)
-#         self.assertEqual(len(output.result), 2)
-#         self.assertEqual(output.result.keys(), {'$a', '$b'})
-#
-#         self.assertIsInstance(output.result['$a'], NumericVector)
-#         self.assertIsInstance(output.result['$b'], dict)
-#         self.assertEqual(len(output.result['$b']), 2)
-#
-#         self.assertEqual(output.result['$a'].result, [2])
-#         self.assertEqual(output.result['$b'].result.keys(), {'c', 'd'})
-#
-#         self.assertIsInstance(output.result['$b']['$c'], NumericVector)
-#         self.assertIsInstance(output.result['$b']['$d'], NumericVector)
-#         self.assertEqual(output.result['$b']['$c'].result, [3])
-#         self.assertEqual(output.result['$b']['$d'].result, [4])
+        output = self.processor.process_output("""[[1]]
+[1] 2
 
-    # [[1]]
-    # [1]
-    # 1
-    #
-    # [[2]]
-    # [1]
-    # 1
-    #
-    # [[3]]
-    # [[3]][[1]]
-    # [1]
-    # 2
-    #
-    # attr(, "names")
-    # [1]
-    # "b"
-    #
-    # [[4]]
-    # [1]
-    # 3
+[[2]]
+[[2]][[1]]
+[1] 3
+
+[[2]][[2]]
+[1] 4
+
+attr(,"names")
+[1] "c" "d"
+
+attr(,"names")
+[1] "a" "b" """)
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 2)
+        self.assertEqual(output.result.keys(), {'$a', '$b'})
+
+        self.assertIsInstance(output.result['$a'], NumericVector)
+        self.assertIsInstance(output.result['$b'], dict)
+        self.assertEqual(len(output.result['$b']), 2)
+
+        self.assertEqual(output.result['$a'].result, [2])
+        self.assertEqual(output.result['$b'].keys(), {'$c', '$d'})
+
+        self.assertIsInstance(output.result['$b']['$c'], NumericVector)
+        self.assertIsInstance(output.result['$b']['$d'], NumericVector)
+        self.assertEqual(output.result['$b']['$c'].result, [3])
+        self.assertEqual(output.result['$b']['$d'].result, [4])
+
+        output = self.processor.process_output("""[[1]]
+[1] 1
+
+[[2]]
+[1] 1
+
+[[3]]
+[[3]][[1]]
+[1] 2
+
+attr(,"names")
+[1] "b"
+
+[[4]]
+[1] 3
+
+attr(,"names")
+[1] "a" ""  ""  "c" """)
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 4)
+        self.assertEqual(output.result.keys(), {'$a', '[[2]]', '[[3]]', '$c'})
+
+        self.assertIsInstance(output.result['$a'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], NumericVector)
+        self.assertIsInstance(output.result['[[3]]'], dict)
+        self.assertIsInstance(output.result['$c'], NumericVector)
+        self.assertEqual(len(output.result['[[3]]']), 1)
+
+        self.assertEqual(output.result['$a'].result, [1])
+        self.assertEqual(output.result['[[2]]'].result, [1])
+        self.assertEqual(output.result['$c'].result, [3])
+        self.assertEqual(output.result['[[3]]'].keys(), {'$b'})
+
+        self.assertIsInstance(output.result['[[3]]']['$b'], NumericVector)
+        self.assertEqual(output.result['[[3]]']['$b'].result, [2])
+
     #
     # attr(, "names")
     # [1]

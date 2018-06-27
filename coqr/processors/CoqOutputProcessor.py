@@ -41,8 +41,8 @@ class CoqOutputProcessor(AbstractOutputProcessor):
     def _result_to_list(self, result: str) -> dict:
         bracket_regex = re.compile(r'\[\[\d+\]\]')
 
-        lines_aux = result.split("\n")
-        lines = list(filter(None, lines_aux))
+        lines = result.split("\n")
+        # lines = list(filter(None, lines_aux))
 
         res = {}
         aux = res
@@ -50,10 +50,14 @@ class CoqOutputProcessor(AbstractOutputProcessor):
         last = "[[1]]"
         current_result_str = ""
         attr = False
+        count = 0
+        last_full_match = ""
         for line in lines:
             if self.list_regex.match(line):
                 match = bracket_regex.findall(line)
+                last_full_match = match
                 size = len(match)
+                count = 0
 
                 if size > index:
                     last_ = match[index - 1]
@@ -69,6 +73,7 @@ class CoqOutputProcessor(AbstractOutputProcessor):
                     for i in range(0, size - 1):
                         aux = aux[match[i]]
 
+                    index = size
                     current_result_str = ""
                 else:
                     if current_result_str:
@@ -77,26 +82,33 @@ class CoqOutputProcessor(AbstractOutputProcessor):
 
                 last = match[-1]
 
-            else:
-                if line == 'attr(,"names")':
-                    if current_result_str:
-                        aux[last] = self.process_output(current_result_str)
-                    attr = True
-                    continue
-                elif attr:
-                    if self.string_regex.match(line):
-                        names = self._result_to_string_vector(self.string_regex.findall(line))
-                        keys = aux.keys()
-                        key_size = len(keys)
-                        for i in range(0, key_size):
-                            new_key = names[i][1:-1]
+            elif line == 'attr(,"names")':
+                if current_result_str:
+                    aux[last] = self.process_output(current_result_str)
+                attr = True
+                continue
+            elif attr:
+                if self.string_regex.match(line):
+                    names = self._result_to_string_vector(self.string_regex.findall(line))
+                    aux = res
+                    for i in range(0, index - count):
+                        aux = aux[last_full_match[i]]
+
+                    keys = aux.keys()
+                    key_size = len(keys)
+                    for i in range(0, key_size):
+                        new_key = names[i][1:-1]
+                        if new_key:
                             aux["$%s" % new_key] = aux["[[%i]]" % (i + 1)]
                             del aux["[[%i]]" % (i + 1)]
-                    attr = False
-                    current_result_str = ""
-                    continue
-                else:
-                    current_result_str = current_result_str + "\n" + line if current_result_str else line
+                attr = False
+                current_result_str = ""
+                continue
+            elif not line:
+                count = count + 1
+            else:
+                count = 0
+                current_result_str = current_result_str + "\n" + line if current_result_str else line
 
         if current_result_str:
             aux[last] = self.process_output(current_result_str)
