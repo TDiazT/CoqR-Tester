@@ -238,10 +238,26 @@ class ListResult(ProcessedResult):
     def compare_to(self, other) -> Status:
         return other.compare_to_list(self)
 
+    def __compare_partial_results(self, res1: dict, res2: dict):
+        if not res1.keys() == res2.keys():
+            return Status.FAIL
+
+        for (k, v), (k2, v2) in zip(res1.items(), res2.items()):
+            if isinstance(v, dict) and isinstance(v2, dict):
+                status = self.__compare_partial_results(v, v2)
+                if status == Status.FAIL or status == Status.UNKNOWN:
+                    return status
+                else:
+                    continue
+
+            status = v.compare_to(v2)
+            if status == Status.FAIL or status == Status.UNKNOWN:
+                return status
+
+        return Status.PASS
+
     def compare_to_list(self, other):
-        if self.result == other.result:
-            return Status.PASS
-        return Status.FAIL
+        return self.__compare_partial_results(self.result, other.result)
 
     def to_json(self):
         return str(self.result)
