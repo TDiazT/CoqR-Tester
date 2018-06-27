@@ -230,7 +230,7 @@ class InvisibleResult(ProcessedResult):
 
 
 class ListResult(ProcessedResult):
-    def __init__(self, list_result: List) -> None:
+    def __init__(self, list_result: dict) -> None:
         super().__init__()
         self.processed_output = 'LIST'
         self.result = list_result
@@ -238,7 +238,26 @@ class ListResult(ProcessedResult):
     def compare_to(self, other) -> Status:
         return other.compare_to_list(self)
 
+    def __compare_partial_results(self, res1: dict, res2: dict):
+        if not res1.keys() == res2.keys():
+            return Status.FAIL
+
+        for k in res1.keys():
+            if isinstance(res1[k], dict) and isinstance(res2[k], dict):
+                status = self.__compare_partial_results(res1[k], res2[k])
+                if status == Status.FAIL or status == Status.UNKNOWN:
+                    return status
+                else:
+                    continue
+
+            status = res1[k].compare_to(res2[k])
+            if status == Status.FAIL or status == Status.UNKNOWN:
+                return status
+
+        return Status.PASS
+
     def compare_to_list(self, other):
-        if self.result == other.result:
-            return Status.PASS
-        return Status.FAIL
+        return self.__compare_partial_results(self.result, other.result)
+
+    def to_json(self):
+        return str(self.result)
