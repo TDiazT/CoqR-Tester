@@ -15,7 +15,7 @@ class ROutputProcessor(AbstractOutputProcessor):
     number_regex = re.compile(r'^ *\[\d+\](?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
                               re.MULTILINE)
     list_regex = re.compile(
-        r'^ *(\[\[\d+\]\]|\$\w+).*$',
+        r'^ *(\[\[\d+\]\]|\$[\w\.]+).*$',
         re.MULTILINE)
 
     def __init__(self):
@@ -36,7 +36,7 @@ class ROutputProcessor(AbstractOutputProcessor):
         ]
 
     def _result_to_list(self, result: str) -> dict:
-        bracket_regex = re.compile(r'(\[\[\d+\]\]|\$\w+)')
+        bracket_regex = re.compile(r'(\[\[\d+\]\]|\$[\w\.]+)')
 
         lines_aux = result.split("\n")
         lines = list(filter(None, lines_aux))

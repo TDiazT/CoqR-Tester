@@ -105,33 +105,3 @@ class AbstractOutputProcessor(ABC):
             quote = self._extract_double_quote(quoted_expression[1:])
 
             return quoted_expression[0] + quote[0], quote[1]
-
-    def _result_to_list(self, result):
-        head, *tail = result
-        results, tail = self.__results_to_list([], 1, tail)
-
-        return results
-
-    def __results_to_list(self, acc : list, index, rest : list) -> Tuple[List, List]:
-        if not rest:
-            return acc, []
-
-        bracket_regex = re.compile(r'\[\[\d+\]\]')
-
-        head, *tail = rest
-        if bracket_regex.match(head):
-            match = bracket_regex.findall(head)
-
-            size = len(match)
-            if size > index:
-                res, tl = self.__results_to_list([], size, tail)
-                acc.append(res)
-                return self.__results_to_list(acc, index, tl)
-            elif size < index:
-                return acc, rest
-            else:
-                return self.__results_to_list(acc, index, tail)
-        else:
-            vector = self._result_to_numeric_vector([head])
-            acc.extend(vector)
-            return self.__results_to_list(acc, index, tail)

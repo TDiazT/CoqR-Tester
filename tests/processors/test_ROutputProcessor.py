@@ -393,6 +393,42 @@ NULL""")
         self.assertEqual(output.result['[[1]]'].result, [1, 2, 3, 4, 8, 12])
         self.assertEqual(output.result['[[2]]'].result, [1, 2, 3, 4, 8, 12])
 
+        output = self.processor.process_output("""$ANY
+function (x, y = NULL) 
+.Internal(crossprod(x, y))
+attr(,"target")
+    x 
+"ANY" 
+attr(,"class")
+[1] "signature"
+attr(,"class")attr(,"package")
+[1] "methods"
+attr(,"package")
+[1] "methods"
+attr(,"defined")
+    x 
+"ANY" 
+attr(,"class")
+[1] "signature"
+attr(,"class")attr(,"package")
+[1] "methods"
+attr(,"package")
+[1] "methods"
+attr(,"generic")
+[1] "crossprod"
+attr(,"generic")attr(,"package")
+[1] "base"
+attr(,"class")
+[1] "derivedDefaultMethod"
+attr(,"class")attr(,"package")
+[1] "methods"
+""")
+
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 1)
+        self.assertIsInstance(output.result['$ANY'], FunctionResult)
+
     def test_simple_list_with_names(self):
         output = self.processor.process_output("$a\n[1] 1")
         self.assertIsInstance(output, ListResult)
@@ -446,3 +482,20 @@ NULL""")
         self.assertIsInstance(output, ListResult)
         self.assertIsInstance(output.result, dict)
         self.assertEqual(output.result['[[1]]'].result, list(range(1, 101)))
+
+    def test_weird_names(self):
+        output = self.processor.process_output("$`1`\n[1] 1\n")
+        self.assertIsInstance(output, UnknownResult)
+
+        output = self.processor.process_output("[[1]]\n[1] 1\n$`'a'`\n[1] 2")
+        self.assertIsInstance(output, ListResult)
+        # self.assertIsInstance(output.result["[[1]]"], UnknownResult)
+
+        output = self.processor.process_output("""[[1]]
+[1] 0
+
+$length.out
+[1] 3""")
+        self.assertIsInstance(output, ListResult)
+        self.assertEqual(set(output.result.keys()), {"[[1]]", "$length.out"})
+
