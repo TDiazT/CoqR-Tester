@@ -242,15 +242,15 @@ class ListResult(ProcessedResult):
         if not res1.keys() == res2.keys():
             return Status.FAIL
 
-        for (k, v), (k2, v2) in zip(res1.items(), res2.items()):
-            if isinstance(v, dict) and isinstance(v2, dict):
-                status = self.__compare_partial_results(v, v2)
+        for k in res1.keys():
+            if isinstance(res1[k], dict) and isinstance(res2[k], dict):
+                status = self.__compare_partial_results(res1[k], res2[k])
                 if status == Status.FAIL or status == Status.UNKNOWN:
                     return status
                 else:
                     continue
 
-            status = v.compare_to(v2)
+            status = res1[k].compare_to(res2[k])
             if status == Status.FAIL or status == Status.UNKNOWN:
                 return status
 
