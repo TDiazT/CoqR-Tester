@@ -71,6 +71,7 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector('[1] "1+1+FALSE-2+2+FALSE-1+3+FALSE"', ['"1+1+FALSE-2+2+FALSE-1+3+FALSE"'])
         self.assert_vector('[1] "/tmp/RtmpagC9oa/Pkgs/exNSS4"', ['"/tmp/RtmpagC9oa/Pkgs/exNSS4"'])
         self.assert_vector('[1] "detaching ‘package:splines’"', ['"detaching ‘package:splines’"'])
+        self.assert_vector('[1] "\\226\\128\\152"', ['"\\226\\128\\152"'])
 
     def test_process_NA(self):
         self.assert_vector("[1] NA", [None])

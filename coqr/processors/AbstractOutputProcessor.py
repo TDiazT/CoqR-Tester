@@ -74,6 +74,7 @@ class AbstractOutputProcessor(ABC):
         return results
 
     def _result_to_string_vector(self, param: List[str]) -> List[str]:
+        # Based on answer https://stackoverflow.com/a/2787064/3802589
         PATTERN = re.compile(r'''((?:[^\[\] "']|"[^"]*"|'[^']*')+)''')
         results = []
 
