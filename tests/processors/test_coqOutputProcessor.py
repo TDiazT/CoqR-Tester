@@ -268,6 +268,44 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         self.assertIsInstance(output.result['[[2]]'], StringVector)
         self.assertEqual(output.result['[[2]]'].result, ['"hey"', '"you"'])
 
+        output = self.processor.process_output("""[[1]]
+[1] 1
+
+[[2]]
+[[2]][[1]]
+[[2]][[1]][[1]]
+[[2]][[1]][[1]][[1]]
+[1] 2
+
+[[2]][[1]][[1]][[2]]
+[1] 3
+
+attr(,"names")
+[1] ""   "bc"
+
+
+
+[[3]]
+[1] 4
+
+[[4]]
+[1] 5
+
+attr(,"names")
+[1] "a" ""  ""  "c" """)
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 4)
+        self.assertEqual(output.result.keys(), {"$a", '[[2]]', '[[3]]', "$c"})
+        self.assertIsInstance(output.result['$a'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], dict)
+        self.assertIsInstance(output.result['[[3]]'], NumericVector)
+        self.assertIsInstance(output.result['$c'], NumericVector)
+
+        self.assertEqual(output.result['$a'].result, [1])
+        self.assertEqual(output.result['[[3]]'].result, [4])
+        self.assertEqual(output.result['$c'].result, [5])
+
     def test_fastr_cases(self):
         # argv <- list('‘', 'Matrix', '’');list(argv[[1]],argv[[2]],argv[[3]]);
         output = self.processor.process_output("""[[1]]
@@ -313,9 +351,12 @@ NULL""")
         self.assertIsInstance(output.result['[[2]]'], dict)
         self.assertEqual(len(output.result['[[2]]']), 3)
         self.assertIsInstance(output.result['[[3]]'], NullResult)
-        self.assertIsInstance(output.result['[[2]]']['[[1]]'], UnknownResult)
-        self.assertIsInstance(output.result['[[2]]']['[[2]]'], UnknownResult)
-        self.assertIsInstance(output.result['[[2]]']['[[3]]'], UnknownResult)
+        self.assertIsInstance(output.result['[[2]]']['[[1]]'], ListResult)
+        self.assertEqual(output.result['[[2]]']['[[1]]'].result, {})
+        self.assertIsInstance(output.result['[[2]]']['[[2]]'], ListResult)
+        self.assertEqual(output.result['[[2]]']['[[2]]'].result, {})
+        self.assertIsInstance(output.result['[[2]]']['[[3]]'], ListResult)
+        self.assertEqual(output.result['[[2]]']['[[3]]'].result, {})
 
         output = self.processor.process_output("""[[1]]
 [1]  1  2  3  4  8 12

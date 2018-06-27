@@ -243,7 +243,7 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         [[1]][[1]][[1]][[2]]
         [1] 5
         [[2]]
-        [1] 4\n""")
+        [1] 4""")
         self.assertIsInstance(output, ListResult)
         self.assertIsInstance(output.result, dict)
         self.assertEqual(len(output.result), 2)
@@ -277,6 +277,36 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assertIsInstance(output.result['[[1]]'], FunctionResult)
         self.assertIsInstance(output.result['[[2]]'], StringVector)
         self.assertEqual(output.result['[[2]]'].result, ['"hey"', '"you"'])
+
+        output = self.processor.process_output("""$a
+[1] 1
+
+[[2]]
+[[2]][[1]]
+[[2]][[1]][[1]]
+[[2]][[1]][[1]][[1]]
+[1] 2
+
+[[2]][[1]][[1]]$bc
+[1] 3
+
+
+
+
+[[3]]
+[1] 4
+
+$c
+[1] 5""")
+        self.assertIsInstance(output, ListResult)
+        self.assertIsInstance(output.result, dict)
+        self.assertEqual(len(output.result), 4)
+        self.assertIsInstance(output.result['$a'], NumericVector)
+        self.assertIsInstance(output.result['[[2]]'], dict)
+        self.assertIsInstance(output.result['[[3]]'], NumericVector)
+        self.assertIsInstance(output.result['$c'], NumericVector)
+
+
 
     def test_fastr_cases(self):
         output = self.processor.process_output("""[[1]]
@@ -321,9 +351,12 @@ NULL""")
         self.assertIsInstance(output.result['[[2]]'], dict)
         self.assertEqual(len(output.result['[[2]]']), 3)
         self.assertIsInstance(output.result['[[3]]'], NullResult)
-        self.assertIsInstance(output.result['[[2]]']['[[1]]'], UnknownResult)
-        self.assertIsInstance(output.result['[[2]]']['[[2]]'], UnknownResult)
-        self.assertIsInstance(output.result['[[2]]']['[[3]]'], UnknownResult)
+        self.assertIsInstance(output.result['[[2]]']['[[1]]'], ListResult)
+        self.assertEqual(output.result['[[2]]']['[[1]]'].result, {})
+        self.assertIsInstance(output.result['[[2]]']['[[2]]'], ListResult)
+        self.assertEqual(output.result['[[2]]']['[[2]]'].result, {})
+        self.assertIsInstance(output.result['[[2]]']['[[3]]'], ListResult)
+        self.assertEqual(output.result['[[2]]']['[[3]]'].result, {})
 
         output = self.processor.process_output("""[[1]]
 Time Series:

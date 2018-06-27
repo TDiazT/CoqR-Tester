@@ -14,9 +14,8 @@ class ROutputProcessor(AbstractOutputProcessor):
     string_regex = re.compile(r'^ *\[\d+\](?: +\".*\")+ *$', re.MULTILINE)
     number_regex = re.compile(r'^ *\[\d+\](?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
                               re.MULTILINE)
-    list_regex = re.compile(
-        r'^ *(\[\[\d+\]\]|\$[\w\.]+).*$',
-        re.MULTILINE)
+    list_regex = re.compile(r'^ *(\[\[\d+\]\]|\$[\w\.]+).*$', re.MULTILINE)
+    empty_list = re.compile(r'^list\(\)$', re.MULTILINE)
 
     def __init__(self):
         super().__init__()
@@ -32,7 +31,8 @@ class ROutputProcessor(AbstractOutputProcessor):
                 lambda x: BooleanVector(self._result_to_boolean_vector(self.boolean_regex.findall(x)))),
             (self.string_regex, lambda x: StringVector(self._result_to_string_vector(self.string_regex.findall(x)))),
             (self.number_regex, lambda x: NumericVector(self._result_to_numeric_vector(self.number_regex.findall(x)))),
-            (self.list_regex, lambda x: ListResult(self._result_to_list(x)))
+            (self.list_regex, lambda x: ListResult(self._result_to_list(x))),
+            (self.empty_list, lambda x: ListResult({})),
         ]
 
     def _result_to_list(self, result: str) -> dict:

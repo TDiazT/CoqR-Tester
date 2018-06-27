@@ -34,3 +34,7 @@ argv <- list('‘', 'Matrix', '’');list(argv[[1]],argv[[2]],argv[[3]]);
 structure('MethodDefinition', package = 'methods')
 argv <- list(logical(0))
 list(1:50, F)
+
+list(a=1, 2, b=3)
+list(a=1, list(list(list(2, bc=3))), 4, c=5)
+list(1, list(), list(list()))
