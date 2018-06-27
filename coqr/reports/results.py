@@ -249,6 +249,8 @@ class ListResult(ProcessedResult):
                     return status
                 else:
                     continue
+            elif isinstance(res1[k], dict) or isinstance(res2[k], dict):
+                return Status.FAIL
 
             status = res1[k].compare_to(res2[k])
             if status == Status.FAIL or status == Status.UNKNOWN:
