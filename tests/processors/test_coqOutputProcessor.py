@@ -89,6 +89,10 @@ class TestCoqOutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector('[1] "detaching ‘package:splines’"', ['"detaching ‘package:splines’"'])
         self.assert_vector('[1] "\\226\\128\\152"', ['"\\226\\128\\152"'])
 
+    def test_process_string_with_NA(self):
+        self.assert_vector('[1] \"75.37\" \"78.22\" NA     \n\n',
+                           ['"75.37"', '"78.22"', 'NA'])
+
     def test_process_NA(self):
         self.assert_vector("[1] NA", [None])
 

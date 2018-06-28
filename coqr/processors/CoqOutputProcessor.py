@@ -11,7 +11,7 @@ class CoqOutputProcessor(AbstractOutputProcessor):
     special_builtin_regex = re.compile(r'^\((builtin|special):.*\)$', re.MULTILINE)
     null_regex = re.compile(r'^ *NULL *$', re.MULTILINE)
     boolean_regex = re.compile(r'^ *\[\d+\](?: +TRUE| +FALSE| +NA)+ *$', re.MULTILINE)
-    string_regex = re.compile(r'^ *\[\d+\](?: +\".*\")+ *$', re.MULTILINE)
+    string_regex = re.compile(r'^ *\[\d+\](?: +\".*\"| +NA)+ *$', re.MULTILINE)
     number_regex = re.compile(r'^ *\[\d+\](?: +(?:[+-]?(?:(?:[0-9]*[.])?[0-9]+(?:[eE][-+]?[0-9]+)*|Inf)|NA|NaN))+ *$',
                               re.MULTILINE)
     list_regex = re.compile(r'^ *\[\[\d+\]\].*$', re.MULTILINE)

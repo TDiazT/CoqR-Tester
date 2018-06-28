@@ -73,6 +73,11 @@ class TestROutputProcessor(TestCase, TestCommonProcessor):
         self.assert_vector('[1] "detaching ‘package:splines’"', ['"detaching ‘package:splines’"'])
         self.assert_vector('[1] "\\226\\128\\152"', ['"\\226\\128\\152"'])
 
+    def test_process_string_with_NA(self):
+        self.assert_vector(
+            '[37] \"58.33\" \"58.84\"\n[46] \"75.37\" \"78.22\" NA ',
+            ['"58.33"', '"58.84"', '"75.37"', '"78.22"', 'NA'])
+
     def test_process_NA(self):
         self.assert_vector("[1] NA", [None])
 
@@ -306,8 +311,6 @@ $c
         self.assertIsInstance(output.result['[[3]]'], NumericVector)
         self.assertIsInstance(output.result['$c'], NumericVector)
 
-
-
     def test_fastr_cases(self):
         output = self.processor.process_output("""[[1]]
 [1] "‘"
@@ -532,4 +535,3 @@ $length.out
 [1] 3""")
         self.assertIsInstance(output, ListResult)
         self.assertEqual(set(output.result.keys()), {"[[1]]", "$length.out"})
-

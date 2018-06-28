@@ -68,10 +68,16 @@ def report_from_dict(dict_):
     line = dict_.get('line', -1)
     filename = dict_.get('filename', '')
     sub_reports = dict_.get('sub_reports', '')
-    res = [sub_report_from_dict(res, interpreter) for res in sub_reports]
+    res = []
+    for sub_report in sub_reports:
+        res.append(sub_report_from_dict(sub_report, interpreter))
+    # res = [sub_report_from_dict(res, interpreter) for res in sub_reports]
 
     return Report(exp, filename, interpreter, line, res)
 
 
 def reports_from_list(dicts: List[Dict]):
-    return [report_from_dict(dict_) for dict_ in dicts]
+    res = []
+    for dict_ in dicts:
+        res.append(report_from_dict(dict_))
+    return res
