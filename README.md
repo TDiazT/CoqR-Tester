@@ -1,4 +1,4 @@
-This project provides a set of tools to test out [proveR](https://github.com/Mbodin/proveR).
+This project provides a set of tools to test out [CoqR](https://github.com/Mbodin/CoqR).
 
 It executes R code with both an R and Coq interpreter, and then proceeds to
 compare their outputs.
@@ -91,8 +91,8 @@ prefer the R case.
 # Running R on a file
 $ RSCRIPT='rscript' python -m coqr.scripts.runner input.R output.json
 
-# Running proveR 
-$ COQ_INTERP=/path/to/proveR/ python -m coqr.scripts.runner input.R output.json
+# Running CoqR 
+$ COQ_INTERP=/path/to/CoqR/ python -m coqr.scripts.runner input.R output.json
 ```
 
 
